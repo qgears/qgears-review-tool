@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="hu.qgears.review.feature"
+      label="Q-Gears review tool"
+      version="1.0.0.qualifier"
+      provider-name="Q-Gears">
+
+   <description url="http://www.example.com/description">
+      Code review and report generator tool, that provides a simple WEB interface for reviewing Java codes, and monitor static code analisys statistics queries from SONAR.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="hu.qgears.review"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.qgears.sonar.client"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.qgears.review.eclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+    <plugin
+         id="hu.qgears.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+    <plugin
+         id="joptsimple"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

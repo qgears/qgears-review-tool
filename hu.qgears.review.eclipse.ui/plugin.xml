@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="hu.qgears.review.eclipse.ui.category"
+            class="hu.qgears.review.eclipse.ui.views.main.ReviewToolMainView"
+            icon="icons/qriview.png"
+            id="hu.qgears.review.eclipse.ui.main"
+            name="Review tool main view"
+            restorable="true">
+      </view>
+      <view
+            category="hu.qgears.review.eclipse.ui.category"
+            class="hu.qgears.review.eclipse.ui.views.todolist.ReviewToolTodoListView"
+            icon="icons/qriview.png"
+            id="hu.qgears.review.eclipse.ui.todos"
+            name="Review source set todo list"
+            restorable="true">
+      </view>
+      <view
+            category="hu.qgears.review.eclipse.ui.category"
+            class="hu.qgears.review.eclipse.ui.views.stats.ReviewToolStatisticsView"
+            icon="icons/qriview.png"
+            id="hu.qgears.review.eclipse.ui.stats"
+            name="Review source set statistics"
+            restorable="true">
+      </view>
+      <category
+            id="hu.qgears.review.eclipse.ui.category"
+            name="Q-Gears review tool UI">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="hu.qgears.review.eclipse.ui.util.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="hu.qgears.review.eclipse.ui.util.ReviewToolMainPreferencePage"
+            id="hu.qgears.reivew..ui.prefs.main"
+            name="Review tool preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="hu.qgears.review.eclipse.ui.views.PerspectiveFactory"
+            icon="icons/qriview.png"
+            id="hu.qgears.review.eclipse.ui.perspective"
+            name="Q-Gears review tool">
+      </perspective>
+   </extension>
+
+</plugin>

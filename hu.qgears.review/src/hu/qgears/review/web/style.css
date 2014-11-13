@@ -1,0 +1,47 @@
+table, th, td
+{
+border: 1px solid black;
+}
+/*color for metrics in generated report table
+  see ReportEntryCSSHelper*/
+.metric_nodata
+{
+	background-color:lightgray;
+}
+.metric_low
+{
+	background-color:#FF6666;
+}
+.metric_average
+{
+	background-color:#FFAD33;
+}
+.metric_good
+{
+	background-color:#FFFF66;
+}
+.metric_very_good
+{
+	background-color:greenyellow;
+}
+.metric_perfect
+{
+	background-color:green;
+}
+progress
+{
+	width:400px;
+}
+/*
+Styles for accordion panels
+*/
+div.accordion h3
+{
+	background-color:lightgray;
+}
+
+div.accordion
+{
+  background: linear-gradient(white, lightgray); /* Standard syntax */
+	padding: 5px;
+}

@@ -10,7 +10,6 @@
 
 # Maven output directories
 **/target/
-**/p2/
 
 # Eclipse output directories
 **/bin/

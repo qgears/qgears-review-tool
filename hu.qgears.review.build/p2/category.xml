@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="hu.qgears.review.feature" version="1.0.0.qualifier">
+      <category name="hu.qgears.review.category"/>
+   </feature>
+   <feature id="hu.qgears.review.feature.source" version="1.0.0.qualifier">
+      <category name="hu.qgears.review.category"/>
+   </feature>
+   <category-def name="hu.qgears.review.category" label="Review tool"/>
+</site>

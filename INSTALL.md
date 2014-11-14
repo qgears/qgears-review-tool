@@ -41,14 +41,20 @@ Here, set the following parameters:
  * 'Local' button -> browse to the '$BUILDDIR/qgears-review-tool/hu.qgears.review.build/p2/target/repository' directory and select it
 
 Press OK.
+
 Allow installation of required components of the Subversive team provider; add the relevant repository to Eclipse with the parameters below, adjusted to the repository chosen in the maven execution step above:
 
  * 'Name' -> Subversive 1.1 update site
  * 'Location' -> http://download.eclipse.org/technology/subversive/1.1/update-site/
  
 In the 'Install' window, select the 'QGears Review tool - Local maven build output' item from the 'Work with' repo list.
+
 Check the 'Review tool' item.
+
 Click 'Finish'.
-Accept the prompt that warns on installing software without certificae.
+
+Accept the prompt that warns on installing software without certificate.
+
 Restart Eclipse.
+
 The installation is done.

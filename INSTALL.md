@@ -9,7 +9,7 @@ Required software:
  * Java 1.7+ - (tested with openjdk-7-jre:amd64 7u71-2.5.3-0ubuntu0.14.04.1)
  * maven (tested with version 3.0.5-1)
 
-# Installation steps
+# Steps
 
 Create an arbitrary directory used for building the review tool! This directory will further be referred to as $BUILDDIR, then execute the following commands.
 ```

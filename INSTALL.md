@@ -12,7 +12,9 @@ Required software:
 
 # Steps
 
-Create an arbitrary directory used for building the review tool! This directory will further be referred to as $BUILDDIR, then execute the following commands.
+Create an arbitrary directory used for building the review tool! This directory will further be referred to as $BUILDDIR. 
+
+Execute the following commands.
 ```
 cd $BUILDDIR
 git clone https://github.com/qgears/opensource-utils.git

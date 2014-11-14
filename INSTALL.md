@@ -3,6 +3,7 @@
 This guide will help you through the installation of the QGears Review tool with the Eclipse user interface.
 
 Assumed environment: ```Ubuntu 14.04.1```
+
 Required software:
 
  * Eclipse Indigo 3.7 SR2

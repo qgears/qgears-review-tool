@@ -44,9 +44,6 @@ public class LoadConfiguration {
 	
 	public static final UtilFileFilter fileFilter=new UtilFileFilter();
 	
-	public static void main(String[] args) throws Exception {
-		new LoadConfiguration().loadConfiguration(new File("mappingexample/sourcefoldermapping.properties"));
-	}
 	public ReviewInstance loadConfiguration(File mappingfile) throws Exception
 	{
 		Properties props=new Properties();
@@ -70,13 +67,6 @@ public class LoadConfiguration {
 		loadFileSets(model, props, configdir);
 		loadAnnotations(model, props, configdir);
 		loadSonarConfiguration(model,props);
-//		System.out.println("mappings: "+model.mappings);
-//		List<String> lines=new ArrayList<>();
-//		for(ReviewSource rs:model.sources)
-//		{
-//			lines.add(""+rs);
-//		}
-//		UtilFile.saveAsFile(new File("/tmp/concat"), UtilString.concat(lines, "\n"));
 		return model;
 	}
 	
@@ -144,8 +134,6 @@ public class LoadConfiguration {
 				e.printStackTrace();
 			}
 			index++;
-//			List<String> pieces=ussProperties.splitAndUnescape(block);
-//			Map<String, String> annotprops=UtilSimpleProperties.parseProperties(pieces);
 		}
 	}
 	private void loadFileSets(ReviewModel model, Properties props,
@@ -199,22 +187,6 @@ public class LoadConfiguration {
 				model.addSourceFiles(files);
 				System.out.println("Creating md5sum: "+id);
 				int n=0;
-//				Map<String, ReviewSource> treemap=new TreeMap<String, ReviewSource>();
-//				for(ReviewSource rs:files)
-//				{
-//					treemap.put(rs.modelUrl(), rs);
-//				}
-//				StringBuilder ret=new StringBuilder();
-//				for(String key: treemap.keySet())
-//				{
-//					File f=model.getFile(key);
-//					if(f.isFile())
-//					{
-//						ret.append(""+key+" "+UtilFile.getMd5(UtilFile.loadFile(f))+"\n");
-//						n++;
-//					}
-//				}
-//				System.out.println(""+ret);
 				System.out.println("Loading svn: "+id+" ready number of md5sums: "+n);
 			}
 		}

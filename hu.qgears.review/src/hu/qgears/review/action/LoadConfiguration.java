@@ -7,6 +7,9 @@ import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSource;
+import hu.qgears.review.tool.ConfigParsingResult;
+import hu.qgears.review.tool.ConfigParsingResult.Problem;
+import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.tool.PomFileSet;
 import hu.qgears.review.tool.PomFileSet.Params;
 import hu.qgears.review.tool.SvnStatus;
@@ -16,14 +19,20 @@ import hu.qgears.review.util.UtilSimpleString;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 
+/**
+ * Loads a review configuration via a root configuration file.  
+ * 
+ * @author rizsi
+ */
 public class LoadConfiguration {
+	private static final Logger logger = Logger.getLogger(LoadConfiguration.class.getName());
 	/**
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
@@ -42,29 +51,67 @@ public class LoadConfiguration {
 	 */
 	public static final UtilSimpleString ussProperties=new UtilSimpleString("\n", "\\", "n");
 	
-	public static final UtilFileFilter fileFilter=new UtilFileFilter();
+	public static final UtilFileFilter scmSubdirFilter=new UtilFileFilter();
 	
-	public ReviewInstance loadConfiguration(File mappingfile) throws Exception
-	{
-		Properties props=new Properties();
-		FileInputStream fis=new FileInputStream(mappingfile);
-		try
-		{
+	/**
+	 * 
+	 * @param mappingfile the root configuration file of a review project
+	 * @return
+	 * @throws Exception
+	 */
+	public ConfigParsingResult loadConfiguration(final File mappingfile) 
+			throws Exception {
+		final List<Problem> problems = new ArrayList<Problem>();
+		Properties props = new Properties();
+		FileInputStream fis = new FileInputStream(mappingfile);
+		
+		try {
 			props.load(fis);
-		}finally
-		{
+		} finally {
 			fis.close();
 		}
-		System.out.println("Current working directory : "+new File(".").getAbsolutePath());
-		File configdir=new File(""+props.get("config"));
-		ReviewModel model=loadReviewModel(props, configdir);
-		return new ReviewInstance(model, new File(configdir, outputfoldername+"/"+System.currentTimeMillis()+".annot"));
+		
+		logger.info("Current working directory : " + new File(".").getAbsolutePath());
+		
+		final Object configDirEntry = props.get("config");
+		
+		if (configDirEntry == null) {
+			problems.add(new Problem(Type.ERROR, "The mandatory 'config=...' " +
+					"entry is missing from the root configuration file: " +
+					mappingfile));
+		}
+		
+		final File configdir = new File(""+configDirEntry);
+		
+		if (!configdir.exists() || !configdir.isDirectory()) {
+			final String problemDetail;
+			
+			if (!configdir.exists()) {
+				problemDetail = "The referred directory does not exist.";
+			} else {
+				problemDetail = configdir.getPath() + " is not a directory";
+			}
+			
+			problems.add(new Problem(Type.ERROR, "The 'config' entry in the" +
+					"configuration file " + mappingfile + " must refer to an" +
+							"existing directory." + configdir, problemDetail));
+		}
+		
+		final ReviewModel model = loadReviewModel(props, configdir, problems);
+		final ReviewInstance reviewInstance = new ReviewInstance(model, 
+				new File(configdir, outputfoldername + "/" + 
+						System.currentTimeMillis() + ".annot"));
+		final ConfigParsingResult configParsingResult = 
+				new ConfigParsingResult(reviewInstance, problems);
+		
+		return configParsingResult;
 	}
-	private ReviewModel loadReviewModel(Properties props, File configdir) throws Exception {
+	private ReviewModel loadReviewModel(final Properties props, 
+			final File configdir, final List<Problem> problems) throws Exception {
 		ReviewModel model=new ReviewModel();
-		parseMappings(model, props);
+		parseMappings(model, props, problems);
 		loadSourceFolders(model, props, configdir);
-		loadFileSets(model, props, configdir);
+		loadFileSets(model, props, configdir, problems);
 		loadAnnotations(model, props, configdir);
 		loadSonarConfiguration(model,props);
 		return model;
@@ -136,18 +183,42 @@ public class LoadConfiguration {
 			index++;
 		}
 	}
-	private void loadFileSets(ReviewModel model, Properties props,
-			File configdir) throws Exception {
-		File[] sets=new File(configdir, "filesets").listFiles();
-		if(sets!=null)
-		{
-			for(File f:sets)
-			{
-				if(!fileFilter.isFilteredOut(f)&& f.isDirectory())
-				{
-					System.out.println("Loading fileset: "+f.getName());
-					loadFileset(model, f);
-					System.out.println("Loading fileset: "+f.getName()+" ready");
+	
+	private void loadFileSets(final ReviewModel model, final Properties props,
+			final File configdir, final List<Problem> problems) throws Exception {
+		final File fileSetsDir = new File(configdir, "filesets");
+		
+		if (!fileSetsDir.exists() || !fileSetsDir.isDirectory()) {
+			problems.add(new Problem(Type.ERROR, "A subdirectory called " +
+					"'filesets', containing the definition of file sets to " +
+					"be reviewed, does not exist within the configuration " +
+					"directory: " + configdir));
+		} else {
+			final File[] fileSetDefSubdirs=fileSetsDir.listFiles();
+			
+			/* 
+			 * fileSetDefSubdirs will never be null according to the above
+			 * branch conditions and javadocs of listFiles().
+			 */
+			if (fileSetDefSubdirs.length == 0) {
+				problems.add(new Problem(Type.ERROR, "No subdirectories, " +
+						"containing file set definition descriptors, are" +
+						"found within the " + fileSetsDir + " directory.",
+						"Create one or more subdirectory within the " +
+						fileSetsDir + " with one file named " +
+						"'filesetdefinition' in each subdirectory."));
+			} else {
+				for (final File fileSetSubdir : fileSetDefSubdirs) {
+					if (!scmSubdirFilter.isFilteredOut(fileSetSubdir) 
+							&& fileSetSubdir.isDirectory()) {
+						logger.info("Loading fileset from: " + 
+							fileSetSubdir.getName());
+						
+						parseFilesetDefinition(model, fileSetSubdir, problems);
+						
+						logger.info("Loading fileset: " + 
+							fileSetSubdir.getName() + " ready");
+					}
 				}
 			}
 		}
@@ -192,14 +263,27 @@ public class LoadConfiguration {
 		}
 	}
 
-	private void parseMappings(ReviewModel model, Properties props) {
-		for(Map.Entry<Object, Object> e:props.entrySet())
-		{
+	/**
+	 * Parses SCM roots.
+	 * @param model
+	 * @param props
+	 * @param problems
+	 */
+	private void parseMappings(final ReviewModel model, final Properties props, 
+			final List<Problem> problems) {
+		for (Map.Entry<Object, Object> e:props.entrySet()) {
 			String key=""+e.getKey();
-			if(key.startsWith("map."))
-			{
+			if(key.startsWith("map.")) {
 				model.mappings.put(key.substring(4), ""+e.getValue());
 			}
+		}
+		
+		if (model.mappings.isEmpty()) {
+			problems.add(new Problem(Type.ERROR, "No SCM working directories " +
+					"are specified in the root review configuration file.",
+					"Specify at least one SCM working directory in the " +
+					"config file by adding at least one " +
+					"'map.workingdir_id=workingdir_path' entry."));
 		}
 	}
 
@@ -210,66 +294,105 @@ public class LoadConfiguration {
 	 * Multiple fileset definitions are supported.
 	 * 
 	 * @param model The {@link ReviewModel} containing sources
-	 * @param f The {@link File} that contains the file set definition
+	 * @param fileSetDefSubdir The {@link File} that contains the file set definition
 	 * @throws Exception
 	 */
-	private void loadFileset(ReviewModel model, File f) throws Exception {
-		String id=f.getName();
-		File g=new File(f, "filesetdefinition");
-		System.out.println("Loading fileset definition: "+g);
-		String def=UtilFile.loadAsString(g);
-		List<String> lines=UtilString.split(def, "\r\n");
-		if (!lines.isEmpty()){
-			List<String> ret;
-			if(lines.get(0).equals("pomfileset"))
-			{
-				ret = parsePomFileSet(model, lines);
-			} else if (lines.get(0).equals(WhiteListFileSet.ID)){
-				ret = new WhiteListFileSet(lines).reduce(toStringList(model.getSources()));
+	private void parseFilesetDefinition(final ReviewModel model, 
+			final File fileSetDefSubdir, final List<Problem> problems) 
+					throws Exception {
+		final String fileSetId = fileSetDefSubdir.getName();
+		final File fileSetDefFile = new File(fileSetDefSubdir, "filesetdefinition");
+		
+		logger.fine("Loading fileset definition: " + fileSetDefFile);
+		
+		final String fileSetDefinition = UtilFile.loadAsString(fileSetDefFile);
+		final List<String> fileSetDefLines = 
+				UtilString.split(fileSetDefinition, "\r\n");
+		
+		if (!fileSetDefLines.isEmpty()){
+			final String fileSetDefType = fileSetDefLines.get(0);
+			final List<String> ret;
+			
+			if (PomFileSet.POMFILESET_ID.equals(fileSetDefType)) {
+				ret = parsePomFileSet(model, fileSetDefFile, fileSetDefLines, 
+						problems);
+			} else if (WhiteListFileSet.ID.equals(fileSetDefType)) {
+				ret = new WhiteListFileSet(fileSetDefLines).reduce(
+						toSourceFileList(model.getSources()), problems);
 			} else {
-				throw new RuntimeException("unknown fileset type - not pomfileset");
+				throw new RuntimeException("Unexpected fileset type '" + 
+						fileSetDefType + "' in " + fileSetDefFile + "; must " +
+								"be either " + PomFileSet.POMFILESET_ID +
+								" or " + WhiteListFileSet.ID);
 			}
-			model.addSourceSet(id, ret);
+			
+			if (ret != null) {
+				model.addSourceSet(fileSetId, ret);
+			}
 		} else {
-			throw new RuntimeException("Empty fileset file! "+g.getAbsolutePath());
+			throw new RuntimeException("Empty fileset definition descriptor " +
+					"file: " + fileSetDefFile.getAbsolutePath());
 		}
 	}
 	
 	/**
-	 * Parses file set from a pom.xml describing a SONAR analisys job. Use
+	 * Parses file set from a pomFileBytes.xml describing a SONAR analisys job. Use
 	 * module definitions as whitelist of required components, and use
 	 * sonar.exclusion property as blacklist.
 	 * 
 	 * @param model
-	 * @param lines
+	 * @param pomFileSetDefFile name of the processed POM file set definition
+	 * file, only used in error messages
+	 * @param fileSetDefLines contents of the POM file set definition
 	 * @return
-	 * @throws IOException
 	 * @throws Exception
 	 * 
 	 * @see PomFileSet
 	 */
-	protected List<String> parsePomFileSet(ReviewModel model, List<String> lines)
-			throws IOException, Exception {
+	protected List<String> parsePomFileSet(final ReviewModel model, 
+			final File pomFileSetDefFile, final List<String> fileSetDefLines, 
+			final List<Problem> problems) throws Exception {
 		List<String> ret;
-		Params params=new Params();
-		params.params=new HashMap<String, String>();
-		String pomfile=lines.get(1);
-		params.pom=UtilFile.loadFile(model.getFile(pomfile));
-		for(int i=2;i<lines.size();++i)
-		{
-			String line=lines.get(i);
-			List<String> parts=UtilString.split(line, "=");
-			if(parts.size()==2)
-			{
-				params.params.put(parts.get(0), parts.get(1));
+		final Params params = new Params();
+		params.params = new HashMap<String, String>();
+		
+		/* 
+		 * The path of the POM xml file is strictly the second line in the file
+		 * set definition.
+		 */
+		if (fileSetDefLines.size() >= 2) {
+			final String pomXmlFilePath = fileSetDefLines.get(1);
+			final File pomXmlFile = model.getFile(pomXmlFilePath);
+			params.pomFileBytes = UtilFile.loadFile(pomXmlFile);
+			
+			/* 
+			 * Parsing parameters, if any, that will be substituted into the
+			 * POM xml.
+			 */
+			for (int i = 2; i < fileSetDefLines.size(); ++i) {
+				final String pomParamLine = fileSetDefLines.get(i);
+				final List<String> parts = UtilString.split(pomParamLine, "=");
+				
+				if (parts.size() == 2) {
+					params.params.put(parts.get(0), parts.get(1));
+				}
 			}
+			
+			final List<String> strings=toSourceFileList(model.getSources());
+			
+			params.fileset=strings;
+			ret = new PomFileSet().filter(params, pomFileSetDefFile, pomXmlFile,
+					problems);
+			
+			return ret;
+		} else {
+			throw new IllegalArgumentException("The POM file set definition " +
+					pomFileSetDefFile + " must contain at least two lines.");
 		}
-		List<String> strings=toStringList(model.getSources());
-		params.fileset=strings;
-		ret =new PomFileSet().reduce(params);
-		return ret;
 	}
-	private List<String> toStringList(List<ReviewSource> sources) {
+	
+	
+	private List<String> toSourceFileList(List<ReviewSource> sources) {
 		List<String> ret=new ArrayList<String>(sources.size());
 		for(ReviewSource s: sources)
 		{

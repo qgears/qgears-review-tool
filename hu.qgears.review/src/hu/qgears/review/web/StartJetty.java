@@ -2,6 +2,7 @@ package hu.qgears.review.web;
 
 import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.model.ReviewInstance;
+import hu.qgears.review.tool.ConfigParsingResult;
 
 import java.io.File;
 
@@ -20,7 +21,10 @@ public class StartJetty {
 		{
 			throw new RuntimeException("Program requires 3 parameters. (Host, port and configuration file name.)");
 		}
-		ReviewInstance instance=new LoadConfiguration().loadConfiguration(new File(args[2]));
+		
+		final ConfigParsingResult configParsingResult =
+				new LoadConfiguration().loadConfiguration(new File(args[2]));
+		final ReviewInstance instance= configParsingResult.getReviewInstance();
 		Server s=new Server();
 		SocketConnector conn=new SocketConnector();
 		conn.setHost(args[0]);

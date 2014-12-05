@@ -1,5 +1,7 @@
 package hu.qgears.review.tool;
 
+import hu.qgears.review.tool.ConfigParsingResult.Problem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,11 +25,11 @@ public class WhiteListFileSet {
 	/**
 	 * Creates a new instance. See {@link WhiteListFileSet head comment}
 	 * 
-	 * @param lines
-	 *            The content of definition file read into memory
+	 * @param fileSetDefLines
+	 *            The content of definition file read into memory.
 	 */
-	public WhiteListFileSet(List<String> lines) {
-		parseValidPatterns(lines);
+	public WhiteListFileSet(final List<String> fileSetDefLines) {
+		parseValidPatterns(fileSetDefLines);
 	}
 
 
@@ -45,9 +47,11 @@ public class WhiteListFileSet {
 	 * holding only the matching ones.
 	 * 
 	 * @param stringList
+	 * @param problems 
 	 * @return
 	 */
-	public List<String> reduce(List<String> stringList) {
+	public List<String> reduce(final List<String> stringList, 
+			final List<Problem> problems) {
 		List<String> mList = new ArrayList<String>();
 		for (String s : stringList){
 			for (Matcher m : validPatterns){

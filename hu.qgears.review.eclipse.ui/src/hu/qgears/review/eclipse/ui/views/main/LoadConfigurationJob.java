@@ -4,13 +4,24 @@ import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
 import hu.qgears.review.eclipse.ui.util.Preferences;
 import hu.qgears.review.model.ReviewInstance;
+import hu.qgears.review.tool.ConfigParsingResult;
+import hu.qgears.review.tool.ConfigParsingResult.Problem;
+import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
 
 /**
  * Eclipse {@link Job} for loading review tool configuration on a BG thread
@@ -21,33 +32,83 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class LoadConfigurationJob extends Job {
 
-	static final String TITLE = "Loading review tool configuration...";
+	public static final String TITLE = "Loading review tool configuration...";
+	
+	/**
+	 * Lookup table for converting {@link Problem#Type} values to integers 
+	 * suitable for Eclipse APIs.
+	 */
+	@SuppressWarnings("serial") // It will not be serialized or even used elsewhere
+	private static final Map<Problem.Type, Integer> problemTypeMap = 
+			Collections.unmodifiableMap(new HashMap<Problem.Type, Integer>() {
+				{
+					put(Problem.Type.ERROR, IStatus.ERROR);
+					put(Problem.Type.WARNING, IStatus.WARNING);
+				}
+			});
 	private ReviewInstance reviewInstance;
 
 	public LoadConfigurationJob() {
 		super(TITLE);
 	}
+	
+	private IStatus convertToStatus(final Problem problem) {
+		final String lineSeparator = System.getProperty("line.separator");
+		final Type problemType = problem.getType();
+		final Integer severity = problemTypeMap.get(problemType);
+		final String problemDetails = problem.getDetails();
+
+		return new Status(severity == null ? IStatus.ERROR : severity, 
+				ReviewToolUI.PLUGIN_ID, problem.getMessage() + 
+				(problemDetails == null || problemDetails.isEmpty() ?
+						"" : lineSeparator + problemDetails), 
+				problem.getException());
+	}
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		String configurationFile = Preferences.getConfigurationFile();
-		IStatus st = Status.OK_STATUS;
+		final String configurationFile = Preferences.getConfigurationFile();
+		IStatus status = Status.OK_STATUS;
+		
 		if (configurationFile == null || configurationFile.isEmpty()){
-			st = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Review tool configuration file is not set. Please open preference store and set file path!");
+			status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Review " +
+					"tool configuration file is not set. Please open the " +
+					"preference store and set file path!");
 		} else {
 			if (Preferences.useSVNCache()){
 				System.setProperty("use.svn.cache", "true");
 			} else {
 				System.setProperty("use.svn.cache", "false");
 			}
-			LoadConfiguration lc = new LoadConfiguration();
 			try {
-				reviewInstance = lc.loadConfiguration(new File (configurationFile));
-			} catch (Exception e) {
-				st = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Cannot load configuration",e);
+				final LoadConfiguration lc = new LoadConfiguration();
+				final ConfigParsingResult configParsingResult = 
+						lc.loadConfiguration(new File (configurationFile));
+				reviewInstance = configParsingResult.getReviewInstance();
+				
+				final List<Problem> configParsingProblems = 
+						configParsingResult.getProblems();
+				
+				if (configParsingProblems != null && !configParsingProblems.isEmpty()) {
+					final Bundle bundle = Platform.getBundle(ReviewToolUI.PLUGIN_ID);
+					final ILog log = Platform.getLog(bundle);
+					
+					for (final Problem problem : configParsingProblems) {
+						log.log(convertToStatus(problem));
+					}
+					
+					status = new Status(IStatus.WARNING, ReviewToolUI.PLUGIN_ID, 
+							"Problems have been encountered during loading " +
+							"the review configuration.");
+				}
+			} catch (final Exception e) {
+				status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, 
+						"Could not load review configuration because of a " +
+						"critical problem", e);
 			}
 		}
-		return st;
+		
+		return status;
 	}
 
 	public ReviewInstance getReviewInstance() {

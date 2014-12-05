@@ -5,6 +5,7 @@ import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSourceSet;
+import hu.qgears.review.tool.ConfigParsingResult;
 import hu.qgears.review.web.HandleReport;
 
 import java.io.File;
@@ -189,8 +190,11 @@ public class ReportGeneratorStandalone {
 	 */
 	private ReviewInstance loadConfiguration() {
 		try {
-			LoadConfiguration loadConfig = new LoadConfiguration();
-			ReviewInstance c = loadConfig.loadConfiguration(mapping);
+			final LoadConfiguration loadConfig = new LoadConfiguration();
+			final ConfigParsingResult configParsingResult = 
+					loadConfig.loadConfiguration(mapping);
+			final ReviewInstance c = configParsingResult.getReviewInstance();
+			
 			return c;
 		} catch (Exception e) {
 			error("Loading configuration failed! "+e.getMessage());

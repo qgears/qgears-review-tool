@@ -34,6 +34,10 @@ import java.util.logging.Logger;
 public class LoadConfiguration {
 	private static final Logger logger = Logger.getLogger(LoadConfiguration.class.getName());
 	/**
+	 * Extension of the files storing saved reviews. 
+	 */
+	private static final String REVIEW_FILE_EXTENSION = ".annot";
+	/**
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
 	private static final String PROPERTY_SONAR_PROJECT = "sonar_project";
@@ -41,7 +45,7 @@ public class LoadConfiguration {
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
 	private static final String PROPERTY_SONAR_URL = "sonar_url";
-	private String reviewOutputFolderName;
+	private String outputfoldername;
 	/**
 	 * This is the separator and escape sequence in the annotation entries file that separates the blocks.
 	 */
@@ -99,8 +103,8 @@ public class LoadConfiguration {
 		
 		final ReviewModel model = loadReviewModel(props, configdir, problems);
 		final ReviewInstance reviewInstance = new ReviewInstance(model, 
-				new File(configdir, reviewOutputFolderName + "/" + 
-						System.currentTimeMillis() + ".annot"));
+				new File(configdir, outputfoldername + "/" + 
+						System.currentTimeMillis() + REVIEW_FILE_EXTENSION));
 		final ConfigParsingResult configParsingResult = 
 				new ConfigParsingResult(reviewInstance, problems);
 		
@@ -151,9 +155,9 @@ public class LoadConfiguration {
 					throws Exception {
 		final String reviewUserName = getReviewUserName(rootConfigProps);
 		
-		reviewOutputFolderName = "review-" + reviewUserName;
+		outputfoldername = "review-" + reviewUserName;
 		
-		logger.fine("Directory into which reviews will be saved: " + reviewOutputFolderName);
+		logger.fine("Directory into which reviews will be saved: " + outputfoldername);
 		
 		final UtilFileVisitor reviewSearch = new UtilFileVisitor() {
 			@Override
@@ -163,7 +167,7 @@ public class LoadConfiguration {
 				if (file.isDirectory() && file.getName().startsWith(".")) {
 					return false;
 				}
-				if (file.isFile() && file.getName().endsWith(".annot")) {
+				if (file.isFile() && file.getName().endsWith(REVIEW_FILE_EXTENSION)) {
 					loadAnnotationsFile(model, rootConfigProps, file);
 				}
 				return true;

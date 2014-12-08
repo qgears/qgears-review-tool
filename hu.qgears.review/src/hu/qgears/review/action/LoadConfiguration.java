@@ -41,7 +41,7 @@ public class LoadConfiguration {
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
 	private static final String PROPERTY_SONAR_URL = "sonar_url";
-	private String outputfoldername;
+	private String reviewOutputFolderName;
 	/**
 	 * This is the separator and escape sequence in the annotation entries file that separates the blocks.
 	 */
@@ -99,7 +99,7 @@ public class LoadConfiguration {
 		
 		final ReviewModel model = loadReviewModel(props, configdir, problems);
 		final ReviewInstance reviewInstance = new ReviewInstance(model, 
-				new File(configdir, outputfoldername + "/" + 
+				new File(configdir, reviewOutputFolderName + "/" + 
 						System.currentTimeMillis() + ".annot"));
 		final ConfigParsingResult configParsingResult = 
 				new ConfigParsingResult(reviewInstance, problems);
@@ -112,7 +112,7 @@ public class LoadConfiguration {
 		parseMappings(model, props, problems);
 		loadSourceFolders(model, props, configdir);
 		loadFileSets(model, props, configdir, problems);
-		loadAnnotations(model, props, configdir);
+		loadExistingReviews(model, props, configdir);
 		loadSonarConfiguration(model,props);
 		return model;
 	}
@@ -122,48 +122,57 @@ public class LoadConfiguration {
 		model.setSonarProjectId(props.getProperty(PROPERTY_SONAR_PROJECT));
 	}
 	
-	private void loadAnnotations(final ReviewModel model, final Properties props,
-			File configdir) throws Exception {
-		List<String> folders=new ArrayList<String>();
-		for(int i=1;true;++i)
-		{
-			Object o=props.get("annotationsfolder."+i);
-			if(o!=null)
-			{
-				String foldername=""+o;
-				if(i==1)
-				{
-					outputfoldername=foldername;
-				}
-				folders.add(foldername);
-			}else
-			{
-				break;
-			}
-		}
-		System.out.println("review folders: "+folders);
-		for(String s:folders)
-		{
-			File annotationsFolder=new File(configdir, s);
-			new UtilFileVisitor()
-			{
-				@Override
-				protected boolean visited(File dir, String localPath)
-						throws Exception {
-					if(dir.isDirectory() && dir.getName().startsWith("."))
-					{
-						return false;
-					}
-					if(dir.isFile())
-					{
-						loadAnnotationsFile(model, props, dir);
-					}
-					return true;
-				}
-			}
-			.visit(annotationsFolder);
-		}
+	private String getReviewUserName(final Properties rootConfigProps) {
+		final String reviewUserNameProp = rootConfigProps.getProperty("review_username");
+		final String reviewUserName = reviewUserNameProp == null 
+				|| reviewUserNameProp.length() == 0 ?
+						System.getProperty("user.name")
+						: reviewUserNameProp;
+						
+		return reviewUserName;
 	}
+	
+	/**
+	 * Loads all the existing reviews into the review model, which can be
+	 * enumerated within the review configuration directory. Side effect of this
+	 * method: it sets the folder where the reviews of the current will be 
+	 * saved, to 'review-$USER', where the value of the $USER property will be
+	 * loaded from the config file, if the 'review_username' entry is found,
+	 * or, if not, its value will be the current OS-level login name.  
+	 * @param model the partial review model, to which reviews are to be added
+	 * @param rootConfigProps configuration properties 
+	 * @param reviewProjectConfigDir the directory containing the project-specific review
+	 * configuration files and reviews. All the review files found within this
+	 * directory and its subdirectories recursively, will be loaded.  
+	 * @throws Exception
+	 */
+	private void loadExistingReviews(final ReviewModel model, 
+			final Properties rootConfigProps, final File reviewProjectConfigDir) 
+					throws Exception {
+		final String reviewUserName = getReviewUserName(rootConfigProps);
+		
+		reviewOutputFolderName = "review-" + reviewUserName;
+		
+		logger.fine("Directory into which reviews will be saved: " + reviewOutputFolderName);
+		
+		final UtilFileVisitor reviewSearch = new UtilFileVisitor() {
+			@Override
+			protected boolean visited(final File file, final String localPath)
+					throws Exception {
+				/* Skipping hidden directories, such as SCM-info dirs. */
+				if (file.isDirectory() && file.getName().startsWith(".")) {
+					return false;
+				}
+				if (file.isFile() && file.getName().endsWith(".annot")) {
+					loadAnnotationsFile(model, rootConfigProps, file);
+				}
+				return true;
+			}
+		};
+		
+		reviewSearch.visit(reviewProjectConfigDir);
+	}
+	
 	private void loadAnnotationsFile(ReviewModel model,
 			Properties props, File annotationsFile) throws Exception {
 		String file=UtilFile.loadAsString(annotationsFile);

@@ -60,7 +60,7 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER |SWT.VIRTUAL);
+		viewer = new TreeViewer(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		ReviewSourceLabelProvider labelProvider = new ReviewSourceLabelProvider();
 		viewer.setContentProvider(new ReviewSourceContentProvier());
 		viewer.setLabelProvider( new DecoratingLabelProvider(labelProvider,labelProvider));

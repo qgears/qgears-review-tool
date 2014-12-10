@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
@@ -148,12 +149,12 @@ public class ReviewToolMainView extends ViewPart {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER |SWT.VIRTUAL);
+		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		ReviewSourceLabelProvider lp = new ReviewSourceLabelProvider();
 		viewer.setContentProvider(new ReviewSourceContentProvier());
 		viewer.setLabelProvider( new DecoratingLabelProvider(lp,lp));
 		
-
 		getSite().setSelectionProvider(viewer);
 		openJavaTypeAction = new OpenJavaTypeAction(viewer);
 		openReviewDetailsAction = new OpenReviewEntryDetailsAction(viewer);

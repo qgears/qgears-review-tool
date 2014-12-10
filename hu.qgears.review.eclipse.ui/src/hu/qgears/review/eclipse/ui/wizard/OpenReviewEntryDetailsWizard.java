@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * Wizard, that shows the properties of an existing {@link ReviewEntry} in read
@@ -36,6 +37,11 @@ public class OpenReviewEntryDetailsWizard extends Wizard {
 	}
 	
 	@Override
+	public void createPageControls(final Composite pageContainer) {
+		super.createPageControls(pageContainer);
+	}
+	
+	@Override
 	public void addPages() {
 		ReviewSource reviewSource = displayedEntry.getReviewSource(model);
 		Collection<ReviewEntry> existingEntries;
@@ -58,5 +64,10 @@ public class OpenReviewEntryDetailsWizard extends Wizard {
 		ReviewEntryDetailsOptionalPageReadOnly p2 = new ReviewEntryDetailsOptionalPageReadOnly(displayedEntry);
 		p2.setDescription(description);
 		addPage(p2);
+	}
+	
+	@Override
+	public boolean canFinish() {
+		return false;
 	}
 }

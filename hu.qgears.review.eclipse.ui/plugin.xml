@@ -25,7 +25,7 @@
             icon="icons/qriview.png"
             id="hu.qgears.review.eclipse.ui.stats"
             name="Review source set statistics"
-            restorable="true">
+            restorable="true" >
       </view>
       <category
             id="hu.qgears.review.eclipse.ui.category"

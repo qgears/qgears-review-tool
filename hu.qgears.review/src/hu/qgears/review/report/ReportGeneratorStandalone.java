@@ -1,17 +1,14 @@
 package hu.qgears.review.report;
 
-import hu.qgears.commons.UtilFile;
 import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSourceSet;
 import hu.qgears.review.tool.ConfigParsingResult;
-import hu.qgears.review.web.HandleReport;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +24,6 @@ import joptsimple.annot.JOSimpleBoolean;
  * 
  */
 public class ReportGeneratorStandalone {
-
-	private static final String STYLE_CSS = "style.css";
-	private static final String HTML_START = "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\""+STYLE_CSS+"\"></head><body>";
-	private static final String HTML_END = "</body></html>";
 
 	/**
 	 * Helper class for parsing command line arguments of this application.
@@ -120,55 +113,32 @@ public class ReportGeneratorStandalone {
 			if (reviewSourceSets == null || reviewSourceSets.isEmpty()){
 				reviewSourceSets = new ArrayList<String>(model.sourcesets.keySet());
 			}
+			ReportGeneratorHtml genHtml = new ReportGeneratorHtml();
 			for (String sourceSet : reviewSourceSets){
 				if (model.sourcesets.containsKey(sourceSet)){
-					generateReport(model, sourceSet);
+					try {
+						File outputFile = getOutputFile(sourceSet);
+						info("Generating report file for "+sourceSet+ " into "+outputFile.getAbsolutePath());
+						genHtml.generateReport(new ReportGenerator(model, model.sourcesets.get(sourceSet)),outputFile,true,true);
+						info("Generation finished without errors.");
+					} catch (Exception e){
+						error("Generationg report for "+sourceSet+ " failed.");
+						e.printStackTrace();
+					}
 				} else {
 					error("Skipping unknown review source set :"+sourceSet);
 				}
 			}
-			copyStyle();
+			genHtml.copyStyle(outputFolder);
 		}
 	}
-
-	private void copyStyle() throws IOException {
-		File style = new File(outputFolder,STYLE_CSS);
-		UtilFile.copyFileFromUrl(style,HandleReport.class.getResource(STYLE_CSS));
-	}
-
+	
 	private void printHelpOnConsole(ApplicationParameters parameters)
 			throws IOException {
 		info("Command line tool for generation HTML reports from code review, and SONAR analisys results.");
 		parameters.printHelpOn(System.out);
 	}
 
-	/**
-	 * Generates the HTML report for specified {@link ReviewSourceSet}.
-	 * 
-	 * @param model the model root of review configuration 
-	 * @param sourceSet String identifier of {@link ReviewSourceSet}
-	 */
-	private void generateReport(ReviewModel model, String sourceSet) {
-		PrintWriter writer = null;
-		try {
-			File outputFile = getOutputFile(sourceSet);
-			info("Generating report file for "+sourceSet+ " into "+outputFile.getAbsolutePath());
-			writer = new PrintWriter(outputFile, "UTF-8");
-			ReportGenerator g = new ReportGenerator(model, model.sourcesets.get(sourceSet));
-			writer.write(HTML_START);
-			ReportGeneratorTemplate template = new ReportGeneratorTemplate(writer, g,false);
-			writer.write(HTML_END);
-			template.generate();
-			info("Generation finished without errors.");
-		} catch (Exception e){
-			error("Generationg report for "+sourceSet+ " failed.");
-			e.printStackTrace();
-		} finally {
-			if (writer != null){
-				writer.close();
-			}
-		}
-	}
 
 	/**
 	 * Returns the file where the report must be saved.

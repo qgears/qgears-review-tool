@@ -4,6 +4,7 @@ import hu.qgears.review.eclipse.ui.ReviewToolUI;
 import hu.qgears.review.eclipse.ui.actions.CompareWithEachOtherAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithHeadAction;
 import hu.qgears.review.eclipse.ui.actions.CreateReviewEntryAction;
+import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeDoubleClickListener;
 import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsAction;
@@ -124,6 +125,10 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 			if (selection.size() == 2 && selection.get(1) instanceof ReviewEntryView){
 				m.add(new CompareWithEachOtherAction((ReviewEntryView)s, (ReviewEntryView)selection.get(1)));
 			}
+		}
+		if (s instanceof ReviewSourceSetView){
+			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) s;
+			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
 		}
 		m.add(new RefreshViewerAction(viewer));
 	}

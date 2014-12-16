@@ -4,6 +4,7 @@ import hu.qgears.review.eclipse.ui.ReviewToolUI;
 import hu.qgears.review.eclipse.ui.actions.CompareWithEachOtherAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithHeadAction;
 import hu.qgears.review.eclipse.ui.actions.CreateReviewEntryAction;
+import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeDoubleClickListener;
 import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsAction;
@@ -17,6 +18,7 @@ import hu.qgears.review.eclipse.ui.actions.filters.FilterByUser;
 import hu.qgears.review.eclipse.ui.util.Preferences;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewModelView;
+import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.eclipse.ui.views.properties.ReviewToolPropertyPage;
 import hu.qgears.review.model.EReviewAnnotation;
@@ -251,6 +253,10 @@ public class ReviewToolMainView extends ViewPart {
 			if (selection.size() == 2 && selection.get(1) instanceof ReviewEntryView){
 				menuManager.add(new CompareWithEachOtherAction((ReviewEntryView)sel, (ReviewEntryView)selection.get(1)));
 			}
+		}
+		if (sel instanceof ReviewSourceSetView){
+			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) sel;
+			menuManager.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
 		}
 		menuManager.add(new RefreshViewerAction(viewer));
 		menuManager.add(new Action("Reload configuration"){

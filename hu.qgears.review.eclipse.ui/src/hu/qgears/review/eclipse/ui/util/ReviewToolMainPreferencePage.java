@@ -3,6 +3,7 @@ package hu.qgears.review.eclipse.ui.util;
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -39,6 +40,9 @@ public class ReviewToolMainPreferencePage extends FieldEditorPreferencePage impl
 		
 		StringFieldEditor sfe = new StringFieldEditor(Preferences.DEFAULT_USER_NAME, "Default user name for new review entries", parent);
 		addField(sfe);
+		
+		DirectoryFieldEditor dfe = new DirectoryFieldEditor(Preferences.DEFAULT_REPORT_PATH, "Default output folder for HTML reports", parent);
+		addField(dfe);
 	}
 
 }

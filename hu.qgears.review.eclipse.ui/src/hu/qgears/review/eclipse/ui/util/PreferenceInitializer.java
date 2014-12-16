@@ -12,6 +12,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore ps = ReviewToolUI.getDefault().getPreferenceStore();
 		ps.setDefault(Preferences.SVN_CACHE, true);
 		ps.setDefault(Preferences.DEFAULT_USER_NAME, System.getProperty("user.name"));
+		ps.setDefault(Preferences.DEFAULT_REPORT_PATH, System.getProperty("user.home"));
 	}
 
 }

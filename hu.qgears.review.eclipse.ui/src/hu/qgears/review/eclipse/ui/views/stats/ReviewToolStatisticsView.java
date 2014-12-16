@@ -1,5 +1,6 @@
 package hu.qgears.review.eclipse.ui.views.stats;
 
+import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
 import hu.qgears.review.eclipse.ui.actions.RefreshViewerAction;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
@@ -61,6 +62,7 @@ public class ReviewToolStatisticsView extends ViewPart implements
 				setText("Reload statistics of " + input.getSourceSet());
 				setEnabled(true);
 			} else {
+				setText("Reload statistics ");
 				setEnabled(false);
 			}
 		}
@@ -197,6 +199,9 @@ public class ReviewToolStatisticsView extends ViewPart implements
 		manager.setRemoveAllWhenShown(true);
 		manager.add(new RefreshViewerAction(statisticsTable));
 		manager.add(new ReloadStatisticsAction(statisticsTable.getInput()));
+		if (statisticsTable.getInput() instanceof StatisticsTableInput){
+			manager.add(new ExportStatisticsAction((StatisticsTableInput) statisticsTable.getInput()));
+		}
 	}
 
 	@Override

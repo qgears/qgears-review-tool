@@ -19,6 +19,8 @@ public class ReportGeneratorTemplate {
 	private List<ColumnDefinition> columnDefinitions;
 	private String title;
 	private final boolean renderLinks;
+	private boolean renderReviewStats = true;
+	private boolean renderSonarStats = true;
 
 	/**
 	 * @param writer
@@ -47,9 +49,15 @@ public class ReportGeneratorTemplate {
 		rtout.write("\t<h1>");
 		rtcout.write(getTitle());
 		rtout.write("</h1>\n");
-		ReviewStatsSummary stats = ReviewStatsSummary.create(entries);
-		generateReviewSummary(stats);
-		generateSonarMetricSummary(stats);
+		if (renderReviewStats || renderSonarStats){
+			ReviewStatsSummary stats = ReviewStatsSummary.create(entries);
+			if (renderReviewStats){
+				generateReviewSummary(stats);
+			}
+			if (renderSonarStats){
+				generateSonarMetricSummary(stats);
+			}
+		}
 		rtout.write("\t\t<h3>Detailed statistics</h3>\n\t\t<table>\t\t\t\n\t\t\t<tr>\n");
 		int i = 0;
 		for (ColumnDefinition cd : columnDefinitions) {
@@ -182,4 +190,11 @@ public class ReportGeneratorTemplate {
 		return title;
 	}
 
+	public void setRenderReviewStats(boolean renderReviewStats) {
+		this.renderReviewStats = renderReviewStats;
+	}
+	
+	public void setRenderSonarStats(boolean renderSonarStats) {
+		this.renderSonarStats = renderSonarStats;
+	}
 }

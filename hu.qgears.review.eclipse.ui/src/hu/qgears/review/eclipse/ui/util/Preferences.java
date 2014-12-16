@@ -23,6 +23,7 @@ public final class Preferences {
 	public static final String SVN_CACHE = "hu.qgears.review.svn.cache";
 
 	public static final String DEFAULT_USER_NAME = "hu.qgears.review.default.user.name";
+	public static final String DEFAULT_REPORT_PATH = "hu.qgears.review.default.report.path";
 	
 	
 	private Preferences (){}
@@ -97,5 +98,14 @@ public final class Preferences {
 	 */
 	public static void setLinkWithEditorToggleState(String viewId,boolean state) {
 		preferenceStore.setValue(LINK_WITH_EDITOR_TOGGLE_PREFIX+viewId,state);
+	}
+
+	/**
+	 * Returns a folder name where exported HTML reports will be saved by default.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultReportPath() {
+		return preferenceStore.getString(DEFAULT_REPORT_PATH);
 	}
 }

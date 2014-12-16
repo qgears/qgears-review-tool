@@ -47,14 +47,20 @@ public class ReportGenerator {
 	private IndexByProperty<SonarResource> sonarResources;
 	private ColumnDefinition orderBy;
 	private boolean orderAscendant;
+	private List<ColumnDefinition> columnDefinitions;
 
 	public ReportGenerator(ReviewModel modelRoot, ReviewSourceSet targetSourceSet) {
 		super();
 		this.modelRoot = modelRoot;
 		this.targetSourceSet = targetSourceSet;
+		columnDefinitions = getDefaultColumnDefinitions();
 	}
 	
 	public List<ColumnDefinition> getColumnDefinitions() {
+		return columnDefinitions;
+	}
+	
+	public static List<ColumnDefinition> getDefaultColumnDefinitions() {
 		List<ColumnDefinition> definitions = new ArrayList<ColumnDefinition>();
 		definitions.add(new ClassNameColumnDefinition());
 		definitions.add(new ReviewStatusColumnDefinition());
@@ -71,8 +77,19 @@ public class ReportGenerator {
 		//return ",,";
 		return definitions;
 	}
-	
-	public List<ReportEntry> collectReportEntries(){
+
+	public final List<ReportEntry> collectReportEntries(){
+		List<ReportEntry> ret = generateReportEntries();
+		if (orderBy != null){
+			Collections.sort(ret,orderBy.getComparator());
+			if (!orderAscendant){
+				Collections.reverse(ret);
+			}
+		}
+		return ret;
+	}
+
+	protected List<ReportEntry> generateReportEntries() {
 		List<ReportEntry> ret = new ArrayList<ReportEntry>();
 		collectSonarStats();
 		for (String s : targetSourceSet.sourceFiles){
@@ -84,12 +101,6 @@ public class ReportGenerator {
 			}
 			report.setSourceFileLink("/source/"+sourceFile.modelUrl());
 			ret.add(report);
-		}
-		if (orderBy != null){
-			Collections.sort(ret,orderBy.getComparator());
-			if (!orderAscendant){
-				Collections.reverse(ret);
-			}
 		}
 		return ret;
 	}
@@ -225,5 +236,32 @@ public class ReportGenerator {
 	
 	public boolean isOrderAscendant() {
 		return orderAscendant;
+	}
+	
+	/**
+	 * The input review source set associated with this generator.
+	 * 
+	 * @return
+	 */
+	public ReviewSourceSet getTargetSourceSet() {
+		return targetSourceSet;
+	}
+	
+	/**
+	 * The target review model root associated with this generator.
+	 * 
+	 * @return
+	 */
+	public ReviewModel getModelRoot() {
+		return modelRoot;
+	}
+
+	/**
+	 * Set the {@link ColumnDefinition}s that must be included in report.
+	 * 
+	 * @param def
+	 */
+	public void setColumnDefinitions(List<ColumnDefinition> def) {
+		this.columnDefinitions = def;
 	}
 }

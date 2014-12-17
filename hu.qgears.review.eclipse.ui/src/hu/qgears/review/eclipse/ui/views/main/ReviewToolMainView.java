@@ -44,7 +44,9 @@ import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -156,6 +158,22 @@ public class ReviewToolMainView extends ViewPart {
 		ReviewSourceLabelProvider lp = new ReviewSourceLabelProvider();
 		viewer.setContentProvider(new ReviewSourceContentProvier());
 		viewer.setLabelProvider( new DecoratingLabelProvider(lp,lp));
+		/* Sorting by fqn by default */
+		viewer.setSorter(new ViewerSorter() {
+			@Override
+			public int compare(final Viewer viewerParam, final Object e1, final Object e2) {
+				if (e1 instanceof SourceTreeElement && e2 instanceof SourceTreeElement) {
+					final SourceTreeElement sourceTreeElement1 = (SourceTreeElement) e1;
+					final String fqn1 = sourceTreeElement1.getModelElement().getFullyQualifiedJavaName();
+					final SourceTreeElement sourceTreeElement2 = (SourceTreeElement) e2;
+					final String fqn2 = sourceTreeElement2.getModelElement().getFullyQualifiedJavaName();
+					
+					return fqn1 != null && fqn2 != null ? fqn1.compareTo(fqn2) : 0;
+				} else {
+					return super.compare(viewerParam, e1, e2);
+				}
+			}
+		});
 		
 		getSite().setSelectionProvider(viewer);
 		openJavaTypeAction = new OpenJavaTypeAction(viewer);

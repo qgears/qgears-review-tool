@@ -35,13 +35,13 @@ The output will be an Eclipse P2 repository, placed in this directory:
 ```
 $BUILDDIR/qgears-review-tool/hu.qgears.review.build/p2/target/repository
 ```
-Set the Java heap size used by Eclipse at least to 1GBytes by adding the -Xmx1024m line to eclipse.ini.
-Start Eclipse.
-'Help' menu -> 'Install new software' -> 'Add' button in the dialog.
-Here, set the following parameters:
+ * Set the Java heap size used by Eclipse at least to 1GBytes by adding the -Xmx1024m line to eclipse.ini.
+ * Start Eclipse.
+ * 'Help' menu -> 'Install new software' -> 'Add' button in the dialog.
+  * Here, set the following parameters:
 
- * 'Name' -> QGears Review tool - Local maven build output 
- * 'Local' button -> browse to the '$BUILDDIR/qgears-review-tool/hu.qgears.review.build/p2/target/repository' directory and select it
+   * 'Name' -> QGears Review tool - Local maven build output 
+   * 'Local' button -> browse to the '$BUILDDIR/qgears-review-tool/hu.qgears.review.build/p2/target/repository' directory and select it
 
 Press OK.
 

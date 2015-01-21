@@ -1,6 +1,7 @@
 package hu.qgears.review.eclipse.ui.views.properties;
 
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
+import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewSource;
@@ -26,6 +27,7 @@ import org.eclipse.jface.viewers.Viewer;
 public class ReviewToolPropertyPageContentProvider implements ITreeContentProvider {
 	
 	private static final String PERCENTAGE_TEMPLATE = "%.2f %%";
+	private static final String VALUE_WITH_PERCENTAGE_TEMPLATE = "%d (%.2f %%)";
 
 	private class Group {
 		private List<Object> children = new ArrayList<Object>();
@@ -122,7 +124,7 @@ public class ReviewToolPropertyPageContentProvider implements ITreeContentProvid
 		for (Entry<ReviewStatus, Integer> review : element.getReviewStatusSummary().entrySet()){
 			PropertyPageContent p = new PropertyPageContent(
 					review.getKey() +" (avg)",
-					String.format(PERCENTAGE_TEMPLATE,element.asPercentage(review.getValue())));
+					String.format(VALUE_WITH_PERCENTAGE_TEMPLATE,review.getValue(),element.asPercentage(review.getValue())));
 			p.setParent(g);
 			g.getChildren().add(
 			p);
@@ -138,6 +140,15 @@ public class ReviewToolPropertyPageContentProvider implements ITreeContentProvid
 		}
 		return props.toArray();
 	}
+	
+	private Object[] createReviewSourceSetProperties(
+			final ReviewSourceSetView reviewSourceSetView) {
+		return new Object[]{
+				new PropertyPageContent("Source set name", reviewSourceSetView.getModelElement().id),
+				new PropertyPageContent("Number of sources", String.valueOf(reviewSourceSetView.getChildren().size()))
+		};
+	}
+	
 	@Override
 	public Object[] getChildren(Object element) {
 		if (element instanceof SourceTreeElement){
@@ -145,6 +156,9 @@ public class ReviewToolPropertyPageContentProvider implements ITreeContentProvid
 		}
 		if (element instanceof ReviewEntryView){
 			return createReviewEntryProperties(((ReviewEntryView)element).getModelElement());
+		}
+		if (element instanceof ReviewSourceSetView){
+			return createReviewSourceSetProperties(((ReviewSourceSetView)element));
 		}
 		if (element instanceof ReviewStatsSummary){
 			return createReviewStatsSummaryProperties((ReviewStatsSummary)element);
@@ -154,7 +168,6 @@ public class ReviewToolPropertyPageContentProvider implements ITreeContentProvid
 		}
 		return new Object[]{};
 	}
-
 
 	@Override
 	public Object getParent(Object element) {

@@ -36,7 +36,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -58,9 +63,27 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 	private ReviewToolPropertyPage propertySheetPage;
 	private OpenJavaTypeAction openJavaTypeAction;
 	private OpenReviewEntryDetailsAction openReviewDetailsAction;
+	private Label sourceSetLabel;
+	private Label userLabel;
+	private Label statusLabel;
 	
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite root) {
+//		root.setLayout(new GridLayout(1, true));
+//		root.setLayoutData(new GridData(GridData.FILL_BOTH));
+//		root.setl
+		root.setLayout(new GridLayout());
+		createStatusGroup(root);
+		createViewer(root);
+		createMenus();
+		createToolBar();
+		getViewSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+	}
+
+	protected void createViewer(Composite root) {
+		Composite parent = new Composite(root, SWT.NONE);
+		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+		parent.setLayout(new FillLayout(SWT.VERTICAL));
 		viewer = new TreeViewer(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		ReviewSourceLabelProvider labelProvider = new ReviewSourceLabelProvider();
 		viewer.setContentProvider(new ReviewSourceContentProvier());
@@ -74,10 +97,21 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 		TodoListFilter todoListFilter = new TodoListFilter();
 		todoListFilter.setUser(getUserName());
 		viewer.addFilter(todoListFilter );
-		
-		createMenus();
-		createToolBar();
-		getViewSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+	}
+
+	protected void createStatusGroup(Composite root) {
+		Group statusGroup = new Group(root, SWT.NONE);
+		statusGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		statusGroup.setLayout(new GridLayout(2,false));
+		new Label(statusGroup, SWT.NONE).setText("Source set : ");
+		sourceSetLabel = new Label(statusGroup, SWT.NONE);
+		sourceSetLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		new Label(statusGroup, SWT.NONE).setText("User : ");
+		userLabel = new Label(statusGroup, SWT.NONE);
+		userLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		new Label(statusGroup, SWT.NONE).setText("Status : ");
+		statusLabel = new Label(statusGroup, SWT.NONE);
+		statusLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 
 	protected void createMenus() {
@@ -163,7 +197,11 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 		if (riCandidate == null || sourceSetCandidate == null){
 			viewer.setInput(null);
 			viewer.refresh();
-			setPartName("Select a review source set!");
+			String msg = "Select a review source set!";
+			setPartName(msg);
+			sourceSetLabel.setText(msg);
+			statusLabel.setText("");
+			userLabel.setText("");
 		} else {
 			if (this.reviewInstance == null || !this.reviewInstance.equals(riCandidate)){
 				reviewInstance = riCandidate;
@@ -172,10 +210,21 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 			viewer.refresh();
 			String id = sourceSetCandidate.getModelElement().id;
 			setPartName("Todo list for "+getUserName()+ " in source set '"+id+"'");
+			statusLabel.setText(getStatusText(sourceSetCandidate));
+			sourceSetLabel.setText(id);
+			userLabel.setText(getUserName());
 		}
 	}
 	
+	private String getStatusText(ReviewSourceSetView sourceSetCandidate) {
+		int remaining = viewer.getTree().getItemCount();
+		int all = sourceSetCandidate.getChildren().size();
+		int reviewed = all -remaining;
+		return String.format("%d%% (%d/%d reviewed, %d remaining)",reviewed *100  / all, reviewed ,all,remaining);
+	}
+
 	private String getUserName() {
+		//TODO create combo selector instead of userLabel
 		return Preferences.getDefaultUserName();
 	}
 

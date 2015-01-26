@@ -5,6 +5,7 @@ import hu.qgears.review.model.ReviewSourceSet;
 import hu.qgears.review.report.ColumnDefinition;
 import hu.qgears.review.report.ReportEntry;
 import hu.qgears.review.report.ReportGenerator;
+import hu.qgears.review.report.ReportGeneratorTemplate;
 
 import java.io.File;
 import java.util.Collections;
@@ -50,6 +51,7 @@ public class ExportHtmlReportWizard extends Wizard{
 	private File targetFile;
 	private boolean generateSonarStats;
 	private boolean generateReviewStats;
+	private boolean generateTodoList;
 
 	/**
 	 * Creates a new wizard.
@@ -82,6 +84,7 @@ public class ExportHtmlReportWizard extends Wizard{
 		targetFile = new File(exportHtmlPage.getTargetFilePath());
 		generateReviewStats = exportHtmlPage.mustGenerateReviewStats();
 		generateSonarStats = exportHtmlPage.mustGenerateSonarStats();
+		generateTodoList = exportHtmlPage.mustGenerateTodoList();
 		return true;
 	}
 
@@ -134,5 +137,14 @@ public class ExportHtmlReportWizard extends Wizard{
 	public boolean mustGenerateSonarStats(){
 		return generateSonarStats;
 		
+	}
+
+	/**
+	 * See {@link ReportGeneratorTemplate#setRenderTodos(boolean)}.
+	 * 
+	 * @return
+	 */
+	public boolean mustGenerateTodoList() {
+		return generateTodoList;
 	}
 }

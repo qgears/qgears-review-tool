@@ -27,10 +27,11 @@ public class ReportGeneratorHtml {
 	 * @param outputFile The target file
 	 * @param generateReviewStats If true than generates summary about review status
 	 * @param generateSonarStats If true than generates summary about SONAR metrics
+	 * @param generateTodoList see {@link ReportGeneratorTemplate#setRenderTodos(boolean)}
 	 * 
 	 * @throws Exception
 	 */
-	public void generateReport(ReportGenerator reportGenerator,File outputFile, boolean generateReviewStats, boolean generateSonarStats) throws Exception{
+	public void generateReport(ReportGenerator reportGenerator,File outputFile, boolean generateReviewStats, boolean generateSonarStats, boolean generateTodoList) throws Exception{
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(outputFile, "UTF-8");
@@ -39,6 +40,7 @@ public class ReportGeneratorHtml {
 			ReportGeneratorTemplate template = new ReportGeneratorTemplate(writer, reportGenerator,false);
 			template.setRenderReviewStats(generateReviewStats);
 			template.setRenderSonarStats(generateSonarStats);
+			template.setRenderTodos(generateTodoList);
 			writer.write(HTML_END);
 			template.generate();
 		} finally {

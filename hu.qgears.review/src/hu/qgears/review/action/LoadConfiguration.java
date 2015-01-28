@@ -45,7 +45,7 @@ public class LoadConfiguration {
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
 	private static final String PROPERTY_SONAR_URL = "sonar_url";
-	private String outputfoldername;
+	private String reviewOutputFolderName;
 	/**
 	 * This is the separator and escape sequence in the annotation entries file that separates the blocks.
 	 */
@@ -103,7 +103,7 @@ public class LoadConfiguration {
 		
 		final ReviewModel model = loadReviewModel(props, configdir, problems);
 		final ReviewInstance reviewInstance = new ReviewInstance(model, 
-				new File(configdir, outputfoldername + "/" + 
+				new File(configdir, reviewOutputFolderName + "/" + 
 						System.currentTimeMillis() + REVIEW_FILE_EXTENSION));
 		final ConfigParsingResult configParsingResult = 
 				new ConfigParsingResult(reviewInstance, problems);
@@ -126,14 +126,15 @@ public class LoadConfiguration {
 		model.setSonarProjectId(props.getProperty(PROPERTY_SONAR_PROJECT));
 	}
 	
-	private String getReviewUserName(final Properties rootConfigProps) {
-		final String reviewUserNameProp = rootConfigProps.getProperty("review_username");
-		final String reviewUserName = reviewUserNameProp == null 
-				|| reviewUserNameProp.length() == 0 ?
-						System.getProperty("user.name")
-						: reviewUserNameProp;
+	private String getReviewOutputFolder(final Properties rootConfigProps) {
+		final String reviewOutputFolderNameProp = 
+				rootConfigProps.getProperty("review_outputfolder_name");
+		final String reviewOutputFolderName = reviewOutputFolderNameProp == null 
+				|| reviewOutputFolderNameProp.length() == 0 ?
+						"review-" + System.getProperty("user.name")
+						: reviewOutputFolderNameProp;
 						
-		return reviewUserName;
+		return reviewOutputFolderName;
 	}
 	
 	/**
@@ -153,11 +154,9 @@ public class LoadConfiguration {
 	private void loadExistingReviews(final ReviewModel model, 
 			final Properties rootConfigProps, final File reviewProjectConfigDir) 
 					throws Exception {
-		final String reviewUserName = getReviewUserName(rootConfigProps);
+		this.reviewOutputFolderName = getReviewOutputFolder(rootConfigProps);
 		
-		outputfoldername = "review-" + reviewUserName;
-		
-		logger.fine("Directory into which reviews will be saved: " + outputfoldername);
+		logger.fine("Directory into which reviews will be saved: " + reviewOutputFolderName);
 		
 		final UtilFileVisitor reviewSearch = new UtilFileVisitor() {
 			@Override
@@ -174,7 +173,21 @@ public class LoadConfiguration {
 			}
 		};
 		
-		reviewSearch.visit(reviewProjectConfigDir);
+		reviewSearch.visit(new File(reviewProjectConfigDir, reviewOutputFolderName));
+		
+		/* 
+		 * Sirectory of additional directories, from which to load reviews.
+		 */
+		String additionalReviewDirName;
+		int i = 1;
+		
+		while ((additionalReviewDirName = rootConfigProps.getProperty("annotationsfolder." + i)) != null) {
+			final File additionalReviewDir = new File(reviewProjectConfigDir,
+					additionalReviewDirName);
+			
+			reviewSearch.visit(additionalReviewDir);
+			i++;
+		}
 	}
 	
 	private void loadAnnotationsFile(ReviewModel model,

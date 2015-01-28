@@ -21,9 +21,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -155,6 +157,7 @@ public class LoadConfiguration {
 			final Properties rootConfigProps, final File reviewProjectConfigDir) 
 					throws Exception {
 		this.reviewOutputFolderName = getReviewOutputFolder(rootConfigProps);
+		final Set<String> loadedReviews = new HashSet<String>();
 		
 		logger.fine("Directory into which reviews will be saved: " + reviewOutputFolderName);
 		
@@ -167,7 +170,7 @@ public class LoadConfiguration {
 					return false;
 				}
 				if (file.isFile() && file.getName().endsWith(REVIEW_FILE_EXTENSION)) {
-					loadAnnotationsFile(model, rootConfigProps, file);
+					loadAnnotationsFile(model, rootConfigProps, file, loadedReviews);
 				}
 				return true;
 			}
@@ -190,17 +193,27 @@ public class LoadConfiguration {
 		}
 	}
 	
-	private void loadAnnotationsFile(ReviewModel model,
-			Properties props, File annotationsFile) throws Exception {
+	private void loadAnnotationsFile(final ReviewModel model,
+			final Properties props, final File annotationsFile, 
+			final Set<String> loadedReviews) throws Exception {
 		String file=UtilFile.loadAsString(annotationsFile);
 		List<String> blocks=ussBlocks.splitAndUnescape(file);
 		int index=0;
+		
+		logger.info("Loading review file: " + annotationsFile.getAbsolutePath());
+		
 		for(String block: blocks)
 		{
 			try
 			{
-				ReviewEntry entry=ReviewEntry.parseFromString(block);
-				model.addEntry(entry);
+				final String trimmedReviewRaw = block.trim();
+				final boolean duplicate = loadedReviews.contains(trimmedReviewRaw);
+				
+				if (!duplicate) {
+					ReviewEntry entry=ReviewEntry.parseFromString(block);
+					model.addEntry(entry);
+					loadedReviews.add(trimmedReviewRaw);
+				}
 			}catch(Exception e)
 			{
 				System.err.println("error in annotation: "+annotationsFile+" "+index);

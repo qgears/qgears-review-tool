@@ -1,5 +1,6 @@
 package hu.qgears.review.report;
 
+import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.web.HandleReport;
 
 import java.io.PrintWriter;
@@ -21,7 +22,8 @@ public class ReportGeneratorTemplate {
 	private final boolean renderLinks;
 	private boolean renderReviewStats = true;
 	private boolean renderSonarStats = true;
-
+	private boolean renderTodos = true;
+	private ReviewModel modelRoot;
 	/**
 	 * @param writer
 	 *            The target {@link PrintWriter} of template instance
@@ -42,6 +44,7 @@ public class ReportGeneratorTemplate {
 		}
 		columnDefinitions.addAll(rg.getColumnDefinitions());
 		this.title = rg.getTitle();
+		this.modelRoot = rg.getModelRoot();
 		rtout = rtcout = writer;
 	}
 
@@ -85,6 +88,41 @@ public class ReportGeneratorTemplate {
 		rtout.write("\t\t\t</tr>\n");
 		for (ReportEntry entry : entries) {
 			generateEntry(entry);
+		}
+		rtout.write("\t\t</table>\n");
+		if (renderTodos){
+			generateTodos();
+		}
+	}
+
+	private void generateTodos() {
+		List<ColumnDefinition> todoTableColumns = new ArrayList<ColumnDefinition>();
+		todoTableColumns.add(new ClassNameColumnDefinition());
+		todoTableColumns.add(new TodoMessageColumnDefinition(modelRoot));
+		rtout.write("\t\t<h3>Classes with TODO-s</h3>\n\t\t<table>\n\t\t\t</tr>\n");
+		for (ColumnDefinition c : todoTableColumns) {
+			rtout.write("\t\t\t\t<th>");
+			rtcout.write(c.getTitle());
+			rtout.write("</th>\n");
+		}
+		boolean wasTodo = false;
+		rtout.write("\t\t\t</tr>\n");
+		for (ReportEntry entry : entries) {
+			if (entry.getReviewStatus() == ReviewStatus.TODO) {
+				wasTodo = true;
+				rtout.write("\t\t\t</tr>\n");
+				for (ColumnDefinition c : todoTableColumns) {
+					rtout.write("\t\t\t\t<td><pre>");
+					rtcout.write(c.getPropertyValue(entry));
+					rtout.write("</pre></td>\n");
+				}
+				rtout.write("\t\t\t</tr>\n");
+			}
+		}
+		if (!wasTodo) {
+			rtout.write("\t\t\t\t<tr><td colspan=\"");
+			rtcout.write(String.valueOf(todoTableColumns.size()));
+			rtout.write("\">There are no TODO-s in this source set</td></tr>\n");
 		}
 		rtout.write("\t\t</table>\n");
 	}
@@ -196,5 +234,16 @@ public class ReportGeneratorTemplate {
 	
 	public void setRenderSonarStats(boolean renderSonarStats) {
 		this.renderSonarStats = renderSonarStats;
+	}
+	
+	/**
+	 * If this is enabled, than a new section will be rendered into report. The
+	 * section includes the list of classes with {@link ReviewStatus#TODO}
+	 * status, and all todo messages that was not invalidated.
+	 * 
+	 * @param renderTodos
+	 */
+	public void setRenderTodos(boolean renderTodos) {
+		this.renderTodos = renderTodos;
 	}
 }

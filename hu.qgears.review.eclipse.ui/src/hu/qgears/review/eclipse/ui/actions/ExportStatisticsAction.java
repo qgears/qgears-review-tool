@@ -61,7 +61,7 @@ public class ExportStatisticsAction extends Action {
 					final ReportGenerator rg = w.getReportGenerator();
 					ReportGeneratorHtml htmlTemplate = new ReportGeneratorHtml();
 					try {
-						htmlTemplate.generateReport(rg, w.getTargetFile(),w.mustGenerateReviewStats(),w.mustGenerateSonarStats());
+						htmlTemplate.generateReport(rg, w.getTargetFile(),w.mustGenerateReviewStats(),w.mustGenerateSonarStats(),w.mustGenerateTodoList());
 						if (w.mustGenerateCss()){
 							htmlTemplate.copyStyle(w.getTargetFile().getParentFile());
 						}

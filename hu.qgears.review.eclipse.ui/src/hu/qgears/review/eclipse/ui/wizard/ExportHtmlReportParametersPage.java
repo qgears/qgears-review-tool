@@ -52,6 +52,7 @@ public class ExportHtmlReportParametersPage extends WizardPage {
 	private ComboViewer orderByCombo;
 	private Button generateReviewStats;
 	private Button generateSonarStats;
+	private Button generateTodoList;
 	
 	protected ExportHtmlReportParametersPage(ReportGenerator rg) {
 		super(TITLE);
@@ -186,9 +187,15 @@ public class ExportHtmlReportParametersPage extends WizardPage {
 		generateReviewStats = new Button(targetFolder, SWT.CHECK);
 		generateReviewStats.setText("Generate review summary");
 		generateReviewStats.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false,columns,1));
+		
 		generateSonarStats = new Button(targetFolder, SWT.CHECK);
 		generateSonarStats.setText("Generate SONAR metric summary");
 		generateSonarStats.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false,columns,1));
+		
+		generateTodoList = new Button(targetFolder, SWT.CHECK);
+		generateTodoList.setText("Generate TODO list");
+		generateTodoList.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false,columns,1));
+		generateTodoList.setSelection(true);
 	}
 
 	
@@ -286,5 +293,14 @@ public class ExportHtmlReportParametersPage extends WizardPage {
 	 */
 	public boolean mustGenerateSonarStats(){
 		return generateSonarStats.getSelection();
+	}
+
+	/**
+	 * See {@link ExportHtmlReportWizard#mustGenerateTodoList()}
+	 * 
+	 * @return
+	 */
+	public boolean mustGenerateTodoList() {
+		return generateTodoList.getSelection();
 	}
 }

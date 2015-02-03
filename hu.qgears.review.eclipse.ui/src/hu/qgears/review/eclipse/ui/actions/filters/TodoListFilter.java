@@ -29,7 +29,7 @@ public class TodoListFilter extends ViewerFilter{
 			if (element instanceof SourceTreeElement){
 				SourceTreeElement ste = (SourceTreeElement) element;
 				for (ReviewEntry re : ste.getSource().getMatchingReviewEntries(ste.getReviewModel())){
-					if (user.equals(re.getUser())){
+					if (user.equals(re.getUser()) && !ste.getReviewModel().isInvalidated(re.getSha1Sum())){
 						//this source has been already reviewed by selected user
 						return false;
 					}

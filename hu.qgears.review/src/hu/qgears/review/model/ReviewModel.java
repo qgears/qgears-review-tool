@@ -2,6 +2,7 @@ package hu.qgears.review.model;
 
 import hu.qgears.commons.MultiMap;
 import hu.qgears.commons.MultiMapHashImpl;
+import hu.qgears.commons.UtilEvent;
 import hu.qgears.review.report.ReportGenerator;
 import hu.qgears.review.util.IndexByProperty;
 
@@ -36,6 +37,7 @@ public class ReviewModel {
 	private String sonarProjectId;
 	private Set<String> users = new HashSet<String>();
 	private Comparator<? super ReviewSource> sourcesComparator;
+	private UtilEvent<ModelChangedEvent> reviewModelChangedEvent;
 	public ReviewModel() {
 		reviewEntryByUrl = new IndexByProperty<ReviewEntry>(new PropUrl());
 		reviewEntryByFileSha1=new IndexByProperty<ReviewEntry>(new PropSha1());
@@ -68,6 +70,11 @@ public class ReviewModel {
 	public ReviewSource getSource(String url) {
 		return sources.get(url);
 	}
+	/**
+	 * Adds a new {@link ReviewEntry} to this model.
+	 * 
+	 * @param entry the new entry
+	 */
 	public void addEntry(ReviewEntry entry) {
 		entries.add(entry);
 		for(IndexByProperty<ReviewEntry> index: indexOnReview)
@@ -79,6 +86,9 @@ public class ReviewModel {
 			invalidates.putSingle(s, entry);
 		}
 		addUser(entry.getUser());
+		if (reviewModelChangedEvent != null){
+			reviewModelChangedEvent.eventHappened(new ModelChangedEvent(this));
+		}
 	}
 	/**
 	 * Get all annotations that have the sha1 given.
@@ -185,5 +195,22 @@ public class ReviewModel {
 	}
 	public Set<String> getUsers() {
 		return users;
+	}
+	
+	/**
+	 * This event is fired if the review model has been changed. Currently the
+	 * model is changed only, when a new {@link ReviewEntry} is added to it.
+	 * 
+	 * @return
+	 * @see #addEntry(ReviewEntry)
+	 * 
+	 */
+	public UtilEvent<ModelChangedEvent> getReviewModelChangedEvent(){
+		if (reviewModelChangedEvent == null){
+			// event object is lazy inited to avoid useless event listener calls
+			// during model initialization.
+			reviewModelChangedEvent = new UtilEvent<ModelChangedEvent>();
+		}
+		return reviewModelChangedEvent;
 	}
 }

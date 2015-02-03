@@ -48,7 +48,6 @@ public class CreateReviewEntryAction extends Action{
 			try {
 				final ReviewEntry newReviewEntry = w.getNewReviewEntry();
 				reviewInstance.saveEntry(newReviewEntry);
-				viewerToRefresh.refresh();
 				currentSelection.visit(new IReviewModelVisitor() {
 					boolean done = false;
 					@Override

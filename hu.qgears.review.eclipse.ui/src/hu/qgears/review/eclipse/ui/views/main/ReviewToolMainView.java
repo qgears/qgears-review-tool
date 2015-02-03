@@ -16,17 +16,15 @@ import hu.qgears.review.eclipse.ui.actions.filters.FilterByReviewStatus;
 import hu.qgears.review.eclipse.ui.actions.filters.FilterBySourceSet;
 import hu.qgears.review.eclipse.ui.actions.filters.FilterByUser;
 import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.views.AbstractReviewToolView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewModelView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
-import hu.qgears.review.eclipse.ui.views.properties.ReviewToolPropertyPage;
 import hu.qgears.review.model.EReviewAnnotation;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.report.ReviewStatus;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,13 +34,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -50,8 +45,6 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 
 /**
@@ -61,7 +54,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
  * @author agostoni
  * 
  */
-public class ReviewToolMainView extends ViewPart {
+public class ReviewToolMainView extends AbstractReviewToolView {
 
 	/**
 	 * A menu entry for filter options, that enables / disables displaying work
@@ -142,8 +135,6 @@ public class ReviewToolMainView extends ViewPart {
 	}
 
 	private TreeViewer viewer;
-	private ReviewInstance reviewInstance;
-	private Object propertySheetPage;
 	private FilterByUser usersFilter;
 	private FilterByReviewAnnotation annotFilter;
 	private FilterBySourceSet sourceSetFilter;
@@ -186,7 +177,7 @@ public class ReviewToolMainView extends ViewPart {
 				annotFilter = new FilterByReviewAnnotation(),
 				statusFilter = new FilterByReviewStatus()
 		});
-		createContextMenus();
+		createContextMenus(viewer);
 		createToolBar();
 		loadConfiguration();
 	}
@@ -203,41 +194,21 @@ public class ReviewToolMainView extends ViewPart {
 				viewer.getControl().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						reviewInstance = job.getReviewInstance();
+						ReviewInstance reviewInstance = job.getReviewInstance();
 						if (reviewInstance != null){
 							viewer.setInput(new ReviewModelView(reviewInstance));
 						} else {
 							viewer.setInput(event.getResult());
 						}
-						createFilters();
-						viewer.refresh();
+						setReviewInstance(reviewInstance);
 					}
 				});
 			}
 		});		
-		reviewInstance = null;
-		viewer.refresh();
+		setReviewInstance(null);
 		job.schedule();
 	}
 
-	protected void createContextMenus() {
-		IMenuListener listener = new IMenuListener() {
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				fillContextMenu(manager);
-			}
-		};
-		getViewSite().getActionBars().getMenuManager().addMenuListener(listener);
-		fillContextMenu(getViewSite().getActionBars().getMenuManager());
-		
-		MenuManager viewMenu = new MenuManager();
-		fillContextMenu(viewMenu);
-		viewMenu.addMenuListener(listener);
-		viewer.getControl().setMenu(viewMenu.createContextMenu(viewer.getControl()));
-		getSite().registerContextMenu(viewMenu, viewer);
-		
-	}
-	
 	/*
 	 * Using internal API of JDT
 	 */
@@ -248,10 +219,11 @@ public class ReviewToolMainView extends ViewPart {
 		toolbar.add(new LinkWithEditorSTEAction(viewer,getSite().getWorkbenchWindow().getSelectionService(),ReviewToolUI.ID_MAIN_VIEW));
 	}
 
-	private void fillContextMenu(IMenuManager menuManager) {
+	@Override
+	protected void fillMenuManager(IMenuManager menuManager) {
 		menuManager.setRemoveAllWhenShown(true);
 		createActions(menuManager);
-		if (reviewInstance != null){
+		if (getReviewInstance() != null){
 			IMenuManager filters = createFilters();
 			menuManager.add(filters);
 		}
@@ -259,11 +231,11 @@ public class ReviewToolMainView extends ViewPart {
 	}
 
 	private void createActions(IMenuManager menuManager) {
-		Object sel = getSingleSelection();
-		List<Object> selection = getSelection();
+		Object sel = getSingleSelection(viewer.getSelection());
+		List<Object> selection = getSelection(viewer.getSelection());
 		if (sel instanceof SourceTreeElement){
 			menuManager.add(openJavaTypeAction);
-			menuManager.add(new CreateReviewEntryAction((SourceTreeElement) sel, viewer,reviewInstance));
+			menuManager.add(new CreateReviewEntryAction((SourceTreeElement) sel, viewer,getReviewInstance()));
 		}
 		if (sel instanceof ReviewEntryView){
 			menuManager.add(openReviewDetailsAction);
@@ -289,7 +261,7 @@ public class ReviewToolMainView extends ViewPart {
 		MenuManager m = new MenuManager("Filter");
 		MenuManager subMenu = new MenuManager("User");
 		m.add(subMenu);
-		Set<String> users =  new HashSet<String>(reviewInstance.getModel().getUsers());
+		Set<String> users =  new HashSet<String>(getReviewInstance().getModel().getUsers());
 		users.add(FilterByUser.NONE_USER);
 		for (String u : users){
 			usersFilter.enableUser(u, Preferences.getFilterStatus(u));
@@ -297,7 +269,7 @@ public class ReviewToolMainView extends ViewPart {
 		}
 		subMenu = new MenuManager("Source set");
 		m.add(subMenu);
-		for (String u : reviewInstance.getModel().sourcesets.keySet()){
+		for (String u : getReviewInstance().getModel().sourcesets.keySet()){
 			sourceSetFilter.enableSourceSet(u, Preferences.getFilterStatus(u));
 			subMenu.add(new SourceSetFilterOption(u));
 		}
@@ -328,38 +300,13 @@ public class ReviewToolMainView extends ViewPart {
 		viewer.getControl().setFocus();
 	}
 
-	
 	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
-		if (adapter.equals(IPropertySheetPage.class)){
-			if(propertySheetPage==null)
-			{
-				propertySheetPage = 
-					new ReviewToolPropertyPage();
-			}
-			return propertySheetPage;
+	protected void reviewModelChanged() {
+		if (getReviewInstance() != null){
+			//must be called to update viewer filters
+			createFilters();
 		}
-		if (adapter.equals(ReviewInstance.class)){
-			return reviewInstance;
-		}
-		return super.getAdapter(adapter);
+		viewer.refresh();
 	}
 
-	
-	public Object getSingleSelection(){
-		ISelection s = viewer.getSelection();
-		if (s != null && !s.isEmpty() && s instanceof StructuredSelection){
-			return ((StructuredSelection)s).getFirstElement();
-		}
-		return null;
-	}
-	public List<Object> getSelection(){
-		ISelection s = viewer.getSelection();
-		if (s != null && !s.isEmpty() && s instanceof StructuredSelection){
-			return Arrays.asList(((StructuredSelection)s).toArray());
-		}
-		return Collections.emptyList();
-	}
-	
-	
 }

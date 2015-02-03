@@ -2,17 +2,15 @@ package hu.qgears.review.eclipse.ui.views.stats;
 
 import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
 import hu.qgears.review.eclipse.ui.actions.RefreshViewerAction;
+import hu.qgears.review.eclipse.ui.views.AbstractReviewToolView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
-import hu.qgears.review.eclipse.ui.views.properties.ReviewToolPropertyPage;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.report.ReportEntry;
 import hu.qgears.review.report.ReportGenerator;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,8 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 /**
  * Defines a table viewer that show statistics about review sources (code
@@ -37,7 +33,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
  * @author agostoni
  * 
  */
-public class ReviewToolStatisticsView extends ViewPart implements
+public class ReviewToolStatisticsView extends AbstractReviewToolView implements
 		ISelectionListener {
 
 	/**
@@ -75,7 +71,6 @@ public class ReviewToolStatisticsView extends ViewPart implements
 	}
 
 	private TableViewer statisticsTable;
-	private Object propertySheetPage;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -83,7 +78,7 @@ public class ReviewToolStatisticsView extends ViewPart implements
 		statisticsTable = createTableViewer(parent);
 		getViewSite().getWorkbenchWindow().getSelectionService()
 				.addSelectionListener(this);
-		createContextMenus();
+		createContextMenus(statisticsTable);
 	}
 
 	protected TableViewer createTableViewer(Composite parent) {
@@ -128,22 +123,20 @@ public class ReviewToolStatisticsView extends ViewPart implements
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (!selection.isEmpty() && selection instanceof StructuredSelection) {
-			StructuredSelection sel = (StructuredSelection) selection;
-			Object sourceSetCandidate = sel.getFirstElement();
+		Object sourceSetCandidate = getSingleSelection(selection);
+		if (sourceSetCandidate != null) {
 			if (sourceSetCandidate instanceof ReviewSourceSetView) {
-				ReviewInstance riCandidate = (ReviewInstance) part
-						.getAdapter(ReviewInstance.class);
+				ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) sourceSetCandidate;
+				ReviewInstance riCandidate = getReviewInstance();
 				if (riCandidate != null) {
 					statisticsTable.setInput(new StatisticsTableInput(
 							riCandidate,
-							((ReviewSourceSetView) sourceSetCandidate)
+							reviewSourceSetView
 									.getModelElement(), false));
 				}
 			} else if (sourceSetCandidate instanceof SourceTreeElement) {
-				ReviewInstance riCandidate = (ReviewInstance) part
-						.getAdapter(ReviewInstance.class);
 				SourceTreeElement ste = (SourceTreeElement) sourceSetCandidate;
+				ReviewInstance riCandidate = getReviewInstance();
 				if (riCandidate != null) {
 					statisticsTable.setInput(new StatisticsTableInput(
 							riCandidate, ste.getSet(), false));
@@ -176,26 +169,8 @@ public class ReviewToolStatisticsView extends ViewPart implements
 		}
 	}
 
-	protected void createContextMenus() {
-		IMenuListener listener = new IMenuListener() {
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				fillContextMenu(manager);
-			}
-		};
-		getViewSite().getActionBars().getMenuManager()
-				.addMenuListener(listener);
-		fillContextMenu(getViewSite().getActionBars().getMenuManager());
-
-		MenuManager viewMenu = new MenuManager();
-		fillContextMenu(viewMenu);
-		viewMenu.addMenuListener(listener);
-		statisticsTable.getControl().setMenu(
-				viewMenu.createContextMenu(statisticsTable.getControl()));
-		getSite().registerContextMenu(viewMenu, statisticsTable);
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
+	@Override
+	protected void fillMenuManager(IMenuManager manager) {
 		manager.setRemoveAllWhenShown(true);
 		manager.add(new RefreshViewerAction(statisticsTable));
 		manager.add(new ReloadStatisticsAction(statisticsTable.getInput()));
@@ -212,14 +187,11 @@ public class ReviewToolStatisticsView extends ViewPart implements
 	}
 
 	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
-		if (adapter.equals(IPropertySheetPage.class)) {
-			if (propertySheetPage == null) {
-				propertySheetPage = new ReviewToolPropertyPage();
-			}
-			return propertySheetPage;
+	protected void reviewModelChanged() {
+		if (getReviewInstance() == null){
+			//clearing statistics table content if configuration was reloaded
+			statisticsTable.setInput(null);
 		}
-		return super.getAdapter(adapter);
 	}
 
 }

@@ -12,25 +12,21 @@ import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsDoubleClickList
 import hu.qgears.review.eclipse.ui.actions.RefreshViewerAction;
 import hu.qgears.review.eclipse.ui.actions.filters.TodoListFilter;
 import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.views.AbstractReviewToolView;
 import hu.qgears.review.eclipse.ui.views.main.LinkWithEditorSTEAction;
 import hu.qgears.review.eclipse.ui.views.main.ReviewSourceContentProvier;
 import hu.qgears.review.eclipse.ui.views.main.ReviewSourceLabelProvider;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
-import hu.qgears.review.eclipse.ui.views.properties.ReviewToolPropertyPage;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.model.ReviewSourceSet;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -42,11 +38,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 /**
  * This view shows the {@link ReviewSource}s from selected
@@ -56,26 +49,21 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
  * @author agostoni
  * 
  */
-public class ReviewToolTodoListView extends ViewPart implements ISelectionListener{
+public class ReviewToolTodoListView extends AbstractReviewToolView implements ISelectionListener{
 
 	private TreeViewer viewer;
-	private ReviewInstance reviewInstance;
-	private ReviewToolPropertyPage propertySheetPage;
 	private OpenJavaTypeAction openJavaTypeAction;
 	private OpenReviewEntryDetailsAction openReviewDetailsAction;
 	private Label sourceSetLabel;
 	private Label userLabel;
 	private Label statusLabel;
-	
+
 	@Override
 	public void createPartControl(Composite root) {
-//		root.setLayout(new GridLayout(1, true));
-//		root.setLayoutData(new GridData(GridData.FILL_BOTH));
-//		root.setl
 		root.setLayout(new GridLayout());
 		createStatusGroup(root);
 		createViewer(root);
-		createMenus();
+		createContextMenus(viewer);
 		createToolBar();
 		getViewSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
 	}
@@ -114,24 +102,6 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 		statusLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 
-	protected void createMenus() {
-		MenuManager menu = new MenuManager();
-		IMenuListener listener = new IMenuListener() {
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				fillMenuManager(manager);
-			}
-		};
-		menu.addMenuListener(listener);
-		Menu m = menu.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(m);
-		getSite().registerContextMenu(menu, viewer);
-		IMenuManager viewMenu = getViewSite().getActionBars().getMenuManager();
-		viewMenu.addMenuListener(listener);
-		viewMenu.setVisible(true);
-		fillMenuManager(viewMenu);
-	}
-	
 	/*
 	 * Using internal API of JDT
 	 */
@@ -143,14 +113,16 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 
 	}
 	
-	private void fillMenuManager (IMenuManager m) {
+	@Override
+	protected void fillMenuManager(IMenuManager m) {
 		//TODO code duplication with ReviewToolMainView: The same actions should be created here and there.
 		m.setRemoveAllWhenShown(true);
-		Object s = getSingleSelection();
-		List<Object> selection = getSelection();
+		Object s = getSingleSelection(viewer.getSelection());
+		List<Object> selection = getSelection(viewer.getSelection());
 		if (s != null && s instanceof SourceTreeElement){
 			m.add(openJavaTypeAction);
-			CreateReviewEntryAction action = new CreateReviewEntryAction((SourceTreeElement) s, viewer, reviewInstance);
+			SourceTreeElement ste = (SourceTreeElement) s;
+			CreateReviewEntryAction action = new CreateReviewEntryAction(ste, viewer, getReviewInstance());
 			m.add(action);
 		}
 		if (s instanceof ReviewEntryView){
@@ -164,7 +136,12 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) s;
 			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
 		}
-		m.add(new RefreshViewerAction(viewer));
+		m.add(new RefreshViewerAction(viewer){
+			@Override
+			public void run() {
+				reviewModelChanged();
+			}
+		});
 	}
 
 	@Override
@@ -184,17 +161,14 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 			StructuredSelection sel = (StructuredSelection) selection;
 			Object sourceSetCandidate = sel.getFirstElement();
 			if (sourceSetCandidate instanceof ReviewSourceSetView){
-				ReviewInstance riCandidate = (ReviewInstance) part.getAdapter(ReviewInstance.class);
-				if (riCandidate != null){
-					updateViewer((ReviewSourceSetView)sourceSetCandidate,riCandidate);
-				}
+				updateViewer((ReviewSourceSetView)sourceSetCandidate);
 			}
 		}
 	}
 
-	private void updateViewer(ReviewSourceSetView sourceSetCandidate,
-			ReviewInstance riCandidate) {
-		if (riCandidate == null || sourceSetCandidate == null){
+	private void updateViewer(ReviewSourceSetView sourceSetCandidate) {
+		ReviewInstance  ri = getReviewInstance();
+		if (ri == null || sourceSetCandidate == null){
 			viewer.setInput(null);
 			viewer.refresh();
 			String msg = "Select a review source set!";
@@ -203,9 +177,6 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 			statusLabel.setText("");
 			userLabel.setText("");
 		} else {
-			if (this.reviewInstance == null || !this.reviewInstance.equals(riCandidate)){
-				reviewInstance = riCandidate;
-			}
 			viewer.setInput(sourceSetCandidate);
 			viewer.refresh();
 			String id = sourceSetCandidate.getModelElement().id;
@@ -228,35 +199,14 @@ public class ReviewToolTodoListView extends ViewPart implements ISelectionListen
 		return Preferences.getDefaultUserName();
 	}
 
-	public Object getSingleSelection(){
-		ISelection s = viewer.getSelection();
-		if (s != null && !s.isEmpty() && s instanceof StructuredSelection){
-			return ((StructuredSelection)s).getFirstElement();
+	@Override
+	protected void reviewModelChanged() {
+		if (getReviewInstance() == null){
+			//clearing viewer if review instance was disposed
+			updateViewer(null);
+		} else {
+			updateViewer((ReviewSourceSetView)viewer.getInput());
 		}
-		return null;
-	}
-	public List<Object> getSelection(){
-		ISelection s = viewer.getSelection();
-		if (s != null && !s.isEmpty() && s instanceof StructuredSelection){
-			return  Arrays.asList(((StructuredSelection)s).toArray());
-		}
-		return Collections.emptyList();
 	}
 	
-	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
-		if (adapter.equals(IPropertySheetPage.class)){
-			if(propertySheetPage==null)
-			{
-				propertySheetPage = 
-					new ReviewToolPropertyPage();
-			}
-			return propertySheetPage;
-		}
-		if (adapter.equals(ReviewInstance.class)){
-			return reviewInstance;
-		}
-		return null;
-	}
-
 }

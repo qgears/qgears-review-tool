@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 /**
  * Content provider for {@link ReviewToolStatisticsView}. This class is handles
- * {@link StatisticsTableInput} inputs. Until the inoput is loading on a
+ * {@link StatisticsTableInput} inputs. Until the input is loading on a
  * background thread, status informations are provided as input, that can be
  * displayed by target viewer.
  * 

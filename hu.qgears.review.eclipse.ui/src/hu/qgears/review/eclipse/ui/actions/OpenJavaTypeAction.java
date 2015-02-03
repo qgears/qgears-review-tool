@@ -4,31 +4,29 @@ import hu.qgears.review.eclipse.ui.util.UtilLog;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.model.ReviewSource;
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.search.IJavaSearchConstants;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
+import java.io.File;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
- * Action that opens {@link OpenTypeSelectionDialog}. Can be used to open the
- * Java source from Eclipse workspace, that belnogs to a given
- * {@link ReviewSource}.
+ * Action that opens a {@link ReviewSource source file} with default editor.
  * 
  * @author agostoni
+ * 
  */
-/*
- * OpenTypeSelection dialog is part of Eclipse's inner API, suppressing
- * generated warning
- */
-@SuppressWarnings("restriction")
 public class OpenJavaTypeAction extends Action{
 
 	private Viewer viewer;
@@ -48,18 +46,19 @@ public class OpenJavaTypeAction extends Action{
 			Object e = ((StructuredSelection) s).getFirstElement();
 			if (e instanceof SourceTreeElement){
 				SourceTreeElement ste = (SourceTreeElement) e;
-				OpenTypeSelectionDialog dialog = new OpenTypeSelectionDialog(
-						shell, false, PlatformUI.getWorkbench().getProgressService(),
-						SearchEngine.createWorkspaceScope(), IJavaSearchConstants.TYPE);
-				dialog.setInitialPattern(ste.getSource().getFullyQualifiedJavaName());
-				if (OpenTypeSelectionDialog.OK == dialog.open()){
-					Object[] types = dialog.getResult();
-					try {
-						JavaUI.openInEditor((IJavaElement)types[0], true, true);
-					} catch (Exception x) {
-						UtilLog.showErrorDialog("Cannot open Java type", x);
+				File file = ste.getModelElement().getFileInWorkingCopy();
+				try {
+					IFile wsFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getCanonicalPath()));
+					if (wsFile != null && wsFile.exists()){
+						IEditorDescriptor ed = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(wsFile.getName());
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new FileEditorInput(wsFile), ed.getId());
+					} else {
+						//TODO automatically import??
+						MessageDialog.openInformation(shell, "Open review source", "The file "+file+" is not imported into Eclipse workspace, cannot be opened.");
 					}
-				} 
+				} catch (Exception e1) {
+					UtilLog.showErrorDialog("Error during file open: "+file.getAbsolutePath(), e1);
+				}
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package hu.qgears.review.eclipse.ui.views.main;
 
 import hu.qgears.review.eclipse.ui.ReviewToolImages;
+import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryGroup;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
@@ -10,23 +11,28 @@ import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.report.ReportGenerator;
 import hu.qgears.review.report.ReviewStatus;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelDecorator  {
+public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelDecorator, IColorProvider {
 
 	private Map<ReviewStatus, Image> imageCache = new HashMap<ReviewStatus, Image>();
-	
 	@Override
 	public String getText(Object element) {
 		if (element instanceof SourceTreeElement){
@@ -130,7 +136,22 @@ public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelD
 
 	@Override
 	public String decorateText(String text, Object element) {
-		return null;
+		if (missingSource(element)){
+			return text + " [missing]"; 
+		}
+		return text;
+	}
+	
+	private boolean missingSource(Object element){
+		if (element instanceof SourceTreeElement){
+			SourceTreeElement ste = (SourceTreeElement) element;
+			File file = ste.getModelElement().getFileInWorkingCopy();
+			IFile iFile = OpenJavaTypeAction.getFileInWorkspace(file);
+			if (iFile == null || !iFile.exists()){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -143,5 +164,23 @@ public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelD
 		}
 		imageCache.clear();
 	}
+
+	@Override
+	public Color getForeground(Object element) {
+		if (missingSource(element)){
+			return Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+		}
+		return null;
+	}
+
+
+	@Override
+	public Color getBackground(Object element) {
+		if (missingSource(element)){
+			return Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+		}
+		return null;
+	}
+
 }
 

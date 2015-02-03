@@ -5,6 +5,7 @@ import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.model.ReviewSource;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,7 +49,7 @@ public class OpenJavaTypeAction extends Action{
 				SourceTreeElement ste = (SourceTreeElement) e;
 				File file = ste.getModelElement().getFileInWorkingCopy();
 				try {
-					IFile wsFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getCanonicalPath()));
+					IFile wsFile = getFileInWorkspace(file);
 					if (wsFile != null && wsFile.exists()){
 						IEditorDescriptor ed = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(wsFile.getName());
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new FileEditorInput(wsFile), ed.getId());
@@ -61,6 +62,24 @@ public class OpenJavaTypeAction extends Action{
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns the {@link IFile} representation of the given file. If the file
+	 * is not present the Eclipse workspace, than
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static IFile getFileInWorkspace(File file) {
+		IFile wsFile = null;
+		try {
+			wsFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getCanonicalPath()));
+		} catch (IOException e) {
+			UtilLog.showErrorDialog("Error resolving workspace file. ", e);
+		}
+		return wsFile;
 	}
 	
 	@Override

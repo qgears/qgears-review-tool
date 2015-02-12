@@ -203,6 +203,31 @@ public class ReviewSource implements Serializable{
 		}
 		return ret;
 	}
+
+	/**
+	 * Returns the {@link ReviewEntry}s that are connected to this source class
+	 * and are invalidated by an other review entry. The returned list
+	 * includes current and old review entries.
+	 * 
+	 * @param modelRoot
+	 *            The {@link ReviewModel} model root to search within
+	 * @return The invalidated {@link ReviewEntry}s, list may be empty.
+	 * 
+	 * @see ReviewModel#isInvalidated(String)
+	 * @see #getMatchingReviewEntriesPreviousVersion(ReviewModel) Query old
+	 *      reviews
+	 * @see #getMatchingReviewEntries(ReviewModel) Query current reviewes
+	 */
+	public List<ReviewEntry> getInValidReviewEntries(ReviewModel modelRoot){
+		Collection<ReviewEntry> entries = modelRoot.getReviewEntryByUrl().getMappedObjects(getSourceUrl());
+		List<ReviewEntry> ret = new ArrayList<ReviewEntry>();
+		for (ReviewEntry re : entries){
+			if (modelRoot.isInvalidated(re.getSha1Sum())){
+				ret.add(re);
+			}
+		}
+		return ret;
+	}
 	
 	/**
 	 * Returns the {@link File} that represents this source file in current

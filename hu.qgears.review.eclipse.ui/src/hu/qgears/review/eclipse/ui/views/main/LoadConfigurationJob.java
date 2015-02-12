@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 
@@ -66,48 +67,52 @@ public class LoadConfigurationJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		final String configurationFile = Preferences.getConfigurationFile();
-		IStatus status = Status.OK_STATUS;
-		
-		if (configurationFile == null || configurationFile.isEmpty()){
-			status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Review " +
-					"tool configuration file is not set. Please open the " +
-					"preference store and set file path!");
-		} else {
-			if (Preferences.useSVNCache()){
-				System.setProperty("use.svn.cache", "true");
+		SubMonitor m = SubMonitor.convert(monitor);
+		try {
+			final String configurationFile = Preferences.getConfigurationFile();
+			IStatus status = Status.OK_STATUS;
+			m.beginTask("Loading..", 1);
+			if (configurationFile == null || configurationFile.isEmpty()){
+				status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Review " +
+						"tool configuration file is not set. Please open the " +
+						"preference store and set file path!");
 			} else {
-				System.setProperty("use.svn.cache", "false");
-			}
-			try {
-				final LoadConfiguration lc = new LoadConfiguration();
-				final ConfigParsingResult configParsingResult = 
-						lc.loadConfiguration(new File (configurationFile));
-				reviewInstance = configParsingResult.getReviewInstance();
-				
-				final List<Problem> configParsingProblems = 
-						configParsingResult.getProblems();
-				
-				if (configParsingProblems != null && !configParsingProblems.isEmpty()) {
-					final Bundle bundle = Platform.getBundle(ReviewToolUI.PLUGIN_ID);
-					final ILog log = Platform.getLog(bundle);
-					
-					for (final Problem problem : configParsingProblems) {
-						log.log(convertToStatus(problem));
-					}
-					
-					status = new Status(IStatus.WARNING, ReviewToolUI.PLUGIN_ID, 
-							"Problems have been encountered during loading " +
-							"the review configuration.");
+				if (Preferences.useSVNCache()){
+					System.setProperty("use.svn.cache", "true");
+				} else {
+					System.setProperty("use.svn.cache", "false");
 				}
-			} catch (final Exception e) {
-				status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, 
-						"Could not load review configuration because of a " +
-						"critical problem", e);
+				try {
+					final LoadConfiguration lc = new LoadConfiguration();
+					final ConfigParsingResult configParsingResult = 
+							lc.loadConfiguration(new File (configurationFile));
+					reviewInstance = configParsingResult.getReviewInstance();
+					
+					final List<Problem> configParsingProblems = 
+							configParsingResult.getProblems();
+					
+					if (configParsingProblems != null && !configParsingProblems.isEmpty()) {
+						final Bundle bundle = Platform.getBundle(ReviewToolUI.PLUGIN_ID);
+						final ILog log = Platform.getLog(bundle);
+						
+						for (final Problem problem : configParsingProblems) {
+							log.log(convertToStatus(problem));
+						}
+						
+						status = new Status(IStatus.WARNING, ReviewToolUI.PLUGIN_ID, 
+								"Problems have been encountered during loading " +
+								"the review configuration.");
+					}
+				} catch (final Exception e) {
+					status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, 
+							"Could not load review configuration because of a " +
+									"critical problem", e);
+				}
 			}
+			return status;
+		} finally {
+			m.done();
 		}
-		
-		return status;
 	}
 
 	public ReviewInstance getReviewInstance() {

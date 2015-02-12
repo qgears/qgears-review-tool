@@ -38,17 +38,7 @@ public class SourceTreeElement extends AbstractViewModel<ReviewSource>{
 		
 		List<ReviewEntry> current = new ArrayList<ReviewEntry>(rs.getMatchingReviewEntries(reviewModel));
 		List<ReviewEntry> old = new ArrayList<ReviewEntry>(rs.getMatchingReviewEntriesPreviousVersion(reviewModel));
-		List<ReviewEntry> invalidated = new ArrayList<ReviewEntry>();
-		for (ReviewEntry re : current){
-			if (reviewModel.isInvalidated(re.getSha1Sum())){
-				invalidated.add(re);
-			}
-		}
-		for (ReviewEntry re : old){
-			if (reviewModel.isInvalidated(re.getSha1Sum())){
-				invalidated.add(re);
-			}
-		}
+		List<ReviewEntry> invalidated = rs.getInValidReviewEntries(reviewModel);
 		current.removeAll(invalidated);
 		old.removeAll(invalidated);
 	

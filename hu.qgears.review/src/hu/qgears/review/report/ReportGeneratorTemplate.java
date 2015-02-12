@@ -99,6 +99,8 @@ public class ReportGeneratorTemplate {
 		List<ColumnDefinition> todoTableColumns = new ArrayList<ColumnDefinition>();
 		todoTableColumns.add(new ClassNameColumnDefinition());
 		todoTableColumns.add(new TodoMessageColumnDefinition(modelRoot));
+		OkWithMessageColumnDefinition om = new OkWithMessageColumnDefinition(modelRoot);
+		todoTableColumns.add(om);
 		rtout.write("\t\t<h3>Classes with TODO-s</h3>\n\t\t<table>\n\t\t\t</tr>\n");
 		for (ColumnDefinition c : todoTableColumns) {
 			rtout.write("\t\t\t\t<th>");
@@ -108,7 +110,7 @@ public class ReportGeneratorTemplate {
 		boolean wasTodo = false;
 		rtout.write("\t\t\t</tr>\n");
 		for (ReportEntry entry : entries) {
-			if (entry.getReviewStatus() == ReviewStatus.TODO) {
+			if (entry.getReviewStatus() == ReviewStatus.TODO || !om.getPropertyValue(entry).isEmpty()){
 				wasTodo = true;
 				rtout.write("\t\t\t</tr>\n");
 				for (ColumnDefinition c : todoTableColumns) {

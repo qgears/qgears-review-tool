@@ -9,6 +9,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Column definition that reads comment from valid review todos and prints into
+ * a multi-line String.
+ * 
+ * @author agostoni
+ * 
+ */
 public class TodoMessageColumnDefinition implements ColumnDefinition {
 
 	private ReviewModel model;

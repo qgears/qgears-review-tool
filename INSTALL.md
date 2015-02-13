@@ -60,4 +60,4 @@ Accept the prompt that warns on installing software without certificate.
 
 Restart Eclipse.
 
-The installation is done.
+The installation is done; you can now proceed to the [wiki page](https://github.com/qgears/qgears-review-tool/wiki) to learn how to how to configure the review tool and assemble a workspace.

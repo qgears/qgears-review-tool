@@ -17,37 +17,30 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="hu.qgears.commons" version="0.9.9" match="greaterOrEqual"/>
+      <import plugin="joptsimple" version="0.9.9" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="hu.qgears.review"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="hu.qgears.sonar.client"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="hu.qgears.review.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-    <plugin
-         id="hu.qgears.commons"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-    <plugin
-         id="joptsimple"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="1.0.0.qualifier"
          unpack="false"/>
 
 </feature>

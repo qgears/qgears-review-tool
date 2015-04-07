@@ -38,7 +38,7 @@ public class SvnStatus {
 			
 			if ("added".equals(mod)) {
 				System.err.println("Uncommitted file in the working copy: " + path);
-			} else if(!mod.equals("unversioned") && !path.equals("."))
+			} else if(!mod.equals("unversioned") && !path.equals(".") && (!mod.equals("obstructed")) )
 			{
 				Element commit=((Element)e.selectSingleNode("wc-status/commit"));
 				String ver=commit.attributeValue("revision");

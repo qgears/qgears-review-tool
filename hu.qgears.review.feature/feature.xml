@@ -2,7 +2,7 @@
 <feature
       id="hu.qgears.review.feature"
       label="Q-Gears review tool"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Q-Gears">
 
    <description url="http://www.example.com/description">

@@ -90,17 +90,15 @@ public class ReportGeneratorStandalone {
 		String errorLogFile = System.getProperty(SYS_PROP_ERROR_INDICATOR);
 		if (errorLogFile != null && !errorLogFile.isEmpty()){
 			File error = new File (errorLogFile);
-			if (error.exists() && error.canWrite()){
-				try {
-					PrintWriter pw = new PrintWriter(error,"UTF-8");
-					pw.println("Report generation failed due to an exception!");
-					if (e != null){
-						e.printStackTrace(pw);
-					}
-					pw.close();
-				} catch (Exception e1) {
-					error("Cannot create error log file: " + e1.getMessage());
+			try {
+				PrintWriter pw = new PrintWriter(error,"UTF-8");
+				pw.println("Report generation failed due to an exception!");
+				if (e != null){
+					e.printStackTrace(pw);
 				}
+				pw.close();
+			} catch (Exception e1) {
+				error("Cannot create error log file: " + e1.getMessage());
 			}
 		}
 	}

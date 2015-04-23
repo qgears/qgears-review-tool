@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -58,7 +59,6 @@ public class LoadConfiguration {
 	public static final UtilSimpleString ussProperties=new UtilSimpleString("\n", "\\", "n");
 	
 	public static final UtilFileFilter scmSubdirFilter=new UtilFileFilter();
-	
 	/**
 	 * 
 	 * @param mappingfile the root configuration file of a review project
@@ -252,11 +252,16 @@ public class LoadConfiguration {
 							&& fileSetSubdir.isDirectory()) {
 						logger.info("Loading fileset from: " + 
 							fileSetSubdir.getName());
+						try {
+							parseFilesetDefinition(model, fileSetSubdir, problems);
+							logger.info("Loading fileset: " + 
+									fileSetSubdir.getName() + " ready");
+						} catch (Exception e){
+							Problem problem = new Problem(Problem.Type.WARNING, "Cannot load fileset : "+fileSetSubdir,e.getMessage(),e);
+							problems.add(problem);
+							logger.log(Level.WARNING,problem.getMessage() ,e);
+						}
 						
-						parseFilesetDefinition(model, fileSetSubdir, problems);
-						
-						logger.info("Loading fileset: " + 
-							fileSetSubdir.getName() + " ready");
 					}
 				}
 			}

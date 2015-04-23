@@ -5,6 +5,7 @@ import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSourceSet;
 import hu.qgears.review.tool.ConfigParsingResult;
+import hu.qgears.review.tool.ConfigParsingResult.Problem;
 
 import java.io.File;
 import java.io.IOException;
@@ -187,6 +188,9 @@ public class ReportGeneratorStandalone {
 			final LoadConfiguration loadConfig = new LoadConfiguration();
 			final ConfigParsingResult configParsingResult = 
 					loadConfig.loadConfiguration(mapping);
+			for (Problem p :configParsingResult.getProblems()){
+				error(p.getType() +" " + p.getMessage() + " : "+p.getDetails());
+			}
 			final ReviewInstance c = configParsingResult.getReviewInstance();
 			
 			return c;

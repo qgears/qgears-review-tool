@@ -186,7 +186,7 @@ public class LoadConfiguration {
 		
 		while ((additionalReviewDirName = rootConfigProps.getProperty("annotationsfolder." + i)) != null) {
 			final File additionalReviewDir = new File(reviewProjectConfigDir,
-					additionalReviewDirName);
+					additionalReviewDirName).getCanonicalFile();
 			
 			reviewSearch.visit(additionalReviewDir);
 			i++;

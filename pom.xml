@@ -17,9 +17,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<profiles>
 		<profile>
 			<id>external</id>
-			<module>../opensource-utils/commons/hu.qgears.commons</module>
-			<module>../jopt-simple/pomq.xml</module>
-			<module>hu.qgears.review.repository</module>
+			<modules>
+				<module>../opensource-utils/commons/hu.qgears.commons</module>
+				<module>../jopt-simple/pomq.xml</module>
+				<module>hu.qgears.review.repository</module>
+			</modules>
 		</profile>
 	</profiles>
 

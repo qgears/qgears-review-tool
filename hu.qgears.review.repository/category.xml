@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="hu.qgears.review.feature">
+      <category name="Q-Gears tools"/>
+   </feature>
+
+<!--   <feature id="hu.qgears.review.feature.source">
+      <category name="Q-Gears tools sources"/>
+   </feature> -->
+
+   <bundle id="hu.qgears.commons">
+      <category name="Q-Gears tools"/>
+   </bundle>
+<!--   <bundle id="hu.qgears.commons.source">
+      <category name="Q-Gears tools sources"/>
+   </bundle> -->
+
+   <bundle id="joptsimple">
+      <category name="Q-Gears tools"/>
+   </bundle>
+<!--   <bundle id="joptsimple.source">
+      <category name="Q-Gears tools sources"/>
+   </bundle> -->
+
+   <category-def name="Q-Gears tools" label="Q-Gears tools"/>
+   <category-def name="Q-Gears tools sources" label="Q-Gears tools developer resources">
+      <description>
+         Source bundles for Q-Gears tools
+      </description>
+   </category-def>
+</site>

@@ -14,6 +14,15 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<relativePath>../parent-poms/root</relativePath>
 	</parent>
 
+	<profiles>
+		<profile>
+			<id>external</id>
+			<module>../opensource-utils/commons/hu.qgears.commons</module>
+			<module>../jopt-simple/pomq.xml</module>
+			<module>hu.qgears.review.repository</module>
+		</profile>
+	</profiles>
+
 	<modules>
 		<module>hu.qgears.sonar.client</module>
 		<module>hu.qgears.review</module>

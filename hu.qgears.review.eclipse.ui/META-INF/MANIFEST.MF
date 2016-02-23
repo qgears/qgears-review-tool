@@ -5,14 +5,14 @@ Bundle-SymbolicName: hu.qgears.review.eclipse.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Q-Gears
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: hu.qgears.review;bundle-version="[1.0.0,2.0.0)",
- hu.qgears.sonar.client;bundle-version="[1.0.0,2.0.0)",
+Require-Bundle: hu.qgears.review;bundle-version="1.0.0",
+ hu.qgears.sonar.client;bundle-version="1.0.0",
  org.eclipse.ui,
  org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.ui.views;bundle-version="3.6.0",
  org.eclipse.jdt.ui;bundle-version="3.7.2",
  org.eclipse.jdt.core;bundle-version="3.7.3",
- hu.qgears.commons;bundle-version="[1.0.0,4.0.0)",
+ hu.qgears.commons;bundle-version="1.0.0",
  org.eclipse.ui.ide;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.101",
  org.eclipse.team.svn.ui;bundle-version="1.1.1",

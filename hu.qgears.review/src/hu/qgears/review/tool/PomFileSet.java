@@ -1,8 +1,6 @@
 package hu.qgears.review.tool;
 
 import hu.qgears.commons.UtilString;
-import hu.qgears.review.tool.ConfigParsingResult.Problem;
-import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -12,13 +10,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 public class PomFileSet {
-	private static final Logger logger = Logger.getLogger(PomFileSet.class.getName());
+
+	private static final Logger LOG = Logger.getLogger(PomFileSet.class);
 	
 	public static final String POMFILESET_ID = "pomfileset";
 
@@ -44,8 +43,7 @@ public class PomFileSet {
 	 * @param problems 
 	 */
 	public List<String> filter(final Params params,
-			final File fileSetDefFile, final File pomXmlFile, 
-			final List<Problem> problems) throws Exception {
+			final File fileSetDefFile, final File pomXmlFile) throws Exception {
 		final Document pomDocument = UtilDom4j.read(
 				new ByteArrayInputStream(params.pomFileBytes));
 		
@@ -54,10 +52,10 @@ public class PomFileSet {
 		final PatternCollection patternCollection = 
 				parsePatternCollection(pomDocument);
 		final List<String> modulepaths = parseModulePaths(pomDocument, 
-				params.params, problems, fileSetDefFile, pomXmlFile);
+				params.params, fileSetDefFile, pomXmlFile);
 		final Set<String> sourceFileSet = new HashSet<String>(params.fileset);
 		final List<String> retfileset = filter(sourceFileSet, 
-				modulepaths, patternCollection, pomXmlFile, problems);
+				modulepaths, patternCollection, pomXmlFile);
 		
 		return retfileset;
 	}
@@ -75,16 +73,10 @@ public class PomFileSet {
 	 */
 	private List<String> filter(final Set<String> sourceFileSet,
 			final List<String> modulePaths, final PatternCollection patternCollection,
-			final File pomXmlFile, final List<Problem> problems) {
+			final File pomXmlFile) {
 		for (final String modulepath : modulePaths) {
 			if (!sourceFileSet.contains(modulepath)) {
-				logger.warning("module does not exist: " + modulepath);
-				
-				problems.add(new Problem(Type.ERROR, "The module '" +
-						modulepath + "' defined in " + pomXmlFile + 
-						" cannot be found in the source file set. The " +
-						"resulting list of files, that are subject to " +
-						"review, may not be complete."));
+				LOG.error("module does not exist: " + modulepath);
 			}
 		}
 		
@@ -106,10 +98,10 @@ public class PomFileSet {
 			final String problemDetails = "Unfiltered source file count: " +
 					moduleSourceFileCounter + "; Hits: " + exclusionCounter;
 			
-			problems.add(new Problem(Type.WARNING, amountHint + " source " +
+			LOG.warn(amountHint + " source " +
 					"files where discarded by the filtering rules and " +
-					"non-matching module paths defined in " + pomXmlFile,
-					problemDetails.toString()));
+					"non-matching module paths defined in " + pomXmlFile + "\n"+
+					problemDetails);
 		}
 		
 		return filteredFileSet;
@@ -149,16 +141,16 @@ public class PomFileSet {
 	 * @return the module paths resolved
 	 */
 	private List<String> parseModulePaths( final Document pomDocument, 
-			final Map<String, String> params, final List<Problem> problems,
+			final Map<String, String> params,
 			final File fileSetDefFile, final File pomXmlFile) {
 		final List<String> modulepaths=new ArrayList<String>();
 		final List<Element> modulePathElements =  UtilDom4j.selectElements(
 				pomDocument.getRootElement(), "//modules/module");
 		
 		if (modulePathElements.isEmpty()) {
-			problems.add(new Problem(Type.WARNING, "No module paths or module" +
+			LOG.warn("No module paths or module" +
 					" path templates could be enumerated in " + pomXmlFile +
-					" referred in file set definition file " + fileSetDefFile));
+					" referred in file set definition file " + fileSetDefFile);
 		}
 		
 		for (final Element modulePathElement: modulePathElements) {

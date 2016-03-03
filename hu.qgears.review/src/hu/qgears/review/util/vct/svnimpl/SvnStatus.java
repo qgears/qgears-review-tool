@@ -1,14 +1,20 @@
-package hu.qgears.review.tool;
+package hu.qgears.review.util.vct.svnimpl;
 
+import hu.qgears.commons.Pair;
 import hu.qgears.commons.UtilProcess;
 import hu.qgears.review.model.ReviewSource;
+import hu.qgears.review.tool.UtilDom4j;
+import hu.qgears.review.tool.UtilProcess2;
 import hu.qgears.review.util.UtilSha1;
+import hu.qgears.review.util.vct.EVersionControlTool;
+import hu.qgears.review.util.vct.IVersionControlTool;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -22,12 +28,13 @@ import org.dom4j.Element;
  * @author rizsi
  *
  */
-public class SvnStatus {
-	public List<ReviewSource> execute(String id, File dir) throws Exception
-	{
+public class SvnStatus implements IVersionControlTool {
+	private static String svnTool = "/usr/bin/svn";
+	@Override
+	public List<ReviewSource> loadSources(String id, File dir) throws Exception {
 		List<ReviewSource> ret=new ArrayList<ReviewSource>();
 		String svnurl=getSvnUrl(dir);
-		String s=UtilProcess.execute(Runtime.getRuntime().exec("/usr/bin/svn status -v --xml", null, dir));
+		String s=UtilProcess.execute(Runtime.getRuntime().exec(getSvnTool() + " status -v --xml", null, dir));
 		Document doc=UtilDom4j.read(new StringReader(s));
 		List<Element> es=UtilDom4j.selectElements(doc.getRootElement(), "target/entry[@path='.']/wc-status");
 		String rev=es.get(0).attributeValue("revision");
@@ -52,18 +59,34 @@ public class SvnStatus {
 				{
 					sha1=UtilSha1.getSHA1(f);
 				}
-				ret.add(new ReviewSource(id, svnurl, path, rev, ver, sha1,f));
-//				System.out.print(""+mod+" ");
-//				System.out.println(""+e.attributeValue("path"));
+				ret.add(new ReviewSource(id, svnurl, path, rev, ver, sha1,f,EVersionControlTool.SVN));
 			}
 		}
 		return ret;
 	}
 	private String getSvnUrl(File dir) throws IOException, DocumentException {
-		String svninfo=UtilProcess.execute(Runtime.getRuntime().exec("/usr/bin/svn info --xml", null, dir));
-		Document doc=UtilDom4j.read(new StringReader(svninfo));
+		String svninfo=UtilProcess.execute(Runtime.getRuntime().exec(getSvnTool()+" info --xml", null, dir));
+		Document doc;
+		doc = UtilDom4j.read(new StringReader(svninfo));
 		List<Element> es=UtilDom4j.selectElements(doc.getRootElement(), "//entry/url");
 		String url=es.get(0).getText();
 		return url;
+	}
+	
+	public static void setSvnTool(String svnTool) {
+		SvnStatus.svnTool = svnTool;
+	}
+	
+	public static String getSvnTool() {
+		return svnTool;
+	}
+	@Override
+	public byte[] downloadResource(String svnurl, String revision)
+			throws Exception {
+		Process p=Runtime.getRuntime().exec(new String[]{svnTool, "cat",
+				"-r"+revision, svnurl});
+		Future<Pair<byte[], byte[]>> fut=UtilProcess2.streamOutputsOfProcess(p);
+		Pair<byte[], byte[]> pa=fut.get();
+		return pa.getA();
 	}
 }

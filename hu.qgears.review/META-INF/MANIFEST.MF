@@ -5,16 +5,17 @@ Bundle-SymbolicName: hu.qgears.review;singleton:=true
 Bundle-Version: 1.0.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.commons;bundle-version="1.0.0",
- javax.servlet;bundle-version="2.5.0",
  hu.qgears.sonar.client;bundle-version="1.0.0",
  joptsimple;bundle-version="1.0.0",
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.apache.log4j;bundle-version="1.2.15"
 Export-Package: hu.qgears.review.action,
  hu.qgears.review.model,
  hu.qgears.review.report,
  hu.qgears.review.test,
  hu.qgears.review.tool,
- hu.qgears.review.util
+ hu.qgears.review.util,
+ hu.qgears.review.util.vct
 Bundle-ClassPath: lib/dom4j-1.6.1.jar,
  .,
  lib/jaxen-1.1.6.jar

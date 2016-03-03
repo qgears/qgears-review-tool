@@ -12,22 +12,21 @@ import hu.qgears.review.tool.ConfigParsingResult.Problem;
 import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.tool.PomFileSet;
 import hu.qgears.review.tool.PomFileSet.Params;
-import hu.qgears.review.tool.SvnStatus;
 import hu.qgears.review.tool.WhiteListFileSet;
 import hu.qgears.review.util.UtilFileFilter;
 import hu.qgears.review.util.UtilSimpleString;
+import hu.qgears.review.util.vct.EVersionControlTool;
+import hu.qgears.review.util.vct.IVersionControlTool;
+import hu.qgears.review.util.vct.VersionControlToolManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * Loads a review configuration via a root configuration file.  
@@ -35,20 +34,13 @@ import java.util.logging.Logger;
  * @author rizsi
  */
 public class LoadConfiguration {
-	private static final Logger logger = Logger.getLogger(LoadConfiguration.class.getName());
+
+	private static final Logger LOG = Logger.getLogger(LoadConfiguration.class);
+
 	/**
 	 * Extension of the files storing saved reviews. 
 	 */
 	private static final String REVIEW_FILE_EXTENSION = ".annot";
-	/**
-	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
-	 */
-	private static final String PROPERTY_SONAR_PROJECT = "sonar_project";
-	/**
-	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
-	 */
-	private static final String PROPERTY_SONAR_URL = "sonar_url";
-	private String reviewOutputFolderName;
 	/**
 	 * This is the separator and escape sequence in the annotation entries file that separates the blocks.
 	 */
@@ -67,27 +59,12 @@ public class LoadConfiguration {
 	 */
 	public ConfigParsingResult loadConfiguration(final File mappingfile) 
 			throws Exception {
+		LOG.info("Current working directory : " + new File(".").getAbsolutePath());
+		
 		final List<Problem> problems = new ArrayList<Problem>();
-		Properties props = new Properties();
-		FileInputStream fis = new FileInputStream(mappingfile);
+		ReviewToolConfig cfg = ReviewToolConfig.load(mappingfile);
 		
-		try {
-			props.load(fis);
-		} finally {
-			fis.close();
-		}
-		
-		logger.info("Current working directory : " + new File(".").getAbsolutePath());
-		
-		final Object configDirEntry = props.get("config");
-		
-		if (configDirEntry == null) {
-			problems.add(new Problem(Type.ERROR, "The mandatory 'config=...' " +
-					"entry is missing from the root configuration file: " +
-					mappingfile));
-		}
-		
-		final File configdir = new File(""+configDirEntry);
+		final File configdir = cfg.getConfigDir();
 		
 		if (!configdir.exists() || !configdir.isDirectory()) {
 			final String problemDetail;
@@ -103,40 +80,29 @@ public class LoadConfiguration {
 							"existing directory." + configdir, problemDetail));
 		}
 		
-		final ReviewModel model = loadReviewModel(props, configdir, problems);
+		final ReviewModel model = loadReviewModel(cfg, configdir, problems);
 		final ReviewInstance reviewInstance = new ReviewInstance(model, 
-				new File(configdir, reviewOutputFolderName + "/" + 
+				new File(cfg.getReviewOutputFolder(), 
 						System.currentTimeMillis() + REVIEW_FILE_EXTENSION));
 		final ConfigParsingResult configParsingResult = 
 				new ConfigParsingResult(reviewInstance, problems);
 		
 		return configParsingResult;
 	}
-	private ReviewModel loadReviewModel(final Properties props, 
+	private ReviewModel loadReviewModel(final ReviewToolConfig cfg, 
 			final File configdir, final List<Problem> problems) throws Exception {
 		ReviewModel model=new ReviewModel();
-		parseMappings(model, props, problems);
-		loadSourceFolders(model, props, configdir);
-		loadFileSets(model, props, configdir, problems);
-		loadExistingReviews(model, props, configdir);
-		loadSonarConfiguration(model,props);
+		parseMappings(model, cfg);
+		loadSourceFolders(model, cfg);
+		loadFileSets(model, cfg);
+		loadExistingReviews(model, cfg);
+		loadSonarConfiguration(model,cfg);
 		return model;
 	}
 	
-	private void loadSonarConfiguration(ReviewModel model, Properties props) {
-		model.setSonarBaseURL(props.getProperty(PROPERTY_SONAR_URL));
-		model.setSonarProjectId(props.getProperty(PROPERTY_SONAR_PROJECT));
-	}
-	
-	private String getReviewOutputFolder(final Properties rootConfigProps) {
-		final String reviewOutputFolderNameProp = 
-				rootConfigProps.getProperty("review_outputfolder_name");
-		final String reviewOutputFolderName = reviewOutputFolderNameProp == null 
-				|| reviewOutputFolderNameProp.length() == 0 ?
-						"review-" + System.getProperty("user.name")
-						: reviewOutputFolderNameProp;
-						
-		return reviewOutputFolderName;
+	private void loadSonarConfiguration(ReviewModel model, ReviewToolConfig cfg) {
+		model.setSonarBaseURL(cfg.getSonarBaseUrl());
+		model.setSonarProjectId(cfg.getSonarProjectId());
 	}
 	
 	/**
@@ -147,19 +113,16 @@ public class LoadConfiguration {
 	 * loaded from the config file, if the 'review_username' entry is found,
 	 * or, if not, its value will be the current OS-level login name.  
 	 * @param model the partial review model, to which reviews are to be added
-	 * @param rootConfigProps configuration properties 
+	 * @param cfg configuration properties 
 	 * @param reviewProjectConfigDir the directory containing the project-specific review
 	 * configuration files and reviews. All the review files found within this
 	 * directory and its subdirectories recursively, will be loaded.  
 	 * @throws Exception
 	 */
 	private void loadExistingReviews(final ReviewModel model, 
-			final Properties rootConfigProps, final File reviewProjectConfigDir) 
+			final ReviewToolConfig cfg) 
 					throws Exception {
-		this.reviewOutputFolderName = getReviewOutputFolder(rootConfigProps);
 		final Set<String> loadedReviews = new HashSet<String>();
-		
-		logger.fine("Directory into which reviews will be saved: " + reviewOutputFolderName);
 		
 		final UtilFileVisitor reviewSearch = new UtilFileVisitor() {
 			@Override
@@ -170,37 +133,24 @@ public class LoadConfiguration {
 					return false;
 				}
 				if (file.isFile() && file.getName().endsWith(REVIEW_FILE_EXTENSION)) {
-					loadAnnotationsFile(model, rootConfigProps, file, loadedReviews);
+					loadAnnotationsFile(model, file, loadedReviews);
 				}
 				return true;
 			}
 		};
-		
-		reviewSearch.visit(new File(reviewProjectConfigDir, reviewOutputFolderName));
-		
-		/* 
-		 * Sirectory of additional directories, from which to load reviews.
-		 */
-		String additionalReviewDirName;
-		int i = 1;
-		
-		while ((additionalReviewDirName = rootConfigProps.getProperty("annotationsfolder." + i)) != null) {
-			final File additionalReviewDir = new File(reviewProjectConfigDir,
-					additionalReviewDirName).getCanonicalFile();
-			
+		reviewSearch.visit(cfg.getReviewOutputFolder());
+		for (File additionalReviewDir : cfg.getAdditionalAnnotationsFolder()){
 			reviewSearch.visit(additionalReviewDir);
-			i++;
 		}
 	}
 	
-	private void loadAnnotationsFile(final ReviewModel model,
-			final Properties props, final File annotationsFile, 
+	private void loadAnnotationsFile(final ReviewModel model, final File annotationsFile, 
 			final Set<String> loadedReviews) throws Exception {
 		String file=UtilFile.loadAsString(annotationsFile);
 		List<String> blocks=ussBlocks.splitAndUnescape(file);
 		int index=0;
 		
-		logger.info("Loading review file: " + annotationsFile.getAbsolutePath());
+		LOG.info("Loading review file: " + annotationsFile.getAbsolutePath());
 		
 		for(String block: blocks)
 		{
@@ -216,50 +166,40 @@ public class LoadConfiguration {
 				}
 			}catch(Exception e)
 			{
-				System.err.println("error in annotation: "+annotationsFile+" "+index);
-				e.printStackTrace();
+				LOG.error("error in annotation: "+annotationsFile+" "+index,e);
 			}
 			index++;
 		}
 	}
 	
-	private void loadFileSets(final ReviewModel model, final Properties props,
-			final File configdir, final List<Problem> problems) throws Exception {
-		final File fileSetsDir = new File(configdir, "filesets");
+	private void loadFileSets(final ReviewModel model, final ReviewToolConfig cfg) throws Exception {
 		
-		if (!fileSetsDir.exists() || !fileSetsDir.isDirectory()) {
-			problems.add(new Problem(Type.ERROR, "A subdirectory called " +
-					"'filesets', containing the definition of file sets to " +
-					"be reviewed, does not exist within the configuration " +
-					"directory: " + configdir));
-		} else {
+		File fileSetsDir = cfg.getFileSetsDir();
+		if (fileSetsDir.isDirectory()) {
 			final File[] fileSetDefSubdirs=fileSetsDir.listFiles();
-			
 			/* 
 			 * fileSetDefSubdirs will never be null according to the above
 			 * branch conditions and javadocs of listFiles().
 			 */
 			if (fileSetDefSubdirs.length == 0) {
-				problems.add(new Problem(Type.ERROR, "No subdirectories, " +
-						"containing file set definition descriptors, are" +
-						"found within the " + fileSetsDir + " directory.",
-						"Create one or more subdirectory within the " +
-						fileSetsDir + " with one file named " +
-						"'filesetdefinition' in each subdirectory."));
+				LOG.error("No subdirectories, "
+						+ "containing file set definition descriptors, are"
+						+ "found within the " + fileSetsDir + " directory."
+						+ "Create one or more subdirectory within the "
+						+ fileSetsDir + " with one file named "
+						+ "'filesetdefinition' in each subdirectory.");
 			} else {
 				for (final File fileSetSubdir : fileSetDefSubdirs) {
 					if (!scmSubdirFilter.isFilteredOut(fileSetSubdir) 
 							&& fileSetSubdir.isDirectory()) {
-						logger.info("Loading fileset from: " + 
+						LOG.info("Loading fileset from: " + 
 							fileSetSubdir.getName());
 						try {
-							parseFilesetDefinition(model, fileSetSubdir, problems);
-							logger.info("Loading fileset: " + 
+							parseFilesetDefinition(model, fileSetSubdir);
+							LOG.info("Loading fileset: " + 
 									fileSetSubdir.getName() + " ready");
 						} catch (Exception e){
-							Problem problem = new Problem(Problem.Type.WARNING, "Cannot load fileset : "+fileSetSubdir,e.getMessage(),e);
-							problems.add(problem);
-							logger.log(Level.WARNING,problem.getMessage() ,e);
+							LOG.warn("Cannot load fileset : "+fileSetSubdir,e);
 						}
 						
 					}
@@ -268,67 +208,59 @@ public class LoadConfiguration {
 		}
 	}
 	
-	
-	private void loadSourceFolders(ReviewModel model, Properties props,
-			File configdir) throws Exception {
-		for(String line: UtilString.split(UtilFile.loadAsString(new File(configdir, "sourcefolders")),"\r\n"))
+	private void loadSourceFolders(ReviewModel model, ReviewToolConfig cfg) throws Exception {
+		for(String line : cfg.getSourceFolders())
 		{
-			if(line.startsWith("svn "))
-			{
-				String id=line.substring(4);
+			EVersionControlTool tool = getVersionControlTool (line);
+			if(tool == null) {
+				LOG.error("Unknown source fodler type: "+line);
+			} else {
+				String id = tool.getSourceFolder(line);
 				String folder=model.mappings.get(id);
-				System.out.println("Loading svn: "+id);
+				LOG.info("Loading svn: "+id);
 				List<ReviewSource> files = null;
+				IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(tool);
+				File targetFolder = new File(folder);
 				if (SourceCache.isCacheEnabled()){
 					try {
 					SourceCache cache = new SourceCache(id);
 						if (cache.exists()){
-							System.out.println("Loading SVN content from cache!");
+							LOG.info("Loading SVN content from cache!");
 							files = cache.load();
 						} else {
-							System.out.println("Creating cache file...");
-							files = new SvnStatus().execute(id, new File(folder));
+							LOG.info("Creating cache file...");
+							files = loader.loadSources(id, targetFolder);
 							cache.save(files);
-							System.out.println("Cache file is ready to use in next startup.");
+							LOG.info("Cache file is ready to use in next startup.");
 						}
 					} catch (Exception e) {
-						System.err.println("Exception during loading cache for SVN repo "+id);
-						e.printStackTrace();
+						LOG.error("Exception during loading cache for SVN repo "+id,e);
 					}
 				} 
 				if (files == null){
-					files = new SvnStatus().execute(id, new File(folder));
+					files = loader.loadSources(id, targetFolder);
 				}
 				model.addSourceFiles(files);
-				System.out.println("Creating md5sum: "+id);
-				int n=0;
-				System.out.println("Loading svn: "+id+" ready number of md5sums: "+n);
 			}
 		}
 	}
 
+	private EVersionControlTool getVersionControlTool(String line) {
+		for (EVersionControlTool t : EVersionControlTool.values()){
+			if (t.supports(line)){
+				return t;
+			}
+		}
+		return null;
+	}
 	/**
 	 * Parses SCM roots.
 	 * @param model
-	 * @param props
+	 * @param cfg
 	 * @param problems
 	 */
-	private void parseMappings(final ReviewModel model, final Properties props, 
-			final List<Problem> problems) {
-		for (Map.Entry<Object, Object> e:props.entrySet()) {
-			String key=""+e.getKey();
-			if(key.startsWith("map.")) {
-				model.mappings.put(key.substring(4), ""+e.getValue());
-			}
-		}
-		
-		if (model.mappings.isEmpty()) {
-			problems.add(new Problem(Type.ERROR, "No SCM working directories " +
-					"are specified in the root review configuration file.",
-					"Specify at least one SCM working directory in the " +
-					"config file by adding at least one " +
-					"'map.workingdir_id=workingdir_path' entry."));
-		}
+	private void parseMappings(final ReviewModel model, final ReviewToolConfig cfg) {
+		model.mappings.putAll(cfg.getMappings());
 	}
 
 	/**
@@ -342,12 +274,12 @@ public class LoadConfiguration {
 	 * @throws Exception
 	 */
 	private void parseFilesetDefinition(final ReviewModel model, 
-			final File fileSetDefSubdir, final List<Problem> problems) 
+			final File fileSetDefSubdir) 
 					throws Exception {
 		final String fileSetId = fileSetDefSubdir.getName();
 		final File fileSetDefFile = new File(fileSetDefSubdir, "filesetdefinition");
 		
-		logger.fine("Loading fileset definition: " + fileSetDefFile);
+		LOG.info("Loading fileset definition: " + fileSetDefFile);
 		
 		final String fileSetDefinition = UtilFile.loadAsString(fileSetDefFile);
 		final List<String> fileSetDefLines = 
@@ -358,18 +290,16 @@ public class LoadConfiguration {
 			final List<String> ret;
 			
 			if (PomFileSet.POMFILESET_ID.equals(fileSetDefType)) {
-				ret = parsePomFileSet(model, fileSetDefFile, fileSetDefLines, 
-						problems);
+				ret = parsePomFileSet(model, fileSetDefFile, fileSetDefLines);
 			} else if (WhiteListFileSet.ID.equals(fileSetDefType)) {
 				ret = new WhiteListFileSet(fileSetDefLines).reduce(
-						toSourceFileList(model.getSources()), problems);
+						toSourceFileList(model.getSources()));
 			} else {
 				throw new RuntimeException("Unexpected fileset type '" + 
 						fileSetDefType + "' in " + fileSetDefFile + "; must " +
 								"be either " + PomFileSet.POMFILESET_ID +
 								" or " + WhiteListFileSet.ID);
 			}
-			
 			if (ret != null) {
 				model.addSourceSet(fileSetId, ret);
 			}
@@ -394,8 +324,7 @@ public class LoadConfiguration {
 	 * @see PomFileSet
 	 */
 	protected List<String> parsePomFileSet(final ReviewModel model, 
-			final File pomFileSetDefFile, final List<String> fileSetDefLines, 
-			final List<Problem> problems) throws Exception {
+			final File pomFileSetDefFile, final List<String> fileSetDefLines) throws Exception {
 		List<String> ret;
 		final Params params = new Params();
 		params.params = new HashMap<String, String>();
@@ -425,8 +354,7 @@ public class LoadConfiguration {
 			final List<String> strings=toSourceFileList(model.getSources());
 			
 			params.fileset=strings;
-			ret = new PomFileSet().filter(params, pomFileSetDefFile, pomXmlFile,
-					problems);
+			ret = new PomFileSet().filter(params, pomFileSetDefFile, pomXmlFile);
 			
 			return ret;
 		} else {

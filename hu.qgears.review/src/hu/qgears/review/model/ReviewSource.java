@@ -1,6 +1,7 @@
 package hu.qgears.review.model;
 
 import hu.qgears.review.util.UtilSha1;
+import hu.qgears.review.util.vct.EVersionControlTool;
 
 import java.io.File;
 import java.io.Serializable;
@@ -25,12 +26,13 @@ public class ReviewSource implements Serializable{
 	private String folderVersion;
 	private String fileVersion;
 	private String sha1;
-
+	private EVersionControlTool vct;
+	
 	private final File fileInWorkingCopy;
 	
 	public ReviewSource(String sourceFolderId, String sourceFolderUrl, 
 			String sourceUrl, String folderVersion, String fileVersion, 
-			String sha1, File fileInWorkingCopy) {
+			String sha1, File fileInWorkingCopy,EVersionControlTool vct) {
 		super();
 		this.fileInWorkingCopy = fileInWorkingCopy;
 		this.setSourceFolderId(sourceFolderId);
@@ -237,5 +239,13 @@ public class ReviewSource implements Serializable{
 	 */
 	public File getFileInWorkingCopy() {
 		return fileInWorkingCopy;
+	}
+	/**
+	 * Returns the vct that loaded this source file.
+	 * 
+	 * @return
+	 */
+	public EVersionControlTool getVersionControlTool(){
+		return vct;
 	}
 }

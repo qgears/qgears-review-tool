@@ -3,7 +3,9 @@ package hu.qgears.review.web;
 import hu.qgears.commons.UtilFile;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.tool.SvnCat;
+import hu.qgears.review.model.ReviewSource;
+import hu.qgears.review.util.vct.IVersionControlTool;
+import hu.qgears.review.util.vct.VersionControlToolManager;
 
 import java.io.File;
 import java.util.List;
@@ -72,7 +74,9 @@ public class HandleAnnotation extends AbstractRender {
 					File g=instance.getModel().getFile(e.getFullUrl());
 					String svnurl=e.getFolderUrl()+"/"+e.getFileUrl();
 					String revision=e.getFileVersion();
-					byte[] content=new SvnCat().execute(svnurl, revision);
+					ReviewSource rs = e.getReviewSource(instance.getModel());
+					IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(rs.getVersionControlTool());
+					byte[] content=loader.downloadResource(svnurl, revision);
 					File f=File.createTempFile(g.getName(), "");
 					UtilFile.saveAsFile(f, content);
 					Runtime.getRuntime().exec(new String[]{"/usr/bin/meld",

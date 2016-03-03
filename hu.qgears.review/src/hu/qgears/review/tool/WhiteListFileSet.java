@@ -1,7 +1,5 @@
 package hu.qgears.review.tool;
 
-import hu.qgears.review.tool.ConfigParsingResult.Problem;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -50,8 +48,7 @@ public class WhiteListFileSet {
 	 * @param problems 
 	 * @return
 	 */
-	public List<String> reduce(final List<String> stringList, 
-			final List<Problem> problems) {
+	public List<String> reduce(final List<String> stringList) {
 		List<String> mList = new ArrayList<String>();
 		for (String s : stringList){
 			for (Matcher m : validPatterns){

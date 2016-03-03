@@ -1,0 +1,22 @@
+package hu.qgears.review.util.vct;
+
+import hu.qgears.review.util.vct.svnimpl.SvnStatus;
+
+public class VersionControlToolManager {
+
+	private static VersionControlToolManager instance = new VersionControlToolManager();
+
+	public static final VersionControlToolManager getInstance(){
+		return instance;
+	}
+	
+	public IVersionControlTool getImplementationFor(EVersionControlTool tool){
+		switch (tool) {
+		case SVN:
+			return new SvnStatus();
+		default:
+			throw new RuntimeException("Unimplemented version control tool: "+tool);
+		}
+		
+	}
+}

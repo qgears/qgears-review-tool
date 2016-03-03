@@ -6,9 +6,9 @@ import hu.qgears.review.tool.ConfigParsingResult;
 
 import java.io.File;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.bio.SocketConnector;
 
 /**
  * Start the annotation (review) server's web server.
@@ -30,11 +30,8 @@ public class StartJetty {
 		conn.setHost(args[0]);
 		conn.setPort(Integer.parseInt(args[1]));
 		s.setConnectors(new Connector[]{conn});
-		s.addHandler(new WebHandler(instance));
+		s.setHandler(new WebHandler(instance));
 		s.start();
-		while(true)
-		{
-			Thread.sleep(1000);
-		}
+		s.join();
 	}
 }

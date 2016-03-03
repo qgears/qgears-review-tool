@@ -1,6 +1,6 @@
 package hu.qgears.review.report;
 
-import hu.qgears.review.web.AbstractRender;
+import hu.qgears.review.util.UtilHtml;
 
 import java.util.Comparator;
 
@@ -15,9 +15,9 @@ public class LinksColumnDefinition implements ColumnDefinition {
 
 	@Override
 	public String getPropertyValue(ReportEntry obj) {
-		String ret = AbstractRender.link(obj.getSourceFileLink(), "[review]");
+		String ret = UtilHtml.link(obj.getSourceFileLink(), "[review]");
 		if (obj.getSonarLink() != null){
-			ret += AbstractRender.link(obj.getSonarLink(), " [SONAR]");
+			ret += UtilHtml.link(obj.getSonarLink(), " [SONAR]");
 		}
 		return ret;
 	}

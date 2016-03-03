@@ -6,6 +6,7 @@ import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.model.ReviewSourceSet;
+import hu.qgears.review.util.UtilHtml;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ abstract public class AbstractRender {
 		rtout.write("<html><head>\n<title>");
 		rtcout.write(title);
 		rtout.write("</title>\n<style type=\"text/css\"><!--\n");
-		rtcout.write(UtilFile.loadAsString(getClass().getResource("style.css")));
+		rtcout.write(UtilFile.loadAsString(UtilHtml.getStyle()));
 		rtout.write("\n-->\n</style>\n</head><body>\n<script>");
 		rtcout.write(UtilFile.loadAsString(getClass().getResource("jquery.min.js")));
 		rtout.write("</script>\n<script>");
@@ -149,8 +150,8 @@ abstract public class AbstractRender {
 	 * @return
 	 */
 	protected String formatSourceSet(ReviewSourceSet rss) {
-		String l1 = link("/"+HandleSourceSet.prefix+"/"+rss.id, rss.id);
-		String l2 = link("/"+HandleReport.URL_PREXIX+"/"+rss.id,"report");
+		String l1 = UtilHtml.link("/"+HandleSourceSet.prefix+"/"+rss.id, rss.id);
+		String l2 = UtilHtml.link("/"+HandleReport.URL_PREXIX+"/"+rss.id,"report");
 		return l1 + " [" +l2+"] ";
 	}
 	
@@ -159,12 +160,4 @@ abstract public class AbstractRender {
 		return String.format("%05.2f %%", val);
 	}
 	
-	private static final String linkTemplate = "<a href=\"%s\">%s</a>";
-	
-	/**
-	 * Creates a link (<code>&lt;a></code>) with specified target URL and content.
-	 */
-	public static String link(String targetURL, String content){
-		return String.format(linkTemplate, targetURL,content);
-	}
 }

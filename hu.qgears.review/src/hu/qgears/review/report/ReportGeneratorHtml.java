@@ -1,7 +1,7 @@
 package hu.qgears.review.report;
 
 import hu.qgears.commons.UtilFile;
-import hu.qgears.review.web.HandleReport;
+import hu.qgears.review.util.UtilHtml;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +60,6 @@ public class ReportGeneratorHtml {
 	 */
 	public void copyStyle(File outputFolder) throws IOException {
 		File style = new File(outputFolder,STYLE_CSS);
-		UtilFile.copyFileFromUrl(style,HandleReport.class.getResource(STYLE_CSS));
+		UtilFile.copyFileFromUrl(style,UtilHtml.getStyle());
 	}
 }

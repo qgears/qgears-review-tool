@@ -8,7 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.handler.AbstractHandler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+
 
 public class WebHandler extends AbstractHandler {
 	private ReviewInstance instance;
@@ -17,10 +19,9 @@ public class WebHandler extends AbstractHandler {
 	}
 
 	@Override
-	public void handle(String target, HttpServletRequest request,
-			HttpServletResponse response, int dispatch) throws IOException,
-			ServletException {
-		WebQuery query=new WebQuery(target, request, response, dispatch);
+	public void handle(String target, Request arg1, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		WebQuery query=new WebQuery(target, request, response);
 		String module=query.getModule();
 		try {
 			AbstractRender r;
@@ -53,5 +54,6 @@ public class WebHandler extends AbstractHandler {
 			e.printStackTrace();
 		}
 	}
+
 }
 

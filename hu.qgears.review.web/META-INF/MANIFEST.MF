@@ -4,3 +4,9 @@ Bundle-Name: Web
 Bundle-SymbolicName: hu.qgears.review.web
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: hu.qgears.review;bundle-version="1.0.3",
+ hu.qgears.commons;bundle-version="6.0.0",
+ org.eclipse.jetty.server;bundle-version="8.1.16",
+ javax.servlet;bundle-version="2.5.0",
+ org.eclipse.jetty.util;bundle-version="8.1.16"
+Export-Package: hu.qgears.review.web

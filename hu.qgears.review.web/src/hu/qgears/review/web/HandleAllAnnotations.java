@@ -3,6 +3,7 @@ package hu.qgears.review.web;
 import hu.qgears.commons.UtilFile;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
+import hu.qgears.review.util.UtilHtml;
 
 public class HandleAllAnnotations extends AbstractRender {
 	public HandleAllAnnotations(WebQuery query, ReviewInstance instance) {
@@ -12,7 +13,7 @@ public class HandleAllAnnotations extends AbstractRender {
 	@Override
 	public void render() throws Exception {
 		rtout.write("<html><head>\n<title>QReview all annotations</title>\n<style type=\"text/css\"><!--\n");
-		rtcout.write(UtilFile.loadAsString(getClass().getResource("style.css")));
+		rtcout.write(UtilFile.loadAsString(UtilHtml.getStyle()));
 		rtout.write("\n-->\n</style>\n</head><body>\n<script>");
 		rtcout.write(UtilFile.loadAsString(getClass().getResource("jquery.min.js")));
 		rtout.write("\n");

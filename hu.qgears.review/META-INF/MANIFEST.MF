@@ -5,8 +5,6 @@ Bundle-SymbolicName: hu.qgears.review;singleton:=true
 Bundle-Version: 1.0.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.commons;bundle-version="1.0.0",
- org.mortbay.jetty.server;bundle-version="6.1.23",
- org.mortbay.jetty.util;bundle-version="6.1.23",
  javax.servlet;bundle-version="2.5.0",
  hu.qgears.sonar.client;bundle-version="1.0.0",
  joptsimple;bundle-version="1.0.0",
@@ -16,8 +14,7 @@ Export-Package: hu.qgears.review.action,
  hu.qgears.review.report,
  hu.qgears.review.test,
  hu.qgears.review.tool,
- hu.qgears.review.util,
- hu.qgears.review.web
+ hu.qgears.review.util
 Bundle-ClassPath: lib/dom4j-1.6.1.jar,
  .,
  lib/jaxen-1.1.6.jar

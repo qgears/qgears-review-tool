@@ -5,13 +5,12 @@ import hu.qgears.review.model.ReviewSourceSet;
 import hu.qgears.review.report.ColumnDefinition;
 import hu.qgears.review.report.ReportGenerator;
 import hu.qgears.review.report.ReportGeneratorTemplate;
+import hu.qgears.review.util.UtilHtml;
 
 import java.util.List;
 
 public class HandleReport extends AbstractRender {
 
-	public static final String Q_PARAM_ORDER_ASC = "asc";
-	public static final String Q_PARAM_ORDER_BY = "orderBy";
 	public static final String URL_PREXIX = "report";
 	
 	public HandleReport(WebQuery query, ReviewInstance instance) {
@@ -39,7 +38,7 @@ public class HandleReport extends AbstractRender {
 
 	private boolean isOrderAscendant() {
 		try {
-			String asc = query.request.getParameter(Q_PARAM_ORDER_ASC);
+			String asc = query.request.getParameter(UtilHtml.Q_PARAM_ORDER_ASC);
 			if (asc != null){
 				return Boolean.valueOf(asc);
 			}
@@ -50,7 +49,7 @@ public class HandleReport extends AbstractRender {
 
 	private int getOrderByIndex() {
 		try {
-			return Integer.valueOf(query.request.getParameter(Q_PARAM_ORDER_BY));
+			return Integer.valueOf(query.request.getParameter(UtilHtml.Q_PARAM_ORDER_BY));
 		} catch (Exception e) {
 			return 0;
 		}

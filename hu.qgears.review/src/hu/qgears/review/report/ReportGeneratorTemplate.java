@@ -1,7 +1,7 @@
 package hu.qgears.review.report;
 
 import hu.qgears.review.model.ReviewModel;
-import hu.qgears.review.web.HandleReport;
+import hu.qgears.review.util.UtilHtml;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -69,17 +69,17 @@ public class ReportGeneratorTemplate {
 			rtout.write("\n");
 			if (renderLinks){
 				rtout.write("\t\t\t\t\t\t<a href=\"?");
-				rtcout.write(HandleReport.Q_PARAM_ORDER_BY);
+				rtcout.write(UtilHtml.Q_PARAM_ORDER_BY);
 				rtout.write("=");
 				rtcout.write(String.valueOf(i));
 				rtout.write("&");
-				rtcout.write(HandleReport.Q_PARAM_ORDER_ASC);
+				rtcout.write(UtilHtml.Q_PARAM_ORDER_ASC);
 				rtout.write("=false\">&#8595;</a> <a href=\"?");
-				rtcout.write(HandleReport.Q_PARAM_ORDER_BY);
+				rtcout.write(UtilHtml.Q_PARAM_ORDER_BY);
 				rtout.write("=");
 				rtcout.write(String.valueOf(i));
 				rtout.write("&");
-				rtcout.write(HandleReport.Q_PARAM_ORDER_ASC);
+				rtcout.write(UtilHtml.Q_PARAM_ORDER_ASC);
 				rtout.write("=true\">&#8593;</a>\n");
 			}
 			rtout.write("\t\t\t\t\t</th>\n");

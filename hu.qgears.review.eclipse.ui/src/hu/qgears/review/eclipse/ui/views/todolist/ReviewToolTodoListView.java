@@ -191,7 +191,8 @@ public class ReviewToolTodoListView extends AbstractReviewToolView implements IS
 		int remaining = viewer.getTree().getItemCount();
 		int all = sourceSetCandidate.getChildren().size();
 		int reviewed = all -remaining;
-		return String.format("%d%% (%d/%d reviewed, %d remaining)",reviewed *100  / all, reviewed ,all,remaining);
+		int curr = all == 0 ? 0 : reviewed *100  / all;
+		return String.format("%d%% (%d/%d reviewed, %d remaining)",curr, reviewed ,all,remaining);
 	}
 
 	private String getUserName() {

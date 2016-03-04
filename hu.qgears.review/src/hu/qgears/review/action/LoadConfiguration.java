@@ -217,7 +217,7 @@ public class LoadConfiguration {
 			} else {
 				String id = tool.getSourceFolder(line);
 				String folder=model.mappings.get(id);
-				LOG.info("Loading svn: "+id);
+				LOG.info("Loading source folder: "+id);
 				List<ReviewSource> files = null;
 				IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(tool);
 				File targetFolder = new File(folder);
@@ -225,11 +225,11 @@ public class LoadConfiguration {
 					try {
 					SourceCache cache = new SourceCache(id);
 						if (cache.exists()){
-							LOG.info("Loading SVN content from cache!");
+							LOG.info("Loading content from cache!");
 							files = cache.load();
 						} else {
 							LOG.info("Creating cache file...");
-							files = loader.loadSources(id, targetFolder);
+							files = loader.loadSources(id, targetFolder,cfg);
 							cache.save(files);
 							LOG.info("Cache file is ready to use in next startup.");
 						}
@@ -238,7 +238,7 @@ public class LoadConfiguration {
 					}
 				} 
 				if (files == null){
-					files = loader.loadSources(id, targetFolder);
+					files = loader.loadSources(id, targetFolder,cfg);
 				}
 				model.addSourceFiles(files);
 			}

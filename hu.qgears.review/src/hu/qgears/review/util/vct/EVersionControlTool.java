@@ -9,7 +9,8 @@ package hu.qgears.review.util.vct;
  */
 public enum EVersionControlTool {
 	
-	SVN ("svn ");
+	SVN ("svn "),
+	GIT ("git ");
 
 	private String code;
 	

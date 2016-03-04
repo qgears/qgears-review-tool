@@ -1,5 +1,6 @@
 package hu.qgears.review.util.vct;
 
+import hu.qgears.review.util.vct.gitimpl.GitImpl;
 import hu.qgears.review.util.vct.svnimpl.SvnStatus;
 
 public class VersionControlToolManager {
@@ -14,6 +15,8 @@ public class VersionControlToolManager {
 		switch (tool) {
 		case SVN:
 			return new SvnStatus();
+		case GIT:
+			return new GitImpl();
 		default:
 			throw new RuntimeException("Unimplemented version control tool: "+tool);
 		}

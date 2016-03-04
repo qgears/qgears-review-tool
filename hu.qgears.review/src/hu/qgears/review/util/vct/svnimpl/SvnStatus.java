@@ -2,6 +2,7 @@ package hu.qgears.review.util.vct.svnimpl;
 
 import hu.qgears.commons.Pair;
 import hu.qgears.commons.UtilProcess;
+import hu.qgears.review.action.ReviewToolConfig;
 import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.tool.UtilDom4j;
 import hu.qgears.review.tool.UtilProcess2;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -29,9 +31,11 @@ import org.dom4j.Element;
  *
  */
 public class SvnStatus implements IVersionControlTool {
+	private static final Logger LOG = Logger.getLogger(SvnStatus.class);
 	private static String svnTool = "/usr/bin/svn";
 	@Override
-	public List<ReviewSource> loadSources(String id, File dir) throws Exception {
+	public List<ReviewSource> loadSources(String id, File dir,ReviewToolConfig rtc) throws Exception {
+		LOG.info("Loading source from SVN working copy "+dir);
 		List<ReviewSource> ret=new ArrayList<ReviewSource>();
 		String svnurl=getSvnUrl(dir);
 		String s=UtilProcess.execute(Runtime.getRuntime().exec(getSvnTool() + " status -v --xml", null, dir));
@@ -42,24 +46,25 @@ public class SvnStatus implements IVersionControlTool {
 		{
 			String mod=((Element)e.selectSingleNode("wc-status")).attributeValue("item");
 			String path=e.attributeValue("path");
-			
-			if ("added".equals(mod)) {
-				System.err.println("Uncommitted file in the working copy: " + path);
-			} else if(!mod.equals("unversioned") && !path.equals(".") && (!mod.equals("obstructed")) )
-			{
-				Element commit=((Element)e.selectSingleNode("wc-status/commit"));
-				String ver=commit.attributeValue("revision");
-				if(!mod.equals("normal"))
+			if (rtc.matchesSource(path)){
+				if ("added".equals(mod)) {
+					LOG.error("Uncommitted file in the working copy: " + path);
+				} else if(!mod.equals("unversioned") && !path.equals(".") && (!mod.equals("obstructed")) )
 				{
-					System.err.println("Working copy is not clean! " +path);
+					Element commit=((Element)e.selectSingleNode("wc-status/commit"));
+					String ver=commit.attributeValue("revision");
+					if(!mod.equals("normal"))
+					{
+						System.err.println("Working copy is not clean! " +path);
+					}
+					String sha1=null;
+					File f=new File(dir, path);
+					if(f.isFile())
+					{
+						sha1=UtilSha1.getSHA1(f);
+					}
+					ret.add(new ReviewSource(id, svnurl, path, rev, ver, sha1,f,EVersionControlTool.SVN));
 				}
-				String sha1=null;
-				File f=new File(dir, path);
-				if(f.isFile())
-				{
-					sha1=UtilSha1.getSHA1(f);
-				}
-				ret.add(new ReviewSource(id, svnurl, path, rev, ver, sha1,f,EVersionControlTool.SVN));
 			}
 		}
 		return ret;

@@ -1,21 +1,25 @@
 package hu.qgears.review.tool;
 
 import hu.qgears.commons.Pair;
+import hu.qgears.commons.UtilProcess;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
+
 /**
  * TODO move this functionality to hu.qgears.commons
  * 
- * @author agostoni
+ * @author rizsi
  *
  */
 public class UtilProcess2 {
+	private static final Logger LOG = Logger.getLogger(UtilProcess2.class);
+	
 	private static class PairFuture implements Future<Pair<byte[], byte[]>>
 	{
 
@@ -87,16 +91,9 @@ public class UtilProcess2 {
 			public void run() {
 				ByteArrayOutputStream ret=new ByteArrayOutputStream();
 				try {
-					InputStream is=p.getInputStream();
-					int n;
-					byte[] cbuf=new byte[1024];
-					while((n=is.read(cbuf))>-1)
-					{
-						ret.write(cbuf, 0, n);
-					}
+					UtilProcess.streamErrorOfProcess(p.getInputStream(), ret);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error("Error streaming std out",e);
 				}finally
 				{
 					retfut.setA(ret.toByteArray());
@@ -107,16 +104,9 @@ public class UtilProcess2 {
 		new Thread(){public void run() {
 			ByteArrayOutputStream ret=new ByteArrayOutputStream();
 			try {
-				InputStream is=p.getErrorStream();
-				int n;
-				byte[] cbuf=new byte[1024];
-				while((n=is.read(cbuf))>-1)
-				{
-					ret.write(cbuf, 0, n);
-				}
+				UtilProcess.streamErrorOfProcess(p.getErrorStream(), ret);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("Error streaming std err",e);
 			}finally
 			{
 				retfut.setB(ret.toByteArray());

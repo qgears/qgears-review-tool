@@ -1,5 +1,6 @@
 package hu.qgears.review.action;
 
+import hu.qgears.commons.UtilFile;
 import hu.qgears.review.model.ReviewModel;
 
 import java.io.BufferedReader;
@@ -7,11 +8,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -41,6 +45,11 @@ public class ReviewToolConfig {
 	 */
 	private static final String SOURCE_FOLDERS = "sourcefolders";
 	/**
+	 * Path relative to config dir, where path patterns can be found. This file
+	 * can bu used to filter out resources form a directory.
+	 */
+	private static final String SOURCE_PATTERNS= "sourcefilepatterns";
+	/**
 	 * Path relative to config dir, where file sets are defined
 	 */
 	private static final String FILESETS = "filesets";
@@ -69,6 +78,7 @@ public class ReviewToolConfig {
 	private List<File> additionalAnnotationsFolder;
 	private String sonarBaseUrl;
 	private String sonarProjectId;
+	private List<Matcher> sourcePatterns;
 	
 	private void loadFromPropertiesFile(Properties props) throws IOException {
 		String configDirEntry = props.getProperty(P_CONFIG);
@@ -79,6 +89,24 @@ public class ReviewToolConfig {
 		loadSonarConfiguration(props);
 		parseSourceFolders();
 		parseFileSets();
+		parseSourcePatternrs();
+	}
+
+	private void parseSourcePatternrs() throws IOException {
+		File sourcePattern = new File (configDir,SOURCE_PATTERNS);
+		if (sourcePattern.exists()){
+			sourcePatterns = new ArrayList<Matcher>();
+			for (String line: UtilFile.readLines(sourcePattern)){
+				try {
+					Pattern p = Pattern.compile(line);
+					sourcePatterns.add(p.matcher(""));
+				} catch (Exception e){
+					LOG.error("Invalid regexp: "+line,e);
+				}
+			}
+		} else {
+			LOG.warn("No sourcepatterns specified, all resources in source folders will be parsed. Create "+sourcePattern +" to specify source filters.");
+		}
 	}
 
 	private void loadAnnotationFolderProperties(Properties props) {
@@ -196,5 +224,20 @@ public class ReviewToolConfig {
 	
 	public List<File> getAdditionalAnnotationsFolder() {
 		return additionalAnnotationsFolder;
+	}
+	
+	public boolean matchesSource(String path){
+		if (sourcePatterns == null || sourcePatterns.isEmpty()){
+			//no patterns specified
+			return true;
+		} else {
+			for (Matcher m : sourcePatterns){
+				//at least one of specified source mathes must match
+				if (m.reset(path).matches()){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -35,6 +35,7 @@ public class ReviewSource implements Serializable{
 			String sha1, File fileInWorkingCopy,EVersionControlTool vct) {
 		super();
 		this.fileInWorkingCopy = fileInWorkingCopy;
+		this.vct = vct;
 		this.setSourceFolderId(sourceFolderId);
 		this.setSourceFolderUrl(sourceFolderUrl);
 		this.setSourceUrl(sourceUrl);

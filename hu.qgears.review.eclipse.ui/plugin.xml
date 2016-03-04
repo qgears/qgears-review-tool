@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="hu.qgears.reivew.eclipse.ui.vct" name="VCT API of Q-Gears review tool UI" schema="schema/hu.qgears.reivew.eclipse.ui.vct.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <view

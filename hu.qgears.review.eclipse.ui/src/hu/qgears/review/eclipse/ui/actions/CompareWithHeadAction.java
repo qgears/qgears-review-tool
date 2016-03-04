@@ -1,6 +1,11 @@
 package hu.qgears.review.eclipse.ui.actions;
 
+import org.eclipse.jface.action.Action;
+
+import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
+import hu.qgears.review.eclipse.ui.vct.VersionContolExtensionManager;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
+import hu.qgears.review.model.ReviewModel;
 
 /**
  * Compares the HEAD version and the version of the source file, specified by
@@ -9,7 +14,7 @@ import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
  * @author agostoni
  * 
  */
-public class CompareWithHeadAction extends CompareWithEachOtherAction {
+public class CompareWithHeadAction extends Action {
 
 	private final ReviewEntryView entry;
 
@@ -20,9 +25,8 @@ public class CompareWithHeadAction extends CompareWithEachOtherAction {
 	
 	@Override
 	public void run() {
-		String svnUrl = getFullSVNUrl(entry.getModelElement());
-		if (svnUrl != null){
-			openCompareEditor(svnUrl, entry.getModelElement().getFileVersion(), svnUrl, "HEAD");
-		}
+		ReviewModel rm = entry.getReviewModel();
+		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(entry.getModelElement().getReviewSource(rm).getVersionControlTool());
+		vui.compareWithHead(entry.getModelElement());
 	}
 }

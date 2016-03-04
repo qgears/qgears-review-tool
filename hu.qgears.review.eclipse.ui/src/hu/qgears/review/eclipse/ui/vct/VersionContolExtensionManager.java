@@ -12,11 +12,28 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 
+/**
+ * Can be used to get {@link IVersionControlToolUi} implementations that are
+ * registered via extension points.
+ * 
+ * @author agostoni
+ * @see #getVersionControlToolUi(EVersionControlTool)
+ *
+ */
 public class VersionContolExtensionManager {
 
 	private static final String VCT_EXT_ID = "hu.qgears.reivew.eclipse.ui.vct";
 	private static Map<EVersionControlTool,IVersionControlToolUi> contributions;
 	
+	/**
+	 * Returns an {@link IVersionControlToolUi} for given tool id. If no
+	 * implementation is registered to the tool, then a default mock
+	 * implementation will be returned (see
+	 * {@link DefaultVersionControlToolImplementation}).
+	 * 
+	 * @param tool The tool id, must be not <code>null</code>
+	 * @return
+	 */
 	public static IVersionControlToolUi getVersionControlToolUi(EVersionControlTool tool){
 		if (tool == null){
 			throw new IllegalArgumentException("tool must not be null");

@@ -10,6 +10,12 @@ import org.eclipse.team.svn.core.resource.IRepositoryResource;
 import org.eclipse.team.svn.core.utility.SVNUtility;
 import org.eclipse.team.svn.ui.operation.CompareRepositoryResourcesOperation;
 
+/**
+ * Responsible for opening compare editor fro SVN resources.
+ * 
+ * @author agostoni
+ *
+ */
 public class CompareEditorImpl {
 
 

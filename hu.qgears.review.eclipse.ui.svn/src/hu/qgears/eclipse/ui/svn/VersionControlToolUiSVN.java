@@ -4,6 +4,12 @@ import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.util.vct.EVersionControlTool;
 
+/**
+ * SVN based implementation of {@link IVersionControlToolUi}
+ * 
+ * @author agostoni
+ *
+ */
 public class VersionControlToolUiSVN implements IVersionControlToolUi {
 
 	private CompareEditorImpl compareEditor = new CompareEditorImpl();

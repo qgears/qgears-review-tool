@@ -1,8 +1,8 @@
 package hu.qgears.review.web;
 
+import hu.qgears.review.action.ConfigParsingResult;
 import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.tool.ConfigParsingResult;
 
 import java.io.File;
 

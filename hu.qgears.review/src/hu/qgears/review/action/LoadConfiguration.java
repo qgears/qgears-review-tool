@@ -3,13 +3,12 @@ package hu.qgears.review.action;
 import hu.qgears.commons.UtilFile;
 import hu.qgears.commons.UtilFileVisitor;
 import hu.qgears.commons.UtilString;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
+import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSource;
-import hu.qgears.review.tool.ConfigParsingResult;
-import hu.qgears.review.tool.ConfigParsingResult.Problem;
-import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.tool.PomFileSet;
 import hu.qgears.review.tool.PomFileSet.Params;
 import hu.qgears.review.tool.WhiteListFileSet;
@@ -323,7 +322,7 @@ public class LoadConfiguration {
 	 * 
 	 * @see PomFileSet
 	 */
-	protected List<String> parsePomFileSet(final ReviewModel model, 
+	private List<String> parsePomFileSet(final ReviewModel model, 
 			final File pomFileSetDefFile, final List<String> fileSetDefLines) throws Exception {
 		List<String> ret;
 		final Params params = new Params();

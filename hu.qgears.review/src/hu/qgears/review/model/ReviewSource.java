@@ -30,6 +30,11 @@ public class ReviewSource implements Serializable{
 	
 	private final File fileInWorkingCopy;
 	
+	/**
+	 * Default contructor
+	 * 
+	 * @since 2.0
+	 */
 	public ReviewSource(String sourceFolderId, String sourceFolderUrl, 
 			String sourceUrl, String folderVersion, String fileVersion, 
 			String sha1, File fileInWorkingCopy,EVersionControlTool vct) {
@@ -245,6 +250,7 @@ public class ReviewSource implements Serializable{
 	 * Returns the vct that loaded this source file.
 	 * 
 	 * @return
+	 * @since 2.0
 	 */
 	public EVersionControlTool getVersionControlTool(){
 		return vct;

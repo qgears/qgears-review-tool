@@ -5,6 +5,7 @@ package hu.qgears.review.util.vct;
  * Enumeration of supported VC tools.
  * 
  * @author agostoni
+ * @since 2.0
  *
  */
 public enum EVersionControlTool {

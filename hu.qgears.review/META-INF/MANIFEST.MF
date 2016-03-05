@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Review
 Bundle-SymbolicName: hu.qgears.review;singleton:=true
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.commons;bundle-version="1.0.0",
  hu.qgears.sonar.client;bundle-version="1.0.0",
@@ -12,8 +12,6 @@ Require-Bundle: hu.qgears.commons;bundle-version="1.0.0",
 Export-Package: hu.qgears.review.action,
  hu.qgears.review.model,
  hu.qgears.review.report,
- hu.qgears.review.test,
- hu.qgears.review.tool,
  hu.qgears.review.util,
  hu.qgears.review.util.vct
 Bundle-ClassPath: lib/dom4j-1.6.1.jar,

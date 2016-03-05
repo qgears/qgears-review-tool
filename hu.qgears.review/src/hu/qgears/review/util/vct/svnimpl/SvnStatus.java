@@ -5,7 +5,6 @@ import hu.qgears.commons.UtilProcess;
 import hu.qgears.review.action.ReviewToolConfig;
 import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.tool.UtilDom4j;
-import hu.qgears.review.tool.UtilProcess2;
 import hu.qgears.review.util.UtilSha1;
 import hu.qgears.review.util.vct.EVersionControlTool;
 import hu.qgears.review.util.vct.IVersionControlTool;
@@ -90,7 +89,7 @@ public class SvnStatus implements IVersionControlTool {
 			throws Exception {
 		Process p=Runtime.getRuntime().exec(new String[]{svnTool, "cat",
 				"-r"+revision, svnurl});
-		Future<Pair<byte[], byte[]>> fut=UtilProcess2.streamOutputsOfProcess(p);
+		Future<Pair<byte[], byte[]>> fut=UtilProcess.saveOutputsOfProcess(p);
 		Pair<byte[], byte[]> pa=fut.get();
 		return pa.getA();
 	}

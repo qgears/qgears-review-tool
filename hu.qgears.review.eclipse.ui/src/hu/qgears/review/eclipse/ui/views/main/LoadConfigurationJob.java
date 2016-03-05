@@ -1,12 +1,12 @@
 package hu.qgears.review.eclipse.ui.views.main;
 
+import hu.qgears.review.action.ConfigParsingResult;
 import hu.qgears.review.action.LoadConfiguration;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
+import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
 import hu.qgears.review.eclipse.ui.util.Preferences;
 import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.tool.ConfigParsingResult;
-import hu.qgears.review.tool.ConfigParsingResult.Problem;
-import hu.qgears.review.tool.ConfigParsingResult.Problem.Type;
 
 import java.io.File;
 import java.util.Collections;

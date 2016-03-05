@@ -40,7 +40,13 @@ public class PomFileSet {
 	/**
 	 * Filters a the list of files extracted form POM file set definition
 	 * against the criteria defined in the POM itself.
-	 * @param problems 
+	 * @param params
+	 * @param fileSetDefFile
+	 * @param pomXmlFile
+	 * @return
+	 * @throws Exception
+	 * 
+	 * @since 2.0
 	 */
 	public List<String> filter(final Params params,
 			final File fileSetDefFile, final File pomXmlFile) throws Exception {

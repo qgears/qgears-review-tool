@@ -1,4 +1,4 @@
-package hu.qgears.review.tool;
+package hu.qgears.review.action;
 
 import hu.qgears.review.model.ReviewInstance;
 
@@ -13,6 +13,7 @@ import java.util.List;
  * be reused during configuration processings.
  * 
  * @author chreex
+ * @since 2.0
  */
 public class ConfigParsingResult {
 	/**

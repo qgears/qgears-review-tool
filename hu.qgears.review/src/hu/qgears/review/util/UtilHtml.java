@@ -2,6 +2,13 @@ package hu.qgears.review.util;
 
 import java.net.URL;
 
+/**
+ * Utility class that collects useful functions for generating HTML documents.
+ * 
+ * @author agostoni
+ * @since 2.0
+ *
+ */
 public final class UtilHtml {
 
 	private static final String linkTemplate = "<a href=\"%s\">%s</a>";

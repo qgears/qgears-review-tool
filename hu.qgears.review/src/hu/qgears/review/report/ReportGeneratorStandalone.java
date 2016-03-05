@@ -1,11 +1,11 @@
 package hu.qgears.review.report;
 
+import hu.qgears.review.action.ConfigParsingResult;
 import hu.qgears.review.action.LoadConfiguration;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
 import hu.qgears.review.model.ReviewInstance;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSourceSet;
-import hu.qgears.review.tool.ConfigParsingResult;
-import hu.qgears.review.tool.ConfigParsingResult.Problem;
 
 import java.io.File;
 import java.io.IOException;

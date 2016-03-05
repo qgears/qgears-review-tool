@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.SafeRunner;
  * 
  * @author agostoni
  * @see #getVersionControlToolUi(EVersionControlTool)
+ * 
+ * @since 2.0
  *
  */
 public class VersionContolExtensionManager {

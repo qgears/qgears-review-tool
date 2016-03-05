@@ -8,6 +8,7 @@ import hu.qgears.review.util.vct.EVersionControlTool;
  * functions, that are related to optional review tool features.
  * 
  * @author agostoni
+ * @since 2.0
  *
  */
 public interface IVersionControlToolUi {

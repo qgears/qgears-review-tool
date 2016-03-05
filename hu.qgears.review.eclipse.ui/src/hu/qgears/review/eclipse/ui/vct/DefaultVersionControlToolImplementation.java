@@ -9,6 +9,7 @@ import hu.qgears.review.util.vct.EVersionControlTool;
  * error dialog when interface methods are called.
  * 
  * @author agostoni
+ * @since 2.0
  *
  */
 public class DefaultVersionControlToolImplementation implements

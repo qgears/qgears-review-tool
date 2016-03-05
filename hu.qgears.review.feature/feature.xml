@@ -5,8 +5,10 @@
       version="2.0.0.qualifier"
       provider-name="Q-Gears">
 
-   <description url="http://www.example.com/description">
-      Code review and report generator tool, that provides a simple WEB interface for reviewing Java codes, and monitor static code analisys statistics queries from SONAR.
+   <description url="https://github.com/qgears/qgears-review-tool">
+      Code review and report generator tool with Eclipse UI interface.
+
+The tool is designed for reviewing (Java) codes without any existing review history. Provides various other optional funtionalities, such as report generation and monitor SCA statistics related to reviewed sources.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -33,13 +35,6 @@
 
    <plugin
          id="hu.qgears.review.eclipse.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="hu.qgears.review.web"
          download-size="0"
          install-size="0"
          version="0.0.0"

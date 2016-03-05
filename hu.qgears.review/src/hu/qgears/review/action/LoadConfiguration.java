@@ -55,6 +55,7 @@ public class LoadConfiguration {
 	 * @param mappingfile the root configuration file of a review project
 	 * @return
 	 * @throws Exception
+	 * @since 2.0
 	 */
 	public ConfigParsingResult loadConfiguration(final File mappingfile) 
 			throws Exception {

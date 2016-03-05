@@ -11,6 +11,7 @@ import java.util.List;
  * control tool.
  * 
  * @author agostoni
+ * @since 2.0
  *
  */
 public interface IVersionControlTool {

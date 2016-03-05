@@ -3,6 +3,14 @@ package hu.qgears.review.util.vct;
 import hu.qgears.review.util.vct.gitimpl.GitImpl;
 import hu.qgears.review.util.vct.svnimpl.SvnStatus;
 
+/**
+ * Version control tool manager that returns the {@link IVersionControlTool} for
+ * a {@link EVersionControlTool}.
+ * 
+ * @author agostoni
+ * @since 2.0
+ *
+ */
 public class VersionControlToolManager {
 
 	private static VersionControlToolManager instance = new VersionControlToolManager();

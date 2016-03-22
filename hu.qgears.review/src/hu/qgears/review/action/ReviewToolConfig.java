@@ -109,12 +109,12 @@ public class ReviewToolConfig {
 		}
 	}
 
-	private void loadAnnotationFolderProperties(Properties props) {
+	private void loadAnnotationFolderProperties(Properties props) throws IOException {
 		additionalAnnotationsFolder = new ArrayList<File>();
 		int i = 1;
 		String additionalReviewDirName = props.getProperty(P_ANNOTATIONSFOLDER + i);
 		while (additionalReviewDirName != null) {
-			File annotFolder = new File(configDir,additionalReviewDirName);
+			File annotFolder = new File(configDir,additionalReviewDirName).getCanonicalFile();
 			LOG.info("Finding additional annotation folder: "+annotFolder);
 			additionalAnnotationsFolder.add(annotFolder);
 			i++;

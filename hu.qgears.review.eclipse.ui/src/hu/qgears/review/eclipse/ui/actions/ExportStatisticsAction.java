@@ -61,10 +61,7 @@ public class ExportStatisticsAction extends Action {
 					final ReportGenerator rg = w.getReportGenerator();
 					ReportGeneratorHtml htmlTemplate = new ReportGeneratorHtml();
 					try {
-						htmlTemplate.generateReport(rg, w.getTargetFile(),w.mustGenerateReviewStats(),w.mustGenerateSonarStats(),w.mustGenerateTodoList());
-						if (w.mustGenerateCss()){
-							htmlTemplate.copyStyle(w.getTargetFile().getParentFile());
-						}
+						htmlTemplate.generateReport(rg, w.getTargetFile(),w.mustGenerateReviewStats(),w.mustGenerateSonarStats(),w.mustGenerateTodoList(),w.mustGenerateCss());
 					} catch (final Exception e) {
 						return new Status(IStatus.ERROR,ReviewToolUI.PLUGIN_ID,"Html export failed",e);
 					}

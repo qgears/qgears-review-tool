@@ -144,7 +144,7 @@ public class ReportGeneratorStandalone {
 					try {
 						File outputFile = getOutputFile(sourceSet);
 						info("Generating report file for "+sourceSet+ " into "+outputFile.getAbsolutePath());
-						genHtml.generateReport(new ReportGenerator(model, model.sourcesets.get(sourceSet)),outputFile,true,true,true);
+						genHtml.generateReport(new ReportGenerator(model, model.sourcesets.get(sourceSet)),outputFile,true,true,true,true);
 						info("Generation finished without errors.");
 					} catch (Exception e){
 						error("Generationg report for "+sourceSet+ " failed.");
@@ -154,7 +154,6 @@ public class ReportGeneratorStandalone {
 					error("Skipping unknown review source set :"+sourceSet);
 				}
 			}
-			genHtml.copyStyle(outputFolder);
 		}
 	}
 	
@@ -174,7 +173,7 @@ public class ReportGeneratorStandalone {
 	 * @return
 	 */
 	private File getOutputFile(String sourceSet) {
-		return new File(outputFolder,sourceSet+".html");
+		return new File(outputFolder,sourceSet+".xhtml");
 	}
 
 	/**

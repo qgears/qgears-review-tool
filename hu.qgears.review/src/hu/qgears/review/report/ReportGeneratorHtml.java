@@ -15,8 +15,8 @@ import java.io.PrintWriter;
  */
 public class ReportGeneratorHtml {
 	
-	private static final String STYLE_CSS = "style.css";
-	private static final String HTML_START = "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\""+STYLE_CSS+"\"></head><body>";
+	private static final String DOC_TYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+	private static final String HTML_START_TEMPLATE = DOC_TYPE +"<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><style>%s</style></head><body>";
 	private static final String HTML_END = "</body></html>";
 
 	/**
@@ -30,19 +30,20 @@ public class ReportGeneratorHtml {
 	 * @param generateTodoList see {@link ReportGeneratorTemplate#setRenderTodos(boolean)}
 	 * 
 	 * @throws Exception
+	 * @since 2.0
 	 */
-	public void generateReport(ReportGenerator reportGenerator,File outputFile, boolean generateReviewStats, boolean generateSonarStats, boolean generateTodoList) throws Exception{
+	public void generateReport(ReportGenerator reportGenerator,File outputFile, boolean generateReviewStats, boolean generateSonarStats, boolean generateTodoList,boolean generateCss) throws Exception{
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(outputFile, "UTF-8");
-			
-			writer.write(HTML_START);
+			String style = generateCss ? readStyle() : "";
+			writer.write(String.format(HTML_START_TEMPLATE, style));
 			ReportGeneratorTemplate template = new ReportGeneratorTemplate(writer, reportGenerator,false);
 			template.setRenderReviewStats(generateReviewStats);
 			template.setRenderSonarStats(generateSonarStats);
 			template.setRenderTodos(generateTodoList);
-			writer.write(HTML_END);
 			template.generate();
+			writer.write(HTML_END);
 		} finally {
 			if (writer != null){
 				writer.close();
@@ -50,16 +51,8 @@ public class ReportGeneratorHtml {
 		}
 	}
 	
-	
-	/**
-	 * Copies a CSS style sheet into specified folder. The styles are used by
-	 * generated HTML documents.
-	 * 
-	 * @param outputFolder
-	 * @throws IOException
-	 */
-	public void copyStyle(File outputFolder) throws IOException {
-		File style = new File(outputFolder,STYLE_CSS);
-		UtilFile.copyFileFromUrl(style,UtilHtml.getStyle());
+	private static String readStyle() throws IOException{
+		return UtilFile.loadAsString(UtilHtml.getStyle());
 	}
+
 }

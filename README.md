@@ -7,6 +7,16 @@ Simple tool for performing code review on large Java code basis.
 
 The QGears Review Tool is to be used for reviewing source code by one or more reviewers. This tool should be used parallel to static code checkers and other heuristics to allow focusing on aspects on reviewing code that require specifically human intelligence, for example, for justifying the correnctness of complex business logic and filtering malicious changes.
 
+# Asynchronous code review
+
+QGears review tool has some unique features:
+
+ * Review is based on files - not commits.
+ * The review process is not synchronized with development. Commits are possible without being reviewed but they will invalidate the review status of the file.
+ * Review tool is designed to work with different version controls systems. But currently only SVN integration is implemented.
+ * The data model of the reviews is human readable line oriented text file that can also be stored in version control. The review files are processed by the review tool to generate review status reports for a specific version of the source code (eg. a tag or branch of the code).
+ * Delta reviews are supported by invoking third party diff tool (meld) to compare the current version to the latest reviewed version.
+
 # Main usage scenario
 
 One or more source file sets may be defined on a specific branch of a source code management system (further abbreviated as 'SCM'), the files of which are the subjects to reviews. One or more reviewers may participate in reviewing the source files of these file sets.

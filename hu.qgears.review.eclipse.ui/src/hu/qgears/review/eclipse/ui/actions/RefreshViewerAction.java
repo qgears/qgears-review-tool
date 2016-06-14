@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
  * @author agostoni
  * 
  */
-public class RefreshViewerAction extends Action
+public class RefreshViewerAction extends Action implements Runnable
 {
 	private final Viewer viewerToRefresh;
 

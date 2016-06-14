@@ -1,6 +1,7 @@
 package hu.qgears.eclipse.ui.svn;
 
 import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
+import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.util.vct.EVersionControlTool;
 
@@ -19,14 +20,14 @@ public class VersionControlToolUiSVN implements IVersionControlToolUi {
 	}
 
 	@Override
-	public void openCompareEditor(ReviewEntry r1, ReviewEntry r2) {
-		compareEditor.openCompareEditor(r1,r2);
+	public void openCompareEditor(ReviewEntryView r1, ReviewEntryView r2) {
+		compareEditor.openCompareEditor(r1.getModelElement(),r2.getModelElement());
 	}
 
 
 	@Override
-	public void compareWithHead(ReviewEntry modelElement) {
-		compareEditor.compareWithHead(modelElement);
+	public void compareWithHead(ReviewEntryView modelElement) {
+		compareEditor.compareWithHead(modelElement.getModelElement());
 	}
 
 	@Override

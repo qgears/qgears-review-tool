@@ -14,6 +14,7 @@ import java.util.List;
  * entries of the current version, and an other for the older version.
  * 
  * @author agostoni
+ * @since 3.0
  * 
  */
 public class ReviewEntryGroup extends AbstractViewModel<List<ReviewEntry>>{

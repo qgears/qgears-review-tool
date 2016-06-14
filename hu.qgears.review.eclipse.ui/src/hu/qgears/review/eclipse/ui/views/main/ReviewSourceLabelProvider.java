@@ -1,7 +1,7 @@
 package hu.qgears.review.eclipse.ui.views.main;
 
 import hu.qgears.review.eclipse.ui.ReviewToolImages;
-import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
+import hu.qgears.review.eclipse.ui.util.UtilWorkspace;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryGroup;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
@@ -146,7 +146,7 @@ public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelD
 		if (element instanceof SourceTreeElement){
 			SourceTreeElement ste = (SourceTreeElement) element;
 			File file = ste.getModelElement().getFileInWorkingCopy();
-			IFile iFile = OpenJavaTypeAction.getFileInWorkspace(file);
+			IFile iFile = UtilWorkspace.getFileInWorkspace(file);
 			if (iFile == null || !iFile.exists()){
 				return true;
 			}

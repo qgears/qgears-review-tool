@@ -13,6 +13,7 @@ import java.util.List;
  * @author agostoni
  * 
  * @see AbstractViewModel
+ * @since 3.0
  */
 public class ReviewModelView extends AbstractViewModel<ReviewModel>{
 	

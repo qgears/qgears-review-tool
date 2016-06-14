@@ -36,13 +36,13 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="hu.qgears.review.eclipse.ui.util.PreferenceInitializer">
+            class="hu.qgears.review.eclipse.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="hu.qgears.review.eclipse.ui.util.ReviewToolMainPreferencePage"
+            class="hu.qgears.review.eclipse.ui.preferences.ReviewToolMainPreferencePage"
             id="hu.qgears.reivew..ui.prefs.main"
             name="Review tool preferences">
       </page>

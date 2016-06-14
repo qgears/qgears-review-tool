@@ -1,7 +1,7 @@
 package hu.qgears.review.eclipse.ui.vct;
 
 import hu.qgears.review.eclipse.ui.util.UtilLog;
-import hu.qgears.review.model.ReviewEntry;
+import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.util.vct.EVersionControlTool;
 
 /**
@@ -21,8 +21,11 @@ public class DefaultVersionControlToolImplementation implements
 		this.tool = tool;
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	@Override
-	public void openCompareEditor(ReviewEntry r1, ReviewEntry r2) {
+	public void openCompareEditor(ReviewEntryView r1, ReviewEntryView r2) {
 		openErrorDialog();
 	}
 
@@ -36,8 +39,11 @@ public class DefaultVersionControlToolImplementation implements
 				null);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	@Override
-	public void compareWithHead(ReviewEntry modelElement) {
+	public void compareWithHead(ReviewEntryView modelElement) {
 		openErrorDialog();
 	}
 }

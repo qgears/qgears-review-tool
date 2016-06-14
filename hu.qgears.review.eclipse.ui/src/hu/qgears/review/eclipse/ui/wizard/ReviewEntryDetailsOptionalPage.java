@@ -1,6 +1,6 @@
 package hu.qgears.review.eclipse.ui.wizard;
 
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 import hu.qgears.review.model.ReviewEntry;
 
 import java.util.Calendar;

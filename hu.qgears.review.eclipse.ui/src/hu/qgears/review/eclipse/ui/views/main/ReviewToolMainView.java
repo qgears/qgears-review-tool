@@ -5,6 +5,7 @@ import hu.qgears.review.eclipse.ui.actions.CompareWithEachOtherAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithHeadAction;
 import hu.qgears.review.eclipse.ui.actions.CreateReviewEntryAction;
 import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
+import hu.qgears.review.eclipse.ui.actions.ImportProjectForSourcesetAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeDoubleClickListener;
 import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsAction;
@@ -15,7 +16,7 @@ import hu.qgears.review.eclipse.ui.actions.filters.FilterByReviewAnnotation;
 import hu.qgears.review.eclipse.ui.actions.filters.FilterByReviewStatus;
 import hu.qgears.review.eclipse.ui.actions.filters.FilterBySourceSet;
 import hu.qgears.review.eclipse.ui.actions.filters.FilterByUser;
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 import hu.qgears.review.eclipse.ui.views.AbstractReviewToolView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.eclipse.ui.views.model.ReviewModelView;
@@ -247,6 +248,7 @@ public class ReviewToolMainView extends AbstractReviewToolView {
 		if (sel instanceof ReviewSourceSetView){
 			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) sel;
 			menuManager.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
+			menuManager.add(new ImportProjectForSourcesetAction(reviewSourceSetView,viewer));
 		}
 		menuManager.add(new RefreshViewerAction(viewer));
 		menuManager.add(new Action("Reload configuration"){

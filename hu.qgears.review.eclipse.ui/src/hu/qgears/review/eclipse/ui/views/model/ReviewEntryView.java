@@ -10,6 +10,7 @@ import java.util.List;
  * 
  * @author agostoni
  * @see AbstractViewModel
+ * @since 3.0
  */
 public class ReviewEntryView extends AbstractViewModel<ReviewEntry> {
 

@@ -1,15 +1,14 @@
 package hu.qgears.review.eclipse.ui.actions;
 
 import hu.qgears.review.eclipse.ui.util.UtilLog;
+import hu.qgears.review.eclipse.ui.util.UtilWorkspace;
+import hu.qgears.review.eclipse.ui.views.model.ReviewSourceSetView;
 import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.model.ReviewSource;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
@@ -49,13 +48,12 @@ public class OpenJavaTypeAction extends Action{
 				SourceTreeElement ste = (SourceTreeElement) e;
 				File file = ste.getModelElement().getFileInWorkingCopy();
 				try {
-					IFile wsFile = getFileInWorkspace(file);
+					IFile wsFile = UtilWorkspace.getFileInWorkspace(file);
 					if (wsFile != null && wsFile.exists()){
 						IEditorDescriptor ed = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(wsFile.getName());
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new FileEditorInput(wsFile), ed.getId());
 					} else {
-						//TODO automatically import??
-						MessageDialog.openInformation(shell, "Open review source", "The file "+file+" is not imported into Eclipse workspace, cannot be opened.");
+						openAutoImportQuestionDialog(file,ste);
 					}
 				} catch (Exception e1) {
 					UtilLog.showErrorDialog("Error during file open: "+file.getAbsolutePath(), e1);
@@ -64,24 +62,15 @@ public class OpenJavaTypeAction extends Action{
 		}
 	}
 
-	/**
-	 * Returns the {@link IFile} representation of the given file. If the file
-	 * is not present the Eclipse workspace, than
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static IFile getFileInWorkspace(File file) {
-		IFile wsFile = null;
-		try {
-			wsFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getCanonicalPath()));
-		} catch (IOException e) {
-			UtilLog.showErrorDialog("Error resolving workspace file. ", e);
+	private void openAutoImportQuestionDialog(File file, SourceTreeElement ste) {
+		ReviewSourceSetView sourceset = ste.getParent();
+		String rset = sourceset.getModelElement().id;
+		boolean doIt = MessageDialog.openQuestion(shell, "Open review source", "The file "+file+" is currently not imported into workspace.\nDo you wan't to import projects of source set '"+rset+"' now?");
+		if (doIt) {
+			new ImportProjectForSourcesetAction(sourceset, viewer).run();
 		}
-		return wsFile;
 	}
-	
+
 	@Override
 	public void run() {
 		openTypeSearchDialog();

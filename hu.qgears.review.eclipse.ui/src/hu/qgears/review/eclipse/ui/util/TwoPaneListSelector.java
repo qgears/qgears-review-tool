@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
  * @author agostoni
  * 
  * @param <ElementType> The type of elements in this selector.
+ * @since 3.0
  */
 public class TwoPaneListSelector<ElementType> extends Composite {
 

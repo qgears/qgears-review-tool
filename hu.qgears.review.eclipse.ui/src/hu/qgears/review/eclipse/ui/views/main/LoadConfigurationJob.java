@@ -5,7 +5,7 @@ import hu.qgears.review.action.LoadConfiguration;
 import hu.qgears.review.action.ConfigParsingResult.Problem;
 import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 import hu.qgears.review.model.ReviewInstance;
 
 import java.io.File;

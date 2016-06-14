@@ -1,6 +1,6 @@
 package hu.qgears.review.eclipse.ui.actions.filters;
 
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 
 import org.eclipse.jface.action.Action;
 

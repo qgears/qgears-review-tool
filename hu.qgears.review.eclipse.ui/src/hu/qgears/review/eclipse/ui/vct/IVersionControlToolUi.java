@@ -1,6 +1,6 @@
 package hu.qgears.review.eclipse.ui.vct;
 
-import hu.qgears.review.model.ReviewEntry;
+import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.util.vct.EVersionControlTool;
 
 /**
@@ -21,8 +21,9 @@ public interface IVersionControlToolUi {
 	 *            The review entry attached to A version of the review source.
 	 * @param r2
 	 *            The review entry attached the B version of the review source.
+	 * @since 3.0
 	 */
-	void openCompareEditor(ReviewEntry r1, ReviewEntry r2);
+	void openCompareEditor(ReviewEntryView r1, ReviewEntryView r2);
 
 	/**
 	 * Opens a compare editor that compares the given revision of the source
@@ -31,8 +32,9 @@ public interface IVersionControlToolUi {
 	 * @param modelElement
 	 *            The review entry attached to current version of the review
 	 *            source.
+	 * @since 3.0
 	 */
-	void compareWithHead(ReviewEntry modelElement);
+	void compareWithHead(ReviewEntryView modelElement);
 	/**
 	 * Returns the {@link EVersionControlTool} that is implemented by this class.
 	 * 

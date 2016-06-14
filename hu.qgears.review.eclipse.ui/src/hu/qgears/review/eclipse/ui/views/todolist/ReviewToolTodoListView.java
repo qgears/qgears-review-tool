@@ -5,13 +5,14 @@ import hu.qgears.review.eclipse.ui.actions.CompareWithEachOtherAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithHeadAction;
 import hu.qgears.review.eclipse.ui.actions.CreateReviewEntryAction;
 import hu.qgears.review.eclipse.ui.actions.ExportStatisticsAction;
+import hu.qgears.review.eclipse.ui.actions.ImportProjectForSourcesetAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeAction;
 import hu.qgears.review.eclipse.ui.actions.OpenJavaTypeDoubleClickListener;
 import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsAction;
 import hu.qgears.review.eclipse.ui.actions.OpenReviewEntryDetailsDoubleClickListener;
 import hu.qgears.review.eclipse.ui.actions.RefreshViewerAction;
 import hu.qgears.review.eclipse.ui.actions.filters.TodoListFilter;
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 import hu.qgears.review.eclipse.ui.views.AbstractReviewToolView;
 import hu.qgears.review.eclipse.ui.views.main.LinkWithEditorSTEAction;
 import hu.qgears.review.eclipse.ui.views.main.ReviewSourceContentProvier;
@@ -135,6 +136,7 @@ public class ReviewToolTodoListView extends AbstractReviewToolView implements IS
 		if (s instanceof ReviewSourceSetView){
 			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) s;
 			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
+			m.add(new ImportProjectForSourcesetAction(reviewSourceSetView,viewer));
 		}
 		m.add(new RefreshViewerAction(viewer){
 			@Override

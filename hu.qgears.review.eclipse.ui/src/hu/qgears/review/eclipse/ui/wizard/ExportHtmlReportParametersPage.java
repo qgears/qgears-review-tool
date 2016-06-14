@@ -1,7 +1,7 @@
 package hu.qgears.review.eclipse.ui.wizard;
 
 import hu.qgears.commons.UtilEventListener;
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 import hu.qgears.review.eclipse.ui.util.TwoPaneListSelector;
 import hu.qgears.review.report.ColumnDefinition;
 import hu.qgears.review.report.ReportGenerator;

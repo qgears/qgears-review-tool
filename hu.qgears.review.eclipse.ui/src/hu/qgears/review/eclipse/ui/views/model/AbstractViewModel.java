@@ -20,6 +20,7 @@ import java.util.List;
  * @param <WrappedType>
  *            The type from Review tool data model, that is wrapped by this
  *            class.
+ * @since 3.0
  */
 public abstract class AbstractViewModel<WrappedType> {
 

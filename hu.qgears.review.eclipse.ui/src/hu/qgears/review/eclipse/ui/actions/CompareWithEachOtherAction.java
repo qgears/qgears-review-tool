@@ -34,7 +34,7 @@ public class CompareWithEachOtherAction extends Action{
 	public void run() {
 		ReviewModel rm = prev.getReviewModel();
 		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(prev.getModelElement().getReviewSource(rm).getVersionControlTool());
-		vui.openCompareEditor(prev.getModelElement(),next.getModelElement());
+		vui.openCompareEditor(prev,next);
 	}
 
 }

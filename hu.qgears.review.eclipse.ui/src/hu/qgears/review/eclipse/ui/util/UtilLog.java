@@ -11,6 +11,7 @@ import org.eclipse.ui.PlatformUI;
  * Utility for showing log messages using built-in {@link ErrorDialog}.
  * 
  * @author agostoni
+ * @since 3.0
  * 
  */
 public class UtilLog {
@@ -30,6 +31,11 @@ public class UtilLog {
 		ErrorDialog .openError(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
 				"Error", message, status);
+		ReviewToolUI.getDefault().getLog().log(status);
+	}
+	
+	public static void logError(String message, Throwable ex){
+		Status status = new Status(IStatus.ERROR,ReviewToolUI.PLUGIN_ID,message,ex);
 		ReviewToolUI.getDefault().getLog().log(status);
 	}
 	

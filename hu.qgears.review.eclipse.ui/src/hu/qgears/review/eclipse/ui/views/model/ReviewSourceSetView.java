@@ -11,6 +11,7 @@ import java.util.List;
  * @author agostoni
  * 
  * @see AbstractViewModel
+ * @since 3.0
  */
 public class ReviewSourceSetView extends AbstractViewModel<ReviewSourceSet>{
 

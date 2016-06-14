@@ -5,6 +5,8 @@ package hu.qgears.review.eclipse.ui.views.model;
  * 
  * @author agostoni
  * 
+ * @since 3.0
+ * 
  */
 public interface IReviewModelVisitor {
 	/**

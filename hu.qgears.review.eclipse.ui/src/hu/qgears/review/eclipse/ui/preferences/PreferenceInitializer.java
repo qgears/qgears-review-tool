@@ -1,4 +1,4 @@
-package hu.qgears.review.eclipse.ui.util;
+package hu.qgears.review.eclipse.ui.preferences;
 
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
 

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Git
+Bundle-SymbolicName: hu.qgears.review.eclipse.ui.git;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: hu.qgears.review.eclipse.ui;bundle-version="2.0.0",
+ hu.qgears.review;bundle-version="2.0.0",
+ org.eclipse.egit.ui,
+ org.eclipse.egit.core;bundle-version="4.3.1",
+ org.eclipse.core.runtime;bundle-version="3.10.0",
+ org.eclipse.ui,
+ org.eclipse.jgit;bundle-version="4.3.1"
+Import-Package: org.eclipse.core.resources

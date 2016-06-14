@@ -1,6 +1,6 @@
 package hu.qgears.review.eclipse.ui.actions;
 
-import hu.qgears.review.eclipse.ui.util.Preferences;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
 
 import java.io.File;
 

@@ -15,6 +15,7 @@ import java.util.List;
  * relationships.
  * 
  * @author agostoni
+ * @since 3.0
  * 
  */
 public class SourceTreeElement extends AbstractViewModel<ReviewSource>{

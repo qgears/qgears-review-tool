@@ -27,6 +27,6 @@ public class CompareWithHeadAction extends Action {
 	public void run() {
 		ReviewModel rm = entry.getReviewModel();
 		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(entry.getModelElement().getReviewSource(rm).getVersionControlTool());
-		vui.compareWithHead(entry.getModelElement());
+		vui.compareWithHead(entry);
 	}
 }

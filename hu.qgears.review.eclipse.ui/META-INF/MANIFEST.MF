@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse UI for reporting component of code review tool
 Bundle-SymbolicName: hu.qgears.review.eclipse.ui;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: Q-Gears
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.review;bundle-version="1.0.0",
@@ -19,4 +19,6 @@ Bundle-Activator: hu.qgears.review.eclipse.ui.ReviewToolUI
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: icons/,
  .
-Export-Package: hu.qgears.review.eclipse.ui.vct
+Export-Package: hu.qgears.review.eclipse.ui.util,
+ hu.qgears.review.eclipse.ui.vct,
+ hu.qgears.review.eclipse.ui.views.model

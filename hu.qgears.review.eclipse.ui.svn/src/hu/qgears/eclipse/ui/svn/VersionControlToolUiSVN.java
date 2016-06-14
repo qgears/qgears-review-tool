@@ -2,7 +2,6 @@ package hu.qgears.eclipse.ui.svn;
 
 import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
-import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.util.vct.EVersionControlTool;
 
 /**

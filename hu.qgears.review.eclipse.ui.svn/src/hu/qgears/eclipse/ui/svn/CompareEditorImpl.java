@@ -31,12 +31,14 @@ public class CompareEditorImpl {
 				prevRes.setSelectedRevision(SVNRevision.fromString(prevRevision));
 				nextRes.setSelectedRevision(SVNRevision.fromString(nextRevision));
 				final CompareRepositoryResourcesOperation ds = new CompareRepositoryResourcesOperation(prevRes, nextRes);
-				new Job("Comparing source revisions...") {
+				Job j = new Job("Comparing source revisions...") {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						return ds.run(monitor).getStatus();
 					}
-				}.schedule();
+				};
+				j.setUser(true);
+				j.schedule();
 			}
 		}
 	}

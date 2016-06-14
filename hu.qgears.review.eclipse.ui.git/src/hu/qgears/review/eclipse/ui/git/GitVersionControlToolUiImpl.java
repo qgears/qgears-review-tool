@@ -17,7 +17,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+
 /**
+ * EGit based implementation of {@link IVersionControlToolUi} interface. This
+ * enables the Compare with HEAD and Compare with each others action for GIT
+ * sources.
+ * 
  * @author agostoni
  *
  */
@@ -33,12 +38,12 @@ public class GitVersionControlToolUiImpl implements IVersionControlToolUi {
 
 	@Override
 	public void openCompareEditor(ReviewEntryView r1, ReviewEntryView r2) {
-		IResource l1 = getResourceForEntry(r1);
-		IResource l2 = getResourceForEntry(r2);
-		if (l1 == null || l2 == null) {
+		IResource res = getResourceForEntry(r1);
+		if (res == null) {
 			notImportedError();
+			//res for r2 should be same as r1
 		} else {
-			openCompareEditor(l1,getVersion(r1), l2, getVersion(r2));
+			openCompareEditor(res,getVersion(r1), getVersion(r2));
 		}
 		
 	}
@@ -52,13 +57,12 @@ public class GitVersionControlToolUiImpl implements IVersionControlToolUi {
 				"Please import the surce files into workspace first!");
 	}
 
-
-	private void openCompareEditor(IResource l1, String  v1, IResource l2, String v2) {
+	private void openCompareEditor(IResource res, String  v1, String v2) {
 		IWorkbenchPage page = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		if (page != null) {
-			IResource[] resources = new IResource[] { l1, l2 };
-			RepositoryMapping rm = RepositoryMapping.getMapping(l1);
+			IResource[] resources = new IResource[] { res };
+			RepositoryMapping rm = RepositoryMapping.getMapping(res);
 			if (rm != null && rm.getRepository() != null) {
 				try {
 					CompareUtils.compare(resources, rm.getRepository(), v1, v2,
@@ -89,7 +93,7 @@ public class GitVersionControlToolUiImpl implements IVersionControlToolUi {
 		if (res == null) {
 			notImportedError();
 		} else {
-			openCompareEditor(res,getVersion(modelElement),res, "HEAD" );
+			openCompareEditor(res,"HEAD",getVersion(modelElement));
 		}
 	}
 

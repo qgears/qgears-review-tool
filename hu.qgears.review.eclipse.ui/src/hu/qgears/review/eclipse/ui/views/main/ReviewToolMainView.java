@@ -240,9 +240,12 @@ public class ReviewToolMainView extends AbstractReviewToolView {
 		}
 		if (sel instanceof ReviewEntryView){
 			menuManager.add(openReviewDetailsAction);
-			menuManager.add(new CompareWithHeadAction((ReviewEntryView) sel));
+			CompareWithHeadAction compareWithHeadAction = new CompareWithHeadAction((ReviewEntryView) sel);
+			compareWithHeadAction.setEnabled(selection.size() == 1);
+			menuManager.add(compareWithHeadAction);
 			if (selection.size() == 2 && selection.get(1) instanceof ReviewEntryView){
-				menuManager.add(new CompareWithEachOtherAction((ReviewEntryView)sel, (ReviewEntryView)selection.get(1)));
+				CompareWithEachOtherAction cweaa = new CompareWithEachOtherAction((ReviewEntryView)sel, (ReviewEntryView)selection.get(1));
+				menuManager.add(cweaa);
 			}
 		}
 		if (sel instanceof ReviewSourceSetView){

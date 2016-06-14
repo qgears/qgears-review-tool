@@ -28,8 +28,18 @@ public class CompareWithEachOtherAction extends Action{
 		setText("Compare with each other...");
 		this.prev = prev;
 		this.next = next;
+		setEnabled(checkEnabled());
 	}
 	
+	private boolean checkEnabled() {
+		if (next != null && prev != null) {
+			if (prev.getParent() != null && next.getParent()!= null && prev.getParent().getParent() != null) {
+				return prev.getParent().getParent().equals(next.getParent().getParent());
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public void run() {
 		ReviewModel rm = prev.getReviewModel();

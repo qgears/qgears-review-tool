@@ -128,7 +128,9 @@ public class ReviewToolTodoListView extends AbstractReviewToolView implements IS
 		}
 		if (s instanceof ReviewEntryView){
 			m.add(openReviewDetailsAction);
-			m.add(new CompareWithHeadAction((ReviewEntryView) s));
+			CompareWithHeadAction compareWithHeadAction = new CompareWithHeadAction((ReviewEntryView) s);
+			compareWithHeadAction.setEnabled(selection.size() == 1);
+			m.add(compareWithHeadAction);
 			if (selection.size() == 2 && selection.get(1) instanceof ReviewEntryView){
 				m.add(new CompareWithEachOtherAction((ReviewEntryView)s, (ReviewEntryView)selection.get(1)));
 			}

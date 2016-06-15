@@ -32,6 +32,8 @@ public class OpenJavaTypeAction extends Action{
 	private Viewer viewer;
 	private Shell shell;
 	
+	private static final String DEFAULT_TEXT_EDITOR_ID = "org.eclipse.ui.DefaultTextEditor";
+	
 	public OpenJavaTypeAction(Viewer viewer) {
 		super();
 		this.viewer = viewer;
@@ -51,7 +53,14 @@ public class OpenJavaTypeAction extends Action{
 					IFile wsFile = UtilWorkspace.getFileInWorkspace(file);
 					if (wsFile != null && wsFile.exists()){
 						IEditorDescriptor ed = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(wsFile.getName());
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new FileEditorInput(wsFile), ed.getId());
+						if (ed == null){
+							ed = PlatformUI.getWorkbench().getEditorRegistry().findEditor(DEFAULT_TEXT_EDITOR_ID);
+						}
+						if (ed == null) {
+							UtilLog.showErrorDialog("No editor found for opening "+wsFile.getName(),null);
+						} else {
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new FileEditorInput(wsFile), ed.getId());
+						}
 					} else {
 						openAutoImportQuestionDialog(file,ste);
 					}

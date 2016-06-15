@@ -83,7 +83,7 @@ public class ReviewToolConfig {
 	private void loadFromPropertiesFile(Properties props) throws IOException {
 		String configDirEntry = props.getProperty(P_CONFIG);
 		loadConfigDir(configDirEntry);
-		loadMappings(props);
+		loadMAppings(props);
 		loadReviewOutputFolderName(props);
 		loadAnnotationFolderProperties(props);
 		loadSonarConfiguration(props);
@@ -101,7 +101,7 @@ public class ReviewToolConfig {
 					Pattern p = Pattern.compile(line);
 					sourcePatterns.add(p.matcher(""));
 				} catch (Exception e){
-					LOG.error("Invalid regexp: "+line,e);
+					throw new IOException("Invalid regexp found in config file "+SOURCE_PATTERNS+": "+line,e);
 				}
 			}
 		} else {
@@ -142,7 +142,7 @@ public class ReviewToolConfig {
 		}
 	}
 
-	private void loadMappings(Properties props) {
+	private void loadMAppings(Properties props) {
 		for (Map.Entry<Object, Object> e:props.entrySet()) {
 			String key=""+e.getKey();
 			if(key.startsWith(P_MAP)) {

@@ -213,7 +213,7 @@ public class LoadConfiguration {
 		{
 			EVersionControlTool tool = getVersionControlTool (line);
 			if(tool == null) {
-				LOG.error("Unknown source fodler type: "+line);
+				throw new RuntimeException("Unknown source folder type found in config file :"+line);
 			} else {
 				String id = tool.getSourceFolder(line);
 				String folder=model.mappings.get(id);

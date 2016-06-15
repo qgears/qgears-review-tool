@@ -83,7 +83,7 @@ public class ReviewToolConfig {
 	private void loadFromPropertiesFile(Properties props) throws IOException {
 		String configDirEntry = props.getProperty(P_CONFIG);
 		loadConfigDir(configDirEntry);
-		loadMAppings(props);
+		loadMappings(props);
 		loadReviewOutputFolderName(props);
 		loadAnnotationFolderProperties(props);
 		loadSonarConfiguration(props);
@@ -142,7 +142,7 @@ public class ReviewToolConfig {
 		}
 	}
 
-	private void loadMAppings(Properties props) {
+	private void loadMappings(Properties props) {
 		for (Map.Entry<Object, Object> e:props.entrySet()) {
 			String key=""+e.getKey();
 			if(key.startsWith(P_MAP)) {
@@ -160,7 +160,7 @@ public class ReviewToolConfig {
 
 	private void loadConfigDir(String configDirEntry) {
 		if (configDirEntry == null) {
-			LOG.error("The mandatory 'config=...' entry is missing from the mapping file!");
+			throw new RuntimeException("The mandatory 'config=...' entry is missing from the mapping file!");
 		} else {
 			this.configDir = new File(configDirEntry);
 		}

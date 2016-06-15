@@ -217,30 +217,34 @@ public class LoadConfiguration {
 			} else {
 				String id = tool.getSourceFolder(line);
 				String folder=model.mappings.get(id);
-				LOG.info("Loading source folder: "+id);
-				List<ReviewSource> files = null;
-				IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(tool);
-				File targetFolder = new File(folder);
-				if (SourceCache.isCacheEnabled()){
-					try {
-					SourceCache cache = new SourceCache(id);
-						if (cache.exists()){
-							LOG.info("Loading content from cache!");
-							files = cache.load();
-						} else {
-							LOG.info("Creating cache file...");
-							files = loader.loadSources(id, targetFolder,cfg);
-							cache.save(files);
-							LOG.info("Cache file is ready to use in next startup.");
+				if (folder != null) {
+					LOG.info("Loading source folder: "+id);
+					List<ReviewSource> files = null;
+					IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(tool);
+					File targetFolder = new File(folder);
+					if (SourceCache.isCacheEnabled()){
+						try {
+						SourceCache cache = new SourceCache(id);
+							if (cache.exists()){
+								LOG.info("Loading content from cache!");
+								files = cache.load();
+							} else {
+								LOG.info("Creating cache file...");
+								files = loader.loadSources(id, targetFolder,cfg);
+								cache.save(files);
+								LOG.info("Cache file is ready to use in next startup.");
+							}
+						} catch (Exception e) {
+							LOG.error("Exception during loading cache for SVN repo "+id,e);
 						}
-					} catch (Exception e) {
-						LOG.error("Exception during loading cache for SVN repo "+id,e);
+					} 
+					if (files == null){
+						files = loader.loadSources(id, targetFolder,cfg);
 					}
-				} 
-				if (files == null){
-					files = loader.loadSources(id, targetFolder,cfg);
+					model.addSourceFiles(files);
+				} else {
+					LOG.error("Invalid mapping file. Missing mapping for repository: "+id);
 				}
-				model.addSourceFiles(files);
 			}
 		}
 	}

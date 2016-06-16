@@ -88,7 +88,7 @@ public class SvnStatus implements IVersionControlTool {
 	public byte[] downloadResource(String svnurl, String revision)
 			throws Exception {
 		Process p=Runtime.getRuntime().exec(new String[]{svnTool, "cat",
-				"-r"+revision, svnurl});
+				"-r",revision, svnurl});
 		Future<Pair<byte[], byte[]>> fut=UtilProcess.saveOutputsOfProcess(p);
 		Pair<byte[], byte[]> pa=fut.get();
 		return pa.getA();

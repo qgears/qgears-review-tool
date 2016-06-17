@@ -49,7 +49,7 @@ public class ReportGeneratorTemplate {
 	}
 
 	public void generate() {
-rtout.write("\t\t<h2>Table of contents</h2>\n<!-- DOXIA macro |section=3|fromDepth=3|toDepth=3 -->\n<!-- MACRO{toc} -->\t\t\n");
+		rtout.write("\t\t<h2>Table of contents</h2>\n<!-- DOXIA macro |section=3|fromDepth=3|toDepth=3 -->\n<!-- MACRO{toc} -->\t\t\n");
 		rtout.write("\t<h2>");
 		rtcout.write(getTitle());
 		rtout.write("</h2>\n");

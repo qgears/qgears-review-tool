@@ -19,6 +19,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<module>hu.qgears.review</module>
 		<module>hu.qgears.review.eclipse.ui</module>
 		<module>hu.qgears.review.eclipse.ui.svn</module>
+		<module>hu.qgears.review.eclipse.ui.git</module>
 		<module>hu.qgears.review.feature</module>
 		<module>hu.qgears.review.target</module>
 		<module>hu.qgears.review.web</module>

@@ -72,7 +72,7 @@ public class GitVersionControlToolUiImpl implements IVersionControlToolUi {
 				}
 			} else {
 				MessageDialog.openError(getShell(), TITLE,
-						"Cannot find GIT repo for resources!");
+						"Cannot find GIT repo for resources! Try Team -> Share Project... on project "+res.getProject());
 			}
 		} else {
 			// no active workbench page, nothing to do

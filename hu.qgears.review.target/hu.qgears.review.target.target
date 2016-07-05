@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Q-Gears review tool target platform" sequenceNumber="1457016661">
+<target name="Q-Gears review tool target platform" sequenceNumber="1467708738">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="javax.servlet" version="3.1.0.v20140303-1611"/>
@@ -11,11 +11,12 @@
       <unit id="org.eclipse.ui.views" version="3.7.0.v20140408-0703"/>
       <unit id="org.eclipse.jdt.ui" version="3.10.2.v20141014-1419"/>
       <unit id="org.eclipse.team.svn.ui" version="2.0.3.I20141224-1700"/>
+      <unit id="org.eclipse.egit.feature.group" version="3.4.2.201412180340-r"/>
       <repository id="eclipse-luna" location="http://download.eclipse.org/releases/luna/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="hu.qgears.commons" version="6.0.0.201603030840"/>
-      <unit id="joptsimple" version="1.0.1.201603030840"/>
+      <unit id="hu.qgears.commons" version="6.2.0.201606140819"/>
+      <unit id="joptsimple" version="1.0.1.201606140819"/>
       <repository id="qgears-opensource-repo" location="http://qgears.net/opensource/updates/"/>
     </location>
   </locations>

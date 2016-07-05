@@ -11,9 +11,10 @@ location "http://download.eclipse.org/releases/luna/" eclipse-luna {
 	org.eclipse.jdt.ui [3.10.2.v20141014-1419,3.10.2.v20141014-1419]
 	
 	org.eclipse.team.svn.ui [2.0.3.I20141224-1700,2.0.3.I20141224-1700]
+	org.eclipse.egit.feature.group [3.4.2,3.4.3)
 }
 
 location "http://qgears.net/opensource/updates/" qgears-opensource-repo {
-	hu.qgears.commons [6.0.0.201603030840,6.0.0.201603030840]
-	joptsimple [1.0.1.201603030840,1.0.1.201603030840]
+	hu.qgears.commons [6.2.0.201606140819,6.2.0.201606140819]
+	joptsimple [1.0.1.201606140819,1.0.1.201606140819]
 }

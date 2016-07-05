@@ -27,8 +27,8 @@ public class ReviewStatsSummary {
 	 * @return
 	 */
 	public static ReviewStatsSummary create(List<ReportEntry> entries){
-		int ok2, ok, missing, off, old, todo;
-		ok2= ok= missing= off= old= todo = 0;
+		int ok2, ok, missing, off, old, todo,wontreview;
+		ok2= ok= missing= off= old= todo = wontreview = 0;
 		ReviewStatsSummary ret = new ReviewStatsSummary();
 		Map<String,Integer> resourceCount = new HashMap<String, Integer>();
 		long sumSizeBytes = 0;
@@ -51,6 +51,11 @@ public class ReviewStatsSummary {
 					old++; break;
 				case TODO:
 					todo++; break;
+				case WONT_REVIEW:
+					wontreview ++;
+					break;
+				default:
+					break;
 				}
 			}
 			if (e.getResource() != null){
@@ -80,6 +85,7 @@ public class ReviewStatsSummary {
 		ret.numbers.put(ReviewStatus.OFF,off);
 		ret.numbers.put(ReviewStatus.OLD,old);
 		ret.numbers.put(ReviewStatus.TODO,todo);
+		ret.numbers.put(ReviewStatus.WONT_REVIEW,wontreview);
 		ret.overallProgress = (100f * okSizeBytes) / sumSizeBytes;
 		return ret;
 	}

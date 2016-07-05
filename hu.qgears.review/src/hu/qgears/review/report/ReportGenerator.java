@@ -126,13 +126,15 @@ public class ReportGenerator {
 				switch (re.getAnnotation()){
 				case reviewOff:
 					return ReviewStatus.OFF;
+				case reviewWontReview:
+					return ReviewStatus.WONT_REVIEW;
 				case reviewOk:
 					reviewOkUsers.add(re.getUser());
 					break;
 				case reviewTodo:
 					return ReviewStatus.TODO;
 				default:
-					throw new RuntimeException("Not imlemented annotation case "+re.getAnnotation());
+					throw new RuntimeException("Not implemented annotation case "+re.getAnnotation());
 				}
 			}
 		}

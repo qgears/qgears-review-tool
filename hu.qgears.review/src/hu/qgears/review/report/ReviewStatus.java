@@ -36,5 +36,11 @@ public enum ReviewStatus {
 	 * At least one developer marked the current version of the source with
 	 * {@link EReviewAnnotation#reviewOff} annotation'.
 	 */
-	OFF
+	OFF,
+	/**
+	 * At least one developer marked the current version of the source with
+	 * {@link EReviewAnnotation#reviewWontReview} annotation'.
+	 * @since 3.0
+	 */
+	WONT_REVIEW
 }

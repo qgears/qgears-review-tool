@@ -64,6 +64,7 @@ public class ReportEntryCSSHelper {
 			case MISSING:
 				return CLASS_METRIC_LOW;
 			case OFF:
+			case WONT_REVIEW:
 				return CLASS_METRIC_GOOD;
 			case OK_MORE_REVIEWERS:
 				return CLASS_METRIC_PERFECT;

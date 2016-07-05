@@ -34,6 +34,16 @@ public enum EReviewAnnotation {
 		public String getDescription() {
 			return "Reviewed with should not be part of class";
 		}
+	},
+	/**
+	 * The review file should be reviewed by somebody else.
+	 * @since 3.0
+	 */
+	reviewWontReview {
+		@Override
+		public String getDescription() {
+			return "Won't review - The file should be reviewed by somebody else.";
+		}
 	};
 	
 	/**

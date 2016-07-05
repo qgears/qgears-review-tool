@@ -73,6 +73,8 @@ public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelD
 					return JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_PUBLIC);
 				case reviewTodo:
 					return JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_PROTECTED);
+				case reviewWontReview:
+					return JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_DEFAULT);
 			}
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
@@ -121,6 +123,9 @@ public class ReviewSourceLabelProvider extends LabelProvider  implements ILabelD
 				break;
 			case TODO:
 				imageDesc =ReviewToolImages.getImageDescriptor(ReviewToolImages.DECORATION_REVIEW_TODO);
+				break;
+			case WONT_REVIEW:
+				imageDesc = ReviewToolImages.getImageDescriptor(ReviewToolImages.DECORATION_REVIEW_WONT_REVIEW);
 				break;
 			}
 			if (imageDesc != null){

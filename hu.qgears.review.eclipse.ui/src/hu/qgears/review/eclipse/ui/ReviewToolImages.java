@@ -20,6 +20,7 @@ public final class ReviewToolImages {
 	public static final String DECORATION_REVIEW_OLD = "review_old.png";
 	public static final String DECORATION_REVIEW_MISSING = "review_missing.png";
 	public static final String DECORATION_REVIEW_OFF = "review_off.png";
+	public static final String DECORATION_REVIEW_WONT_REVIEW = "review_wont_review.png";
 	public static final String ICON_REFRESH = "refresh.png";
 	
 	private ReviewToolImages() {}
@@ -31,6 +32,7 @@ public final class ReviewToolImages {
 		addIcon(reg,DECORATION_REVIEW_MISSING);
 		addIcon(reg,DECORATION_REVIEW_OFF);
 		addIcon(reg,DECORATION_REVIEW_OLD);
+		addIcon(reg,DECORATION_REVIEW_WONT_REVIEW);
 		addIcon(reg,ICON_REFRESH);
 	}
 

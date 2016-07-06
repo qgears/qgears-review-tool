@@ -15,6 +15,7 @@ public class ReportEntryCSSHelper {
 	private static final String CLASS_METRIC_GOOD = "metric_good";
 	private static final String CLASS_METRIC_AVERAGE = "metric_average";
 	private static final String CLASS_METRIC_LOW = "metric_low";
+	private static final String CLASS_WONT_REVIEW = "wont_review";
 
 	private ReportEntryCSSHelper(){}
 
@@ -64,8 +65,9 @@ public class ReportEntryCSSHelper {
 			case MISSING:
 				return CLASS_METRIC_LOW;
 			case OFF:
-			case WONT_REVIEW:
 				return CLASS_METRIC_GOOD;
+			case WONT_REVIEW:
+				return CLASS_WONT_REVIEW;
 			case OK_MORE_REVIEWERS:
 				return CLASS_METRIC_PERFECT;
 			case OK_ONE_REVIEWER:

@@ -1,13 +1,7 @@
 package hu.qgears.review.report;
 
 import hu.qgears.review.model.EReviewAnnotation;
-import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewModel;
-import hu.qgears.review.model.ReviewSource;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Column definition that reads comment from valid review todos and prints into
@@ -16,32 +10,12 @@ import java.util.List;
  * @author agostoni
  * 
  */
-public class TodoMessageColumnDefinition implements ColumnDefinition {
+public class TodoMessageColumnDefinition extends AbstractMessageColumnDefinition {
 
-	private ReviewModel model;
-	
+
 	public TodoMessageColumnDefinition(ReviewModel model) {
-		super();
-		this.model = model;
+		super(model, ReviewStatus.TODO,EReviewAnnotation.reviewTodo);
 	}
-
-	@Override
-	public String getPropertyValue(ReportEntry obj) {
-		StringBuilder bld = new StringBuilder();
-		if (obj.getReviewStatus() == ReviewStatus.TODO){
-			ReviewSource sourceFile = obj.getSourceFile();
-			List<ReviewEntry> reviews = new ArrayList<ReviewEntry>();
-			reviews.addAll(sourceFile.getMatchingReviewEntries(model));
-			reviews.addAll(sourceFile.getMatchingReviewEntriesPreviousVersion(model));
-			for (ReviewEntry r : reviews){
-				if (r.getAnnotation() == EReviewAnnotation.reviewTodo && !model.isInvalidated(r.getSha1Sum())){
-					bld.append(String.format("%s%n",""+r.getComment()));
-				}
-			}
-		}
-		return bld.toString();
-	}
-
 
 	@Override
 	public String getTitle() {
@@ -51,11 +25,6 @@ public class TodoMessageColumnDefinition implements ColumnDefinition {
 	@Override
 	public String getEntryClass(ReportEntry e) {
 		return null;
-	}
-
-	@Override
-	public Comparator<ReportEntry> getComparator() {
-		return new DefaultReportEntryComparator(this);
 	}
 
 }

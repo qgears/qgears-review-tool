@@ -155,7 +155,7 @@ public class ExportHtmlReportParametersPage extends WizardPage {
 		targetFolder.setLayout(new GridLayout(columns,false));
 		new Label(targetFolder,SWT.NONE).setText("Select target file :");
 		targetFilePath = new Text(targetFolder,SWT.BORDER);
-		final String defultPath = Preferences.getDefaultReportPath()+File.separator+theGenerator.getTargetSourceSet().id+".html";
+		final String defultPath = Preferences.getDefaultReportPath()+File.separator+theGenerator.getTargetSourceSet().id+".xhtml";
 		targetFilePath.setText(defultPath);
 		targetFilePath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		targetFilePath.addKeyListener(new KeyAdapter() {

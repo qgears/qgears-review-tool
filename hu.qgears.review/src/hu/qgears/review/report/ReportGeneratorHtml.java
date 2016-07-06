@@ -18,7 +18,7 @@ public class ReportGeneratorHtml {
 	private static final String CHARSET = "UTF-8";
 	private static final String DOC_TYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
 	private static final String HTML_START_TEMPLATE = DOC_TYPE +"<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta charset=\""
-			+ CHARSET + "\"><style>%s</style></head><body>";
+			+ CHARSET + "\"/><style>%s</style></head><body>";
 	private static final String HTML_END = "</body></html>";
 
 	/**
@@ -30,6 +30,7 @@ public class ReportGeneratorHtml {
 	 * @param generateReviewStats If true than generates summary about review status
 	 * @param generateSonarStats If true than generates summary about SONAR metrics
 	 * @param generateTodoList see {@link ReportGeneratorTemplate#setRenderTodos(boolean)}
+	 * @param generateCss
 	 * 
 	 * @throws Exception
 	 * @since 2.0

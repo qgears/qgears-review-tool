@@ -49,8 +49,7 @@ public class ReportGeneratorTemplate {
 	}
 
 	public void generate() {
-		rtout.write("\t\t<h2>Table of contents</h2>\n<!-- DOXIA macro |section=3|fromDepth=3|toDepth=3 -->\n<!-- MACRO{toc} -->\t\t\n");
-		rtout.write("\t<h2>");
+		rtout.write("\t\t<h2>Table of contents</h2>\n<!-- DOXIA macro |section=3|fromDepth=3|toDepth=3 -->\n<!-- MACRO{toc} -->\t\t\n\t<h2>");
 		rtcout.write(getTitle());
 		rtout.write("</h2>\n");
 		if (renderReviewStats || renderSonarStats){
@@ -91,8 +90,48 @@ public class ReportGeneratorTemplate {
 			generateEntry(entry);
 		}
 		rtout.write("\t\t</table>\n");
+		
+		generateWontReview();
 		if (renderTodos){
 			generateTodos();
+		}
+	}
+
+	private void generateWontReview() {
+		List<ReportEntry> wontReviewEntries = new ArrayList<ReportEntry>();
+		for (ReportEntry entry : entries) {
+			if (entry.getReviewStatus() == ReviewStatus.WONT_REVIEW) {
+				wontReviewEntries.add(entry);
+			}
+		}
+		if (!wontReviewEntries.isEmpty()) {
+			List<ColumnDefinition> todoTableColumns = new ArrayList<ColumnDefinition>();
+			todoTableColumns.add(new ClassNameColumnDefinition());
+			todoTableColumns.add(new WongReviewMessageColumnDefinition(
+					modelRoot));
+			//Wont review table title
+		rtout.write("\n");
+			rtout.write("<h3>Classes that must be reviewed by someone else</h3>\n\t\t<table>\n");
+			//headers
+			rtout.write("\t\t\t<tr>\n");
+			for (ColumnDefinition c : todoTableColumns) {
+				rtout.write("\t\t\t\t<th>");
+				rtcout.write(c.getTitle());
+				rtout.write("</th>\n");
+			}
+			rtout.write("\t\t\t</tr>\n");
+			//values
+			for (ReportEntry entry : wontReviewEntries) {
+				rtout.write("\t\t\t<tr>\n");
+				for (ColumnDefinition c : todoTableColumns) {
+					rtout.write("\t\t\t\t<td><pre>");
+					rtcout.write(c.getPropertyValue(entry));
+					rtout.write("</pre></td>\n");
+				}
+				rtout.write("\t\t\t</tr>\n");
+
+			}
+			rtout.write("\t\t</table>\n");
 		}
 	}
 
@@ -102,7 +141,8 @@ public class ReportGeneratorTemplate {
 		todoTableColumns.add(new TodoMessageColumnDefinition(modelRoot));
 		OkWithMessageColumnDefinition om = new OkWithMessageColumnDefinition(modelRoot);
 		todoTableColumns.add(om);
-		rtout.write("\t\t<h3>Classes with TODO-s</h3>\n\t\t<table>\n\t\t\t<tr>\n");
+			rtout.write("\n");
+				rtout.write("<h3>Classes with TODO-s</h3>\n\t\t<table>\n\t\t\t<tr>\n");
 		for (ColumnDefinition c : todoTableColumns) {
 			rtout.write("\t\t\t\t<th>");
 			rtcout.write(c.getTitle());

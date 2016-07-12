@@ -9,17 +9,30 @@ Required software:
  * Eclipse Luna 4.4.2
  * Java 1.6+
  * maven (tested with version 3.0.5-1)
+ * 
+ 
+# Update site
 
-# Steps
+Most convenient way is to install from update site:
+```
+http://qgears.net/opensource/updates/
+```
+
+After installing, you can proceed to the [wiki](https://github.com/qgears/qgears-review-tool/wiki) to learn how to how to configure the review tool and assemble a workspace.
+
+# Installing from source
 
 Create an arbitrary directory used for building the review tool! This directory will further be referred to as $BUILDDIR. 
 
-Execute the following commands.
+Execute the following commands:
 ```
 cd $BUILDDIR
 git clone --recursive https://github.com/qgears/repository-builder.git .
 mvn clean package
 ```
+
+Note that [setting up a fast P2 mirror of Eclipse Luna, Indigo and subclipse in a settings.xml file is strongly recommended](https://wiki.eclipse.org/Tycho/Target_Platform/Authentication_and_Mirrors), otherwise downloading the build artifacts may last for hours. The mirror ids are expected to be, in order, the following: ```eclipse-luna```, ```indigo-repo```, ```subclipse-repo```.
+
 The output will be an Eclipse P2 repository, placed in this directory:
 
 ```
@@ -46,4 +59,4 @@ Accept the prompt that warns on installing software without certificate.
 
 Restart Eclipse.
 
-The installation is done; you can now proceed to the [wiki page](https://github.com/qgears/qgears-review-tool/wiki) to learn how to how to configure the review tool and assemble a workspace.
+The installation is done; you can proceed to the [wiki](https://github.com/qgears/qgears-review-tool/wiki) to learn how to how to configure the review tool and assemble a workspace.

@@ -8,9 +8,7 @@ Required software:
 
  * Eclipse Luna 4.4.2
  * Java 1.6+
- * maven (tested with version 3.0.5-1)
- * 
- 
+
 # Update site
 
 Most convenient way is to install from update site:

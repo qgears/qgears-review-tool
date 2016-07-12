@@ -13,26 +13,37 @@ QGears review tool has some unique features:
 
  * Review is based on files - not commits.
  * The review process is not synchronized with development. Commits are possible without being reviewed but they will invalidate the review status of the file.
- * Review tool is designed to work with different version controls systems. But currently only SVN integration is implemented.
+ * Review tool is designed to work with different version control systems; SVN and GIT are currently supported.
  * The data model of the reviews is human readable line oriented text file that can also be stored in version control. The review files are processed by the review tool to generate review status reports for a specific version of the source code (eg. a tag or branch of the code).
  * Delta reviews are supported by invoking third party diff tool (meld) to compare the current version to the latest reviewed version.
 
 # Main usage scenario
 
-One or more source file sets may be defined on a specific branch of a source code management system (further abbreviated as 'SCM'), the files of which are the subjects to reviews. One or more reviewers may participate in reviewing the source files of these file sets.
+First, one or more source file sets are to be defined on a specific branch of a source code management system (further abbreviated as 'SCM'), the files of which are the subjects to reviews. Reviewers then review the source files of these file sets.
 
-A reviewer has to review a specific SCM revision of a file, and, as a result, has to associate a textual description and a status flag to it. The status flags and their meanings are:
-
+More specifically, reviewers review a specific SCM revision of a file, and associate a status and a textual description to it. By the [status assigned by the reviewers](hu.qgears.review/src/hu/qgears/review/model/EReviewAnnotation.java), a [file-level status will be assigned](hu.qgears.review/src/hu/qgears/review/report/ReviewStatus.java) and will be presented in a report for all reviewed files:
 * OK: the file is all right and accepted for release
-* TODO: changes, corrections are required
+* TODO: at least one developer has reviewed the current version of the source, and found some defects, that must be fixed
 * OFF: the file should not be the part of the file set
+* WON'T REVIEW: according at least one reviewer, the (current version of a) source file is not his or her responsibility to review and must be delegated to another team
+
+If an already reviewed file changes, i. e. a new revision of it is committed to the SCM, the reviews for that file become obsolete for the new revision, marking the file with the status called 'OLD'. In this case, the affected file has to be reviewed again by all the reviewers to reach a complete state for the new revision. Note that changing a file does not invalidate a completed review process for a previous revision.
 
 A reviewer may mark other, previously written reviews for a specific file as invalid, be the invalidated review or reviews created by him- or herself or other reviewers.
 
 A review process is considered as completed for a revision if, and only if there is at least two non-obsolete, non-invalidated review with 'OK' status for every files for that revision, from at least two reviewers.
 
-If an already reviewed file changes, i. e. a new revision of it is committed to the SCM, the reviews for that file become obsolete for the new revision, implicitly rendering the whole new revision as incomplete. In this case, the affected file has to be reviewed again by all the reviewers to reach a complete state for the new revision. Note that changing a file does not invalidate a completed review process for a previous revision.
+# Feature summary
+
+* reviewing files
+* defining source file sets, the files of which are to be reviewed
+* support of the process of maintaining and modifying the source sets
+* delegating responsibility of reviewing a file, to help communication of distinct teams having to review a large set of files together 
+* review report generation
+* review process traceability
 
 # User interface
 
-An Eclipse user interface helps to manage the review process with a special perspective and helps to evaluate the current status of a review process by creating statistics specific to the whole process and specific to a single reviewer.
+A browser-based and an Eclipse user interface helps to manage the review process, the latter with a special perspective, helping the evaluation of the current status of a review process by creating statistics both
+* specific to the whole process and 
+* specific to a single reviewer.

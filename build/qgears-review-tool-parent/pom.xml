@@ -36,7 +36,7 @@ Parent POM for QGears review tool components.
 					 <artifact>
 						<groupId>hu.qgears</groupId>
 						<artifactId>hu.qgears.review.target</artifactId>
-						<version>3.0.0-SNAPSHOT</version>
+						<version>${project.version}</version>
 					 </artifact>
 				  </target>
 			   </configuration>

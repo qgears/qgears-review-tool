@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Optional Git features for the Eclipse UI
 Bundle-SymbolicName: hu.qgears.review.eclipse.ui.git;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.0.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.review.eclipse.ui;bundle-version="2.0.0",
  hu.qgears.review;bundle-version="2.0.0",

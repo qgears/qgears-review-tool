@@ -7,13 +7,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<version>3.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<parent>
-		<groupId>hu.qgears</groupId>
-		<artifactId>root0</artifactId>
-		<version>1.0.0</version>
-		<relativePath>../parent-poms/root0</relativePath>
-	</parent>
-
 	<modules>
 		<module>hu.qgears.sonar.client</module>
 		<module>hu.qgears.review</module>
@@ -21,8 +14,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<module>hu.qgears.review.eclipse.ui.svn</module>
 		<module>hu.qgears.review.eclipse.ui.git</module>
 		<module>hu.qgears.review.feature</module>
-		<module>hu.qgears.review.target</module>
 		<module>hu.qgears.review.web</module>
+		<module>build/hu.qgears.review.target</module>
+		<module>build/hu.qgears.review.p2</module>
 	</modules>
 
 </project>

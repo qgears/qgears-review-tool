@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<!-- Review tool category -->
+	<!-- Core functionality with eclipse UI -->
+	<category-def name="Q-Gears review tool" label="Q-Gears review tool" />
+	<category-def name="Q-Gears review tool sources" label="Q-Gears review tool sources">
+		<description>Source bundles of Q-Gears review tool</description>
+	</category-def>
+
+	<feature id="hu.qgears.review.feature">
+		<category name="Q-Gears review tool" />
+	</feature>
+	<feature id="hu.qgears.review.feature.source">
+		<category name="Q-Gears review tool sources" />
+	</feature>
+	<!-- WEB UI -->
+	<bundle id="hu.qgears.review.web">
+		<category name="Q-Gears review tool" />
+	</bundle>
+	<bundle id="hu.qgears.review.web.source">
+		<category name="Q-Gears review tool sources" />
+	</bundle>
+	<!-- SVN extensions for eclipse UI -->
+	<bundle id="hu.qgears.review.eclipse.ui.svn">
+		<category name="Q-Gears review tool" />
+	</bundle>
+	<bundle id="hu.qgears.review.eclipse.ui.svn.source">
+		<category name="Q-Gears review tool sources" />
+	</bundle>
+	<!-- GIT extensions for eclipse UI -->
+	<bundle id="hu.qgears.review.eclipse.ui.git">
+		<category name="Q-Gears review tool" />
+	</bundle>
+	<bundle id="hu.qgears.review.eclipse.ui.git.source">
+		<category name="Q-Gears review tool sources" />
+	</bundle>
+</site>

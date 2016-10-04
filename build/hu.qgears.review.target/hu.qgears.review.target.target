@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Q-Gears review tool target platform" sequenceNumber="1467708738">
+<target name="Q-Gears review tool target platform" sequenceNumber="1475588041">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="javax.servlet" version="3.1.0.v20140303-1611"/>
-      <unit id="org.eclipse.jetty.server" version="8.1.16.v20140903"/>
-      <unit id="org.eclipse.jetty.util" version="9.2.2.v20140723"/>
-      <unit id="org.eclipse.platform" version="4.4.2.v20150204-1700"/>
-      <unit id="org.eclipse.ui.views" version="3.7.0.v20140408-0703"/>
-      <unit id="org.eclipse.jdt.ui" version="3.10.2.v20141014-1419"/>
-      <unit id="org.eclipse.team.svn.ui" version="2.0.3.I20141224-1700"/>
-      <unit id="org.eclipse.egit.feature.group" version="3.4.2.201412180340-r"/>
-      <repository id="eclipse-luna" location="http://download.eclipse.org/releases/luna/"/>
+      <unit id="javax.servlet" version="3.1.0.v201410161800"/>
+      <unit id="org.eclipse.jetty.server" version="9.2.13.v20150730"/>
+      <unit id="org.eclipse.jetty.util" version="9.2.13.v20150730"/>
+      <unit id="org.eclipse.platform" version="4.5.2.v20160212-1500"/>
+      <unit id="org.eclipse.ui.views" version="3.8.0.v20150422-0725"/>
+      <unit id="org.eclipse.jdt.ui" version="3.11.2.v20151123-1510"/>
+      <unit id="org.eclipse.team.svn.ui" version="3.0.4.I20160131-1700"/>
+      <unit id="org.eclipse.egit.feature.group" version="4.1.1.201511131810-r"/>
+      <repository id="eclipse-mars-mirror" location="http://192.168.1.116:8888/nexus/content/repositories/eclipse-mars/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="hu.qgears.commons" version="6.2.0.201606140819"/>

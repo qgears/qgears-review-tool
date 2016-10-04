@@ -8,7 +8,7 @@ import java.io.File;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
 
 /**
  * Start the annotation (review) server's web server.
@@ -26,7 +26,7 @@ public class StartJetty {
 				new LoadConfiguration().loadConfiguration(new File(args[2]));
 		final ReviewInstance instance= configParsingResult.getReviewInstance();
 		Server s=new Server();
-		SocketConnector conn=new SocketConnector();
+		ServerConnector conn=new ServerConnector(s);
 		conn.setHost(args[0]);
 		conn.setPort(Integer.parseInt(args[1]));
 		s.setConnectors(new Connector[]{conn});

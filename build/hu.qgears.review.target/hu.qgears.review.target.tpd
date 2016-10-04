@@ -1,8 +1,8 @@
 target "Q-Gears review tool target platform"
 
 with requirements
-location "http://192.168.1.116:8888/nexus/content/repositories/eclipse-mars/" eclipse-mars-mirror {
-//location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
+
+location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
 	javax.servlet [3.1.0.v201410161800,3.1.0.v201410161800]
 	org.eclipse.jetty.server [9.2.13.v20150730,9.2.13.v20150730]
 	org.eclipse.jetty.util [9.2.13.v20150730,9.2.13.v20150730]
@@ -15,6 +15,6 @@ location "http://192.168.1.116:8888/nexus/content/repositories/eclipse-mars/" ec
 }
 
 location "http://qgears.net/opensource/updates/" qgears-opensource-repo {
-	hu.qgears.commons [6.2.0.201606140819,6.2.0.201606140819]
-	joptsimple [1.0.1.201606140819,1.0.1.201606140819]
+	hu.qgears.commons [6.5.0.201610041352,6.5.0.201610041352]
+	joptsimple [1.1.0.201610041556,1.1.0.201610041556]
 }

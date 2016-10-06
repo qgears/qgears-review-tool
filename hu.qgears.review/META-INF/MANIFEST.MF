@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Review
 Bundle-SymbolicName: hu.qgears.review;singleton:=true
-Bundle-Version: 3.0.1.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.commons;bundle-version="6.1.0",
  hu.qgears.sonar.client;bundle-version="1.0.0",

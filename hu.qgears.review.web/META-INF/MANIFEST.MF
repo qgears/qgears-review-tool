@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Web API of review tool
 Bundle-SymbolicName: hu.qgears.review.web
-Bundle-Version: 3.0.1.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: hu.qgears.review;bundle-version="1.0.3",
  hu.qgears.commons;bundle-version="6.0.0",

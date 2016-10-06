@@ -15,6 +15,6 @@ location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
 }
 
 location "http://qgears.net/opensource/updates/" qgears-opensource-repo {
-	hu.qgears.commons [6.5.0.201610041352,6.5.0.201610041352]
-	joptsimple [1.1.0.201610041556,1.1.0.201610041556]
+	hu.qgears.commons [6.5.0.201610061055,6.5.0.201610061055]
+	joptsimple [1.1.0.201610061257,1.1.0.201610061257]
 }

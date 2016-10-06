@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Q-Gears review tool target platform" sequenceNumber="1475589554">
+<target name="Q-Gears review tool target platform" sequenceNumber="1475752394">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="javax.servlet" version="3.1.0.v201410161800"/>
@@ -15,8 +15,8 @@
       <repository id="eclipse-mars-mirror" location="http://download.eclipse.org/releases/mars/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="hu.qgears.commons" version="6.5.0.201610041352"/>
-      <unit id="joptsimple" version="1.1.0.201610041556"/>
+      <unit id="hu.qgears.commons" version="6.5.0.201610061055"/>
+      <unit id="joptsimple" version="1.1.0.201610061257"/>
       <repository id="qgears-opensource-repo" location="http://qgears.net/opensource/updates/"/>
     </location>
   </locations>

@@ -1,24 +1,20 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Eclipse UI for reporting component of code review tool
 Bundle-SymbolicName: hu.qgears.review.eclipse.ui;singleton:=true
+Export-Package: hu.qgears.review.eclipse.ui.util,hu.qgears.review.ecli
+ pse.ui.vct,hu.qgears.review.eclipse.ui.views.model
+Bundle-Name: Eclipse UI for reporting component of code review tool
 Bundle-Version: 3.1.0.qualifier
-Bundle-Vendor: Q-Gears
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: hu.qgears.review;bundle-version="1.0.0",
- hu.qgears.sonar.client;bundle-version="1.0.0",
- org.eclipse.ui,
- org.eclipse.core.runtime;bundle-version="3.7.0",
- org.eclipse.ui.views;bundle-version="3.6.0",
- org.eclipse.jdt.ui;bundle-version="3.7.2",
- org.eclipse.jdt.core;bundle-version="3.7.3",
- hu.qgears.commons;bundle-version="1.0.0",
- org.eclipse.ui.ide;bundle-version="3.7.0",
- org.eclipse.core.resources;bundle-version="3.7.101"
+Bundle-ClassPath: icons/,.
+Require-Bundle: hu.qgears.review;bundle-version="1.0.0",hu.qgears.sona
+ r.client;bundle-version="1.0.0",org.eclipse.ui,org.eclipse.core.runti
+ me;bundle-version="3.7.0",org.eclipse.ui.views;bundle-version="3.6.0"
+ ,org.eclipse.jdt.ui;bundle-version="3.7.2",org.eclipse.jdt.core;bundl
+ e-version="3.7.3",hu.qgears.commons;bundle-version="1.0.0",org.eclips
+ e.ui.ide;bundle-version="3.7.0",org.eclipse.core.resources;bundle-ver
+ sion="3.7.101"
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Activator: hu.qgears.review.eclipse.ui.ReviewToolUI
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: icons/,
- .
-Export-Package: hu.qgears.review.eclipse.ui.util,
- hu.qgears.review.eclipse.ui.vct,
- hu.qgears.review.eclipse.ui.views.model
+Bundle-Vendor: Q-Gears Kft.
+

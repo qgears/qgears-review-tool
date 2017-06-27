@@ -68,13 +68,50 @@ public class SvnStatus implements IVersionControlTool {
 		}
 		return ret;
 	}
-	private String getSvnUrl(File dir) throws IOException, DocumentException {
-		String svninfo=UtilProcess.execute(Runtime.getRuntime().exec(getSvnTool()+" info --xml", null, dir));
-		Document doc;
-		doc = UtilDom4j.read(new StringReader(svninfo));
-		List<Element> es=UtilDom4j.selectElements(doc.getRootElement(), "//entry/url");
-		String url=es.get(0).getText();
-		return url;
+	
+	/**
+	 * Queries the SVN repository URL in an SVN working copy directory.
+	 * @param dir SVN working copy directory, in which the 
+	 * {@link #getSvnTool() svn tool} will be run to retrieve the repository URL 
+	 * @return the SVN repository URL of the given working directory
+	 * @throws IOException if IO-related error occurs during the 
+	 * execution of the SVN tool  
+	 * @throws DocumentException if the expected xml output of the svn
+	 * tool cannot be parsed 
+	 * @throws InterruptedException if the svn tool is interrupted
+	 */
+	private String getSvnUrl(final File dir) throws IOException,
+			DocumentException, InterruptedException {
+		final String svnInfoCommand = getSvnTool() + " info --xml";
+		final Process svnInfoProcess = Runtime.getRuntime().exec(
+				svnInfoCommand, null, dir);
+		final String svnInfo = UtilProcess.execute(svnInfoProcess);
+		
+		try {
+			final Document doc = UtilDom4j.read(new StringReader(svnInfo));
+			final List<Element> es = UtilDom4j.selectElements(
+					doc.getRootElement(), "//entry/url");
+			String url=es.get(0).getText();
+			
+			return url;
+		} catch (final DocumentException de) {
+			LOG.error("Could not parse the output of command `"
+					+ svnInfoCommand + "` executed in directory: " + dir
+					+ "; erroneous output: \n" + svnInfo, de);
+			
+			throw de;
+		} finally {
+			try {
+				final int svnInfoExitCode = svnInfoProcess.waitFor();
+				
+				if (svnInfoExitCode != 0) {
+					LOG.warn("Exit code of `"+ svnInfoCommand + "` in" 
+							+ dir.toString() + ": " + svnInfoExitCode);
+				}
+			} catch (final Exception e) {
+				LOG.warn("Exception during running the `" + svnInfoCommand + "`", e);
+			}
+		}
 	}
 	
 	public static void setSvnTool(String svnTool) {

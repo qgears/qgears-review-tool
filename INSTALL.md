@@ -2,12 +2,12 @@
 
 This guide will help you through the installation of the QGears Review tool with the Eclipse user interface.
 
-Assumed environment: ```Ubuntu 14.04.1```
+Assumed environment: ```Ubuntu 14.04.4```
 
 Required software:
 
  * Eclipse Luna 4.4.2
- * Java 1.6+
+ * Java 1.7+
 
 # Update site
 

@@ -3,7 +3,7 @@ Bundle-SymbolicName: hu.qgears.review.eclipse.ui;singleton:=true
 Export-Package: hu.qgears.review.eclipse.ui.util,hu.qgears.review.ecli
  pse.ui.vct,hu.qgears.review.eclipse.ui.views.model
 Bundle-Name: Eclipse UI for reporting component of code review tool
-Bundle-Version: 3.2.0.qualifier
+Bundle-Version: 3.2.1.qualifier
 Bundle-ClassPath: icons/,.
 Require-Bundle: hu.qgears.review;bundle-version="1.0.0",hu.qgears.sona
  r.client;bundle-version="1.0.0",org.eclipse.ui,org.eclipse.core.runti

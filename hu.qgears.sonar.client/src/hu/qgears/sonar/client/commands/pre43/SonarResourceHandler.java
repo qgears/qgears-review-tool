@@ -1,6 +1,4 @@
-package hu.qgears.sonar.client.commands;
-
-import hu.qgears.sonar.client.model.SonarResource;
+package hu.qgears.sonar.client.commands.pre43;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +8,8 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import hu.qgears.sonar.client.model.SonarResource;
 
 /**
  * This handler is able to list resources (projects, packages, files ...) from sonar.
@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
  * @author agostoni
  *
  */
-public class SonarResourceHandler extends AbstractSonarQueryHandler{
+public class SonarResourceHandler extends AbstractXMLSonarQuery{
 
 	private String resourceId;
 	private String scopes;
@@ -54,9 +54,10 @@ public class SonarResourceHandler extends AbstractSonarQueryHandler{
 		return res;
 	}
 
+	
 	@Override
-	protected Map<String, String> getQueryParameters() {
-		Map<String,String> qp = new HashMap<String, String>();
+	protected void addQueryParameters(Map<String, String> qp) {
+		super.addQueryParameters(qp);
 		qp.put("depth", "-1");
 		if (resourceId != null){
 			qp.put("resource", resourceId);
@@ -64,7 +65,6 @@ public class SonarResourceHandler extends AbstractSonarQueryHandler{
 		if (scopes != null){
 			qp.put("scopes", scopes);
 		}
-		return qp;
 	}
 
 	@Override

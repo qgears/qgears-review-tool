@@ -1,4 +1,4 @@
-package hu.qgears.sonar.client.commands;
+package hu.qgears.sonar.client.commands.pre43;
 
 import hu.qgears.sonar.client.model.SonarResource;
 import hu.qgears.sonar.client.model.SonarResourceScope;
@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,8 @@ public class SonarResourceMetricsHandler extends SonarResourceHandler {
 	private boolean recursive;
 	private String fileName;
 
+	private List<SonarResource> results;
+
 	/**
 	 * @param sonarBaseURL
 	 */
@@ -42,11 +45,11 @@ public class SonarResourceMetricsHandler extends SonarResourceHandler {
 	@Override
 	protected String processSonarResponse(Document xmlResponse) {
 		String ans = "OK";
-		List<SonarResource> resouceList = readResourceListRecursive(xmlResponse);
+		results = readResourceListRecursive(xmlResponse);
 		if (fileName != null){
-			ans = saveToFile(resouceList);
+			ans = saveToFile(results);
 		} else {
-			ans = resouceList.size() +" elements read.";
+			ans = results.size() +" elements read.";
 		}
 		return ans;
 	}
@@ -63,13 +66,20 @@ public class SonarResourceMetricsHandler extends SonarResourceHandler {
 				break;
 				case FIL: newScope = null;
 				break;
-				case PRJ: newScope = SonarResourceScope.DIR;
+				case TRK: newScope = SonarResourceScope.DIR;
 				break;
+				case BRC:
+				case UTS:
+					//BRC and UTS not supported in old APIS
+				default:
+					break;
 				}
 				if (newScope != null){
-					super.setCommandParameters(Arrays.asList("-id="+r.getResurceName(),"-s="+newScope.toString()));
+					super.setCommandParameters(Arrays.asList("-id="+r.getResurceName(),"-s="+newScope.scopeName(api)));
 					try {
-						Document doc = read(buildQuery(getQueryParameters()));
+						Map<String,String> qp = new HashMap<>();
+						addQueryParameters(qp);
+						Document doc = read(buildQuery(qp));
 						List<SonarResource> childRes = getSonarResourcesFromXML(doc);
 						r.getContainedResources().addAll(childRes);
 						todoList.addAll(childRes);
@@ -95,14 +105,12 @@ public class SonarResourceMetricsHandler extends SonarResourceHandler {
 	}
 
 	@Override
-	protected Map<String, String> getQueryParameters() {
-		Map<String, String> qp =  super.getQueryParameters();
+	protected void addQueryParameters(Map<String, String> qp) {
+		super.addQueryParameters(qp);
 		if (metrics != null){
 			qp.put("metrics", metrics);
 		}
-		return qp;
 	}
-
 	
 	@Override
 	protected void setCommandParameters(List<String> cmdParameters) {
@@ -119,5 +127,9 @@ public class SonarResourceMetricsHandler extends SonarResourceHandler {
 				metrics = p.split("=")[1];
 			}
 		}
+	}
+
+	public List<SonarResource> getResults() {
+		return results;
 	}
 }

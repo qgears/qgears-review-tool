@@ -1,6 +1,4 @@
-package hu.qgears.sonar.client.commands;
-
-import hu.qgears.sonar.client.util.DomHelper;
+package hu.qgears.sonar.client.commands.pre43;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +9,8 @@ import java.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import hu.qgears.sonar.client.util.DomHelper;
 
 /**
  * This handler is able to query all metrics that is known by SONAR.
@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
  * @author agostoni
  *
  */
-public class SonarMetricsHandler extends AbstractSonarQueryHandler{
+public class SonarMetricsHandler extends AbstractXMLSonarQuery{
 
 	public static final String KEY = "metrics";
 	private Logger logger = Logger.getLogger(getClass().getName());
@@ -53,11 +53,6 @@ public class SonarMetricsHandler extends AbstractSonarQueryHandler{
 	@Override
 	protected String getServiceName() {
 		return KEY;
-	}
-
-	@Override
-	protected Map<String, String> getQueryParameters() {
-		return Collections.emptyMap();
 	}
 
 	@Override

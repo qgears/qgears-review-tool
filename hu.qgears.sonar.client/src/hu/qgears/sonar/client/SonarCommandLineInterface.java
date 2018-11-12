@@ -1,9 +1,5 @@
 package hu.qgears.sonar.client;
 
-import hu.qgears.sonar.client.commands.SonarMetricsHandler;
-import hu.qgears.sonar.client.commands.SonarResourceHandler;
-import hu.qgears.sonar.client.commands.SonarResourceMetricsHandler;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -13,6 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import hu.qgears.sonar.client.commands.post67.SonarMetricsHandler67;
+import hu.qgears.sonar.client.commands.post67.SonarResourceHandler67;
+import hu.qgears.sonar.client.commands.post67.SonarResourceMetricsHandler67;
+import hu.qgears.sonar.client.commands.pre43.SonarMetricsHandler;
+import hu.qgears.sonar.client.commands.pre43.SonarResourceHandler;
+import hu.qgears.sonar.client.commands.pre43.SonarResourceMetricsHandler;
+import hu.qgears.sonar.client.model.SonarAPI;
 
 /**
  * Simple command line based Java client for the REST API of Sonar.
@@ -116,9 +120,23 @@ public class SonarCommandLineInterface {
 		if (args.length > 0){
 			String sonarBaseUrl = args[0];
 			SonarCommandLineInterface sif = new SonarCommandLineInterface();
-			sif.registerCommandHandler(SonarMetricsHandler.KEY, new SonarMetricsHandler(sonarBaseUrl));
-			sif.registerCommandHandler(SonarResourceHandler.KEY, new SonarResourceHandler(sonarBaseUrl));
-			sif.registerCommandHandler(SonarResourceMetricsHandler.KEY, new SonarResourceMetricsHandler(sonarBaseUrl));
+			SonarAPI api = SonarAPI.PRE_4_3;
+			if (args.length > 1){
+				api = SonarAPI.valueOf(args[1]);
+			}
+			switch (api) {
+			case POST_6_7:
+				sif.registerCommandHandler(SonarMetricsHandler67.KEY, new SonarMetricsHandler67(sonarBaseUrl));
+				sif.registerCommandHandler(SonarResourceHandler67.KEY, new SonarResourceHandler67(sonarBaseUrl));
+				sif.registerCommandHandler(SonarResourceMetricsHandler67.KEY, new SonarResourceMetricsHandler67(sonarBaseUrl));
+				break;
+			case PRE_4_3:
+			default:
+				sif.registerCommandHandler(SonarMetricsHandler.KEY, new SonarMetricsHandler(sonarBaseUrl));
+				sif.registerCommandHandler(SonarResourceHandler.KEY, new SonarResourceHandler(sonarBaseUrl));
+				sif.registerCommandHandler(SonarResourceMetricsHandler.KEY, new SonarResourceMetricsHandler(sonarBaseUrl));
+				break;
+			}
 			try {
 				sif.start();
 			} catch (Exception e) {

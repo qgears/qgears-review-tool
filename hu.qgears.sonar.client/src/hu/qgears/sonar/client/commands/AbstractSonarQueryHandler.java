@@ -1,38 +1,29 @@
 package hu.qgears.sonar.client.commands;
 
-import hu.qgears.sonar.client.ICommandHandler;
-
-import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
+import hu.qgears.sonar.client.ICommandHandler;
+import hu.qgears.sonar.client.model.SonarAPI;
 
 /**
- * Abstract handler that is able to call one service of Sonar REST API, and
- * parses the answer XML message using DOM4j. Subclasses has to process the
- * parsed XML {@link Document}.
+ * Abstract handler that is able to call one service of Sonar REST API.
  * 
  * @author agostoni
  * 
  */
 public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 
-	private String sonarBaseURL;
-	private DocumentBuilderFactory factory;
 	
+	private String sonarBaseURL;
+	protected SonarAPI api;
 	/**
 	 * @param sonarBaseURL The base URL of REST API. E.g. http://localhost/sonar/api.
 	 */
 	public AbstractSonarQueryHandler(String sonarBaseURL) {
 		super();
 		this.sonarBaseURL = sonarBaseURL;
-		factory = DocumentBuilderFactory.newInstance();
 	}
 
 
@@ -40,17 +31,25 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 	public final String handleCommand(List<String> cmdParameters) {
 		String ans;
 		setCommandParameters(cmdParameters);
-		Map<String,String> qParams = getQueryParameters();
+		Map<String,String> qParams = new HashMap<>();
+		addQueryParameters(qParams);
 		String address = buildQuery(qParams);
 		try {
-			Document xmlRespose = read(address);
-			ans =processSonarResponse(xmlRespose);
+			ans = processUrl(address);
 		} catch (Exception e) {
 			ans ="Cannot read URL : "+address+". "+e.getMessage();
 		}
 		return ans;
 	}
+	/**
+	 * Collect additional URL parameters that must be passed to REST API. 
+	 * 
+	 * @return
+	 */
+	protected abstract void addQueryParameters(Map<String, String> qParams);
 
+
+	protected abstract String processUrl(String address) throws Exception;
 	
 	/**
 	 * Called when a new command is arrived from UI. Subclasses should parse and
@@ -60,29 +59,6 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 	 */
 	protected abstract void setCommandParameters(List<String> cmdParameters);
 
-
-	/**
-	 * Process the XML document retrieved from REST API here.
-	 * 
-	 * @param xmlRespose
-	 * @return The answer that must be print to console
-	 */
-	protected abstract String processSonarResponse(Document xmlRespose);		
-
-
-	/**
-	 * Reads data from specified URL, and parses the answer as an XML document.
-	 * 
-	 * @param urlS
-	 * @return
-	 * @throws Exception
-	 */
-	protected Document read(String urlS) throws Exception{
-		URL url = new URL(urlS);
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		InputStream is = url.openStream();
-		return builder.parse(is);
-	}
 
 
 	/**
@@ -95,7 +71,6 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 	protected String buildQuery(Map<String, String> qP) {
 		StringBuilder bld = new StringBuilder();
 		Map<String,String> qParams = new HashMap<String, String>(qP);
-		qParams.put("format", "xml");
 		boolean needComma = false;
 		bld.append(sonarBaseURL).append("/").append(getServiceName()).append("?");
 		for (String key : qParams.keySet()){
@@ -115,12 +90,4 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 	 */
 	protected abstract String getServiceName();
 	
-	/**
-	 * Collect additional URL parameters that must be passed to REST API. Return
-	 * an empty map, if no need for additional params.
-	 * 
-	 * @return
-	 */
-	protected abstract Map<String, String> getQueryParameters();
-
 }

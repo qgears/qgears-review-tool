@@ -5,6 +5,7 @@ import hu.qgears.commons.MultiMapHashImpl;
 import hu.qgears.commons.UtilEvent;
 import hu.qgears.review.report.ReportGenerator;
 import hu.qgears.review.util.IndexByProperty;
+import hu.qgears.sonar.client.model.SonarAPI;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class ReviewModel {
 	private Set<String> users = new HashSet<String>();
 	private Comparator<? super ReviewSource> sourcesComparator;
 	private UtilEvent<ModelChangedEvent> reviewModelChangedEvent;
+	private SonarAPI sonarAPIVersion;
 	public ReviewModel() {
 		reviewEntryByUrl = new IndexByProperty<ReviewEntry>(new PropUrl());
 		reviewEntryByFileSha1=new IndexByProperty<ReviewEntry>(new PropSha1());
@@ -212,5 +214,12 @@ public class ReviewModel {
 			reviewModelChangedEvent = new UtilEvent<ModelChangedEvent>();
 		}
 		return reviewModelChangedEvent;
+	}
+	public SonarAPI getSonarAPIVersion() {
+		return sonarAPIVersion;
+	}
+	
+	public void setSonarAPIVersion(SonarAPI sonarAPIVersion) {
+		this.sonarAPIVersion = sonarAPIVersion;
 	}
 }

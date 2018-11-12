@@ -2,6 +2,7 @@ package hu.qgears.review.action;
 
 import hu.qgears.commons.UtilFile;
 import hu.qgears.review.model.ReviewModel;
+import hu.qgears.sonar.client.model.SonarAPI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class ReviewToolConfig {
 	 * The property name in mappings file that contains {@link ReviewModel#getSonarProjectId()}.
 	 */
 	private static final String P_SONAR_URL = "sonar_url";
+	private static final String P_SONAR_API_VERSION = "sonar_api";
 	/**
 	 * Path relative to config dir, where source folder mappings can be found.
 	 */
@@ -79,6 +82,7 @@ public class ReviewToolConfig {
 	private String sonarBaseUrl;
 	private String sonarProjectId;
 	private List<Matcher> sourcePatterns;
+	private SonarAPI sonarApiVersion;
 	
 	private void loadFromPropertiesFile(Properties props) throws IOException {
 		String configDirEntry = props.getProperty(P_CONFIG);
@@ -193,6 +197,18 @@ public class ReviewToolConfig {
 		if (sonarProjectId == null || sonarProjectId.isEmpty()){
 			LOG.warn("Warnign missing SONAR project id, statistics will not be available in report. Set "+P_SONAR_PROJECT+ " in mappings file");
 		}
+		String p = props.getProperty(P_SONAR_API_VERSION);
+		this.sonarApiVersion = SonarAPI.PRE_4_3;
+		if (p == null) {
+			LOG.warn("SONAR API version not specified using default "+sonarApiVersion+ " . Please set "+P_SONAR_API_VERSION+ " in mappings file");
+		} else {
+			try {
+				this.sonarApiVersion = SonarAPI.valueOf(p);
+			} catch (Exception e) {
+				LOG.error("Invalid SONAR API verison '"+p+"'. Expected "+Arrays.toString(SonarAPI.values()));
+			}
+		}
+		
 	}
 	public File getConfigDir() {
 		return configDir;
@@ -239,5 +255,9 @@ public class ReviewToolConfig {
 			}
 		}
 		return false;
+	}
+	
+	public SonarAPI getSonarApiVersion() {
+		return sonarApiVersion;
 	}
 }

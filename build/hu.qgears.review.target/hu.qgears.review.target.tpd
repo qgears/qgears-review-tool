@@ -9,6 +9,7 @@ location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
 	org.eclipse.platform [4.5.2.v20160212-1500,4.5.2.v20160212-1500]
 	org.eclipse.ui.views [3.8.0.v20150422-0725,3.8.0.v20150422-0725]
 	org.eclipse.jdt.ui [3.11.2.v20151123-1510,3.11.2.v20151123-1510]
+	com.google.gson [2.2.4.v201311231704,2.2.4.v201311231704]
 	
 	org.eclipse.team.svn.ui [3.0.4.I20160131-1700,3.0.4.I20160131-1700]
 	org.eclipse.egit.feature.group [4.1.1,4.1.2)

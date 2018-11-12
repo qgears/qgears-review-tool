@@ -103,6 +103,9 @@ public class LoadConfiguration {
 	private void loadSonarConfiguration(ReviewModel model, ReviewToolConfig cfg) {
 		model.setSonarBaseURL(cfg.getSonarBaseUrl());
 		model.setSonarProjectId(cfg.getSonarProjectId());
+		model.setSonarAPIVersion(cfg.getSonarApiVersion());
+		
+		
 	}
 	
 	/**

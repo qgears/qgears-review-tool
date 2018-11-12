@@ -1,5 +1,13 @@
 package hu.qgears.review.report;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import hu.qgears.review.model.EReviewAnnotation;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewModel;
@@ -9,14 +17,6 @@ import hu.qgears.review.util.IPropertyGetter;
 import hu.qgears.review.util.IndexByProperty;
 import hu.qgears.sonar.client.model.SonarResource;
 import hu.qgears.sonar.client.model.SonarResourceScope;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Collects SONAR coverage statistics and review progress statistics for a
@@ -159,7 +159,7 @@ public class ReportGenerator {
 			}
 		}
 	}
-
+	
 	private void collectSonarStats() {
 		if (modelRoot.getSonarBaseURL() != null && modelRoot.getSonarProjectId() != null){
 			SonarCodeCoverageQuery q = SonarCodeCoverageQuery.getInstance(
@@ -168,7 +168,7 @@ public class ReportGenerator {
 					Arrays.asList(OVERALL_COVERAGE,OVERALL_BRANCH_COVERAGE, OVERALL_LINE_COVERAGE,
 							IT_BRANCH_COVERAGE,IT_COVERAGE, IT_LINE_COVERAGE,
 							UNIT_TEST_BRANCH_COVERAGE, UNIT_TEST_COVERAGE,UNIT_TEST_LINE_COVERAGE
-							));
+							),modelRoot.getSonarAPIVersion());
 			
 			//building index
 			sonarResources = new IndexByProperty<SonarResource>(new IPropertyGetter<SonarResource>() {

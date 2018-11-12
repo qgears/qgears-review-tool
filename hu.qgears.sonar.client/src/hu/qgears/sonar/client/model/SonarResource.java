@@ -21,14 +21,15 @@ public class SonarResource {
 	private String resurceName;
 	private List<SonarResource> containedResources = new ArrayList<SonarResource>();
 	private List<ResourceMetric> metrics = new ArrayList<ResourceMetric>();
-	private int resourceId;
+	private String resourceId;
+	private SonarAPI api;
 	
-	
-	public SonarResource() {
+	public SonarResource(SonarAPI api) {
+		this.api = api;
 	}
 	
-	public SonarResource(SonarResourceScope scope, String resurceName) {
-		super();
+	public SonarResource(SonarResourceScope scope, String resurceName,SonarAPI api) {
+		this(api);
 		this.scope = scope;
 		this.resurceName = resurceName;
 	}
@@ -55,7 +56,7 @@ public class SonarResource {
 		this.resurceName = resurceName;
 	}
 	
-	public void setResourceId(int resourceId) {
+	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
 	}
 
@@ -64,7 +65,7 @@ public class SonarResource {
 	 * 
 	 * @param resourceId
 	 */
-	public int getResourceId() {
+	public String getResourceId() {
 		return resourceId;
 	}
 	public List<SonarResource> getContainedResources() {
@@ -93,10 +94,10 @@ public class SonarResource {
 	 * @return
 	 */
 	public static SonarResource readFromXml(Element e){
-		SonarResource newI = new SonarResource();
-		newI.setResourceId(Integer.parseInt(DomHelper.getChildElementByTagName(e,("id")).getTextContent()));
+		SonarResource newI = new SonarResource(SonarAPI.PRE_4_3);
+		newI.setResourceId(DomHelper.getChildElementByTagName(e,("id")).getTextContent());
 		newI.setResurceName(DomHelper.getChildElementByTagName(e,("key")).getTextContent());
-		newI.setScope(SonarResourceScope.valueOf(DomHelper.getChildElementByTagName(e,"scope").getTextContent()));
+		newI.setScope(SonarResourceScope.scope(DomHelper.getChildElementByTagName(e,"scope").getTextContent(),SonarAPI.PRE_4_3));
 		newI.getMetrics().addAll(ResourceMetric.readFromXml(e));
 		return newI;
 	}
@@ -110,12 +111,24 @@ public class SonarResource {
 	 * @return
 	 */
 	public String getFullyQualifiedJavaName() {
+		String ret;
 		String fn = getResurceName();
 		if (fn.contains(":")){
 			String[] parts = fn.split(":");
-			return parts [parts.length-1];
+			ret = parts [parts.length-1];
 		} else {
-			return fn;
+			ret = fn;
+		}
+		switch (api) {
+		case POST_6_7:
+			//split source folder name, and .java
+			ret = ret.substring(ret.indexOf('/')+1,ret.lastIndexOf('.'));
+			ret = ret.replace('/', '.');
+			return ret;
+		case PRE_4_3:
+		default:
+			return ret;
 		}
 	}
+	
 }

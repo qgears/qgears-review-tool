@@ -1,15 +1,15 @@
 package hu.qgears.review.report;
 
-import hu.qgears.commons.UtilComma;
-import hu.qgears.sonar.client.commands.SonarResourceMetricsHandler;
-import hu.qgears.sonar.client.model.SonarResource;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
+import hu.qgears.commons.UtilComma;
+import hu.qgears.sonar.client.commands.post67.SonarResourceMetricsHandler67;
+import hu.qgears.sonar.client.commands.pre43.SonarResourceMetricsHandler;
+import hu.qgears.sonar.client.model.SonarAPI;
+import hu.qgears.sonar.client.model.SonarResource;
 
 /**
  * Utility for querying data from SONAR. See {@link #loadResorucesFromSonar()}.
@@ -19,23 +19,21 @@ import org.w3c.dom.Document;
  * @author agostoni
  *
  */
-public class SonarCodeCoverageQuery extends SonarResourceMetricsHandler{
+public class SonarCodeCoverageQuery {
 
 	private List<SonarResource> results;
 	private final String sonarProjectId;
 	private final List<String> requiredMetrics;
+	private SonarAPI api;
+	private String sonarBaseURL;
 
-	private SonarCodeCoverageQuery(String sonarBaseURL,String sonarProjectId,List<String> requiredMetrics) {
-		super(sonarBaseURL);
+	private SonarCodeCoverageQuery(String sonarBaseURL,String sonarProjectId,List<String> requiredMetrics,SonarAPI api) {
+		this.sonarBaseURL = sonarBaseURL;
 		this.sonarProjectId = sonarProjectId;
 		this.requiredMetrics = requiredMetrics;
+		this.api = api;
 	}
 
-	@Override
-	protected String processSonarResponse(Document xmlResponse) {
-		results = readResourceListRecursive(xmlResponse);
-		return "Query finished";
-	}
 
 
 	/**
@@ -54,13 +52,25 @@ public class SonarCodeCoverageQuery extends SonarResourceMetricsHandler{
 		if (results == null)
 		{	
 			synchronized (this) {
-				if (results == null){
-					handleCommand(
-							Arrays.asList(
-									"-m="+getMetricsAsString(),
-									"-r",//recursive
-									"-id="+getSonarProjectId(),
-									"-s=PRJ"));
+				if (results == null) {
+					List<String> params = Arrays.asList(
+							"-m="+getMetricsAsString(),
+							"-r",//recursive
+							"-id="+getSonarProjectId());
+					switch (api) {
+					case POST_6_7:
+						SonarResourceMetricsHandler67 h = new SonarResourceMetricsHandler67(sonarBaseURL);
+						h.handleCommand(params);
+						results = h.getResults();
+						break;
+					case PRE_4_3:
+						SonarResourceMetricsHandler h2 = new SonarResourceMetricsHandler(sonarBaseURL);
+						h2.handleCommand(params);
+						results = h2.getResults();
+						break;
+					default:
+						break;
+					}
 				}
 			}
 		}
@@ -108,13 +118,13 @@ public class SonarCodeCoverageQuery extends SonarResourceMetricsHandler{
 	 * @return
 	 */
 	public static SonarCodeCoverageQuery getInstance(String sonarBaseURL,
-			String sonarProjectId, List<String> requiredMetrics) {
+			String sonarProjectId, List<String> requiredMetrics,SonarAPI api) {
 		String key = sonarBaseURL + "###" + sonarProjectId + "###"
 				+ requiredMetrics.toString();
 		if (!cache.containsKey(key)) {
 
 			cache.put(key, new SonarCodeCoverageQuery(sonarBaseURL, sonarProjectId,
-					requiredMetrics));
+					requiredMetrics,api));
 		}
 		return cache.get(key);
 	}

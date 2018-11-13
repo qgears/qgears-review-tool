@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Q-Gears review tool target platform" sequenceNumber="1478601002">
+<target name="Q-Gears review tool target platform" sequenceNumber="1542100204">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="javax.servlet" version="3.1.0.v201410161800"/>
@@ -10,6 +10,7 @@
       <unit id="org.eclipse.platform" version="4.5.2.v20160212-1500"/>
       <unit id="org.eclipse.ui.views" version="3.8.0.v20150422-0725"/>
       <unit id="org.eclipse.jdt.ui" version="3.11.2.v20151123-1510"/>
+      <unit id="com.google.gson" version="2.2.4.v201311231704"/>
       <unit id="org.eclipse.team.svn.ui" version="3.0.4.I20160131-1700"/>
       <unit id="org.eclipse.egit.feature.group" version="4.1.1.201511131810-r"/>
       <repository id="eclipse-mars-mirror" location="http://download.eclipse.org/releases/mars/"/>

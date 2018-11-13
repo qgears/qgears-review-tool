@@ -3,7 +3,6 @@ package hu.qgears.sonar.client.commands.post67;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import hu.qgears.commons.UtilFile;
 import hu.qgears.sonar.client.model.SonarResource;
 import hu.qgears.sonar.client.util.ExportToCSVHelper;
 

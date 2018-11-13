@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import hu.qgears.sonar.client.model.SonarResource;
-
 /**
  * This handler is able to query all metrics that is known by SONAR.
  * <h4>Usage</h4>

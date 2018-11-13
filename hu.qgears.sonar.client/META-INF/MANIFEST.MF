@@ -12,5 +12,5 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Q-Gears Kft.
 Require-Bundle: com.google.gson;bundle-version="2.2.4",
- hu.qgears.commons;bundle-version="7.1.0"
+ hu.qgears.commons
 

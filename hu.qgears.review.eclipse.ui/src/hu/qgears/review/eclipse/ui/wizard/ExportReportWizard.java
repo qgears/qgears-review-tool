@@ -19,7 +19,7 @@ import org.eclipse.jface.wizard.Wizard;
  * @author agostoni
  *
  */
-public class ExportHtmlReportWizard extends Wizard{
+public class ExportReportWizard extends Wizard{
 
 	/**
 	 * Optimization : do not query report results again, if they are already
@@ -46,12 +46,13 @@ public class ExportHtmlReportWizard extends Wizard{
 	}
 	
 	private ReportGenerator reportGenerator;
-	private ExportHtmlReportParametersPage exportHtmlPage;
+	private AbstractExportReportParametersPage exportHtmlPage;
 	private boolean generateCss;
 	private File targetFile;
 	private boolean generateSonarStats;
 	private boolean generateReviewStats;
 	private boolean generateTodoList;
+	private boolean isHtml;
 
 	/**
 	 * Creates a new wizard.
@@ -65,9 +66,10 @@ public class ExportHtmlReportWizard extends Wizard{
 	 *            The existing report entries, or <code>null</code> if the
 	 *            report must be regenerated.
 	 */
-	public ExportHtmlReportWizard(ReviewModel model,
-			ReviewSourceSet targetSourceSet,List<ReportEntry> existingEntries) {
+	public ExportReportWizard(ReviewModel model,
+			ReviewSourceSet targetSourceSet,List<ReportEntry> existingEntries, boolean isHtml) {
 		super();
+		this.isHtml = isHtml;
 		if (existingEntries == null || existingEntries.isEmpty()){
 			reportGenerator = new ReportGenerator(model, targetSourceSet);
 		} else {
@@ -90,7 +92,11 @@ public class ExportHtmlReportWizard extends Wizard{
 
 	@Override
 	public void addPages() {
-		addPage(exportHtmlPage = new ExportHtmlReportParametersPage(reportGenerator));
+		if (isHtml) {
+			addPage(exportHtmlPage = new ExportHtmlReportParametersPage(reportGenerator));
+		} else  {
+			addPage(exportHtmlPage = new ExportODSReportParametersPage(reportGenerator));
+		}
 	}
 
 	/**

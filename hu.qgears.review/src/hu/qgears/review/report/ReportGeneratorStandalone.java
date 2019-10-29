@@ -139,12 +139,17 @@ public class ReportGeneratorStandalone {
 				reviewSourceSets = new ArrayList<String>(model.sourcesets.keySet());
 			}
 			ReportGeneratorHtml genHtml = new ReportGeneratorHtml();
+			ReportGeneratorODS genOds = new ReportGeneratorODS();
 			for (String sourceSet : reviewSourceSets){
 				if (model.sourcesets.containsKey(sourceSet)){
 					try {
 						File outputFile = getOutputFile(sourceSet);
 						info("Generating report file for "+sourceSet+ " into "+outputFile.getAbsolutePath());
-						genHtml.generateReport(new ReportGenerator(model, model.sourcesets.get(sourceSet)),outputFile,true,true,true,true);
+						ReportGenerator rg = new ReportGenerator(model, model.sourcesets.get(sourceSet));
+						genHtml.generateReport(rg,outputFile,true,true,true,true);
+						
+						File odsOut = new File (outputFile.toString()+".ods");
+						genOds.generateReport(rg,odsOut , true, true,true);
 						info("Generation finished without errors.");
 					} catch (Exception e){
 						error("Generationg report for "+sourceSet+ " failed.");

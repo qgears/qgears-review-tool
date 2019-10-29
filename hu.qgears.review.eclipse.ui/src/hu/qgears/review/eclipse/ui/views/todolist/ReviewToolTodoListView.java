@@ -137,7 +137,8 @@ public class ReviewToolTodoListView extends AbstractReviewToolView implements IS
 		}
 		if (s instanceof ReviewSourceSetView){
 			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) s;
-			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
+			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement(),true));
+			m.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement(),false));
 			m.add(new ImportProjectForSourcesetAction(reviewSourceSetView,viewer));
 		}
 		m.add(new RefreshViewerAction(viewer){

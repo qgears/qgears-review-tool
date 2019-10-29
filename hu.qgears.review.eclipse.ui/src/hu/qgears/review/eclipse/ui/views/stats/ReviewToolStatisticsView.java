@@ -175,7 +175,8 @@ public class ReviewToolStatisticsView extends AbstractReviewToolView implements
 		manager.add(new RefreshViewerAction(statisticsTable));
 		manager.add(new ReloadStatisticsAction(statisticsTable.getInput()));
 		if (statisticsTable.getInput() instanceof StatisticsTableInput){
-			manager.add(new ExportStatisticsAction((StatisticsTableInput) statisticsTable.getInput()));
+			manager.add(new ExportStatisticsAction((StatisticsTableInput) statisticsTable.getInput(),true));
+			manager.add(new ExportStatisticsAction((StatisticsTableInput) statisticsTable.getInput(),false));
 		}
 	}
 

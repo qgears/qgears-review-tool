@@ -250,7 +250,8 @@ public class ReviewToolMainView extends AbstractReviewToolView {
 		}
 		if (sel instanceof ReviewSourceSetView){
 			ReviewSourceSetView reviewSourceSetView = (ReviewSourceSetView) sel;
-			menuManager.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement()));
+			menuManager.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement(),true));
+			menuManager.add(new ExportStatisticsAction(reviewSourceSetView.getReviewModel(),reviewSourceSetView.getModelElement(),false));
 			menuManager.add(new ImportProjectForSourcesetAction(reviewSourceSetView,viewer));
 		}
 		menuManager.add(new RefreshViewerAction(viewer));

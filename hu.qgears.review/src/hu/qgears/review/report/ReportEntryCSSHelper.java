@@ -9,13 +9,13 @@ package hu.qgears.review.report;
  */
 public class ReportEntryCSSHelper {
 
-	private static final String CLASS_METRIC_NODATA = "metric_nodata";
-	private static final String CLASS_METRIC_PERFECT = "metric_perfect";
-	private static final String CLASS_METRIC_VERY_GOOD = "metric_very_good";
-	private static final String CLASS_METRIC_GOOD = "metric_good";
-	private static final String CLASS_METRIC_AVERAGE = "metric_average";
-	private static final String CLASS_METRIC_LOW = "metric_low";
-	private static final String CLASS_WONT_REVIEW = "wont_review";
+	public static final String CLASS_METRIC_NODATA = "metric_nodata";
+	public static final String CLASS_METRIC_PERFECT = "metric_perfect";
+	public static final String CLASS_METRIC_VERY_GOOD = "metric_very_good";
+	public static final String CLASS_METRIC_GOOD = "metric_good";
+	public static final String CLASS_METRIC_AVERAGE = "metric_average";
+	public static final String CLASS_METRIC_LOW = "metric_low";
+	public static final String CLASS_WONT_REVIEW = "wont_review";
 
 	private ReportEntryCSSHelper(){}
 

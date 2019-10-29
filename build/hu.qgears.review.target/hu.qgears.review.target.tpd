@@ -16,6 +16,7 @@ location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
 }
 
 location "http://qgears.net/opensource/updates/" qgears-opensource-repo {
-	hu.qgears.commons [6.6.0.201611081022,6.6.0.201611081022]
-	joptsimple [1.2.0.201611081126,1.2.0.201611081126]
+	hu.qgears.commons [7.2.1.20190920163039,7.2.1.20190920163039]
+	joptsimple [1.4.0.20190329132902,1.4.0.20190329132902]
+	org.apache.odftoolkit.simple-odf [0.8.2.incubating,0.8.2.incubating]
 }

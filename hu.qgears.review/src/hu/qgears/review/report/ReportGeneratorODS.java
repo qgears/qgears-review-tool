@@ -228,7 +228,6 @@ public class ReportGeneratorODS {
 	
 	private void applyStyle(String entryClass, Cell c) {
 		if (entryClass != null){
-			System.out.println(entryClass);
 			Color color;
 			switch (entryClass) {
 			case ReportEntryCSSHelper.CLASS_METRIC_NODATA:

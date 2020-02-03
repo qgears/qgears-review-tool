@@ -28,7 +28,7 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 
 
 	@Override
-	public final String handleCommand(List<String> cmdParameters) {
+	public String handleCommand(List<String> cmdParameters) {
 		String ans;
 		setCommandParameters(cmdParameters);
 		Map<String,String> qParams = new HashMap<>();
@@ -90,4 +90,7 @@ public abstract class AbstractSonarQueryHandler implements ICommandHandler{
 	 */
 	protected abstract String getServiceName();
 	
+	protected String getSonarBaseURL() {
+		return sonarBaseURL;
+	}
 }

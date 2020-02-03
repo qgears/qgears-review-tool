@@ -1,14 +1,17 @@
 package hu.qgears.sonar.client.util;
 
-import hu.qgears.sonar.client.model.ResourceMetric;
-import hu.qgears.sonar.client.model.SonarResource;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import hu.qgears.sonar.client.model.ResourceMetric;
+import hu.qgears.sonar.client.model.SonarIssue;
+import hu.qgears.sonar.client.model.SonarResource;
 
 /**
  * Utility class to export {@link SonarResource}s and its metrics into a CSV
@@ -86,5 +89,53 @@ public class ExportToCSVHelper {
 		}
 		bld.append("\n");
 		
+	}
+	
+	public static void saveIssuesToCSV(File targetFile,List<SonarIssue> resouceList,boolean group) throws IOException {
+		StringBuilder bld = new StringBuilder();
+		if (resouceList.size() > 0){
+			if (group){
+				bld.append("RULE_ID")
+				.append(separator).append("SEVERITY")
+				.append(separator).append("COUNT").append("\n");
+			} else {
+				bld.append("RULE_ID")
+				.append(separator).append("SEVERITY")
+				.append(separator).append("COMPONENT")
+				.append(separator).append("LINE").append("\n");
+			}
+		}
+		if (group){
+			Map<String,Integer> sMap = new TreeMap<>();
+			for (SonarIssue i : resouceList){
+				String k = i.getRuleId()+separator+ i.getSeverity();
+				if (sMap.containsKey(k)){
+					int currentCount = sMap.get(k);
+					sMap.put(k, currentCount+1);
+				} else {
+					sMap.put(k, 1);
+				}
+			}
+			for (String key : sMap.keySet()) {
+				bld.append(key).append(separator).append(String.valueOf(sMap.get(key))).append("\n");
+			}
+		} else {
+			for (SonarIssue i : resouceList){
+				bld.append(i.getRuleId()).append(separator)
+				.append(i.getSeverity()).append(separator)
+				.append(i.getComponentKey()).append(separator)
+				.append(i.getLine()).append("\n");
+			}
+		}
+		FileOutputStream fos=new FileOutputStream(targetFile);
+		try
+		{
+			OutputStreamWriter osw=new OutputStreamWriter(fos, "UTF-8");
+			osw.write(bld.toString());
+			osw.close();
+		}finally
+		{
+			fos.close();
+		}
 	}
 }

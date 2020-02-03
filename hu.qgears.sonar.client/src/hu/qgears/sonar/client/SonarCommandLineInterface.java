@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import hu.qgears.sonar.client.commands.post67.SonarIssueFinder;
 import hu.qgears.sonar.client.commands.post67.SonarMetricsHandler67;
 import hu.qgears.sonar.client.commands.post67.SonarResourceHandler67;
 import hu.qgears.sonar.client.commands.post67.SonarResourceMetricsHandler67;
+import hu.qgears.sonar.client.commands.post67.SonarRuleFinder;
 import hu.qgears.sonar.client.commands.pre43.SonarMetricsHandler;
 import hu.qgears.sonar.client.commands.pre43.SonarResourceHandler;
 import hu.qgears.sonar.client.commands.pre43.SonarResourceMetricsHandler;
@@ -50,9 +52,23 @@ public class SonarCommandLineInterface {
 			return "Sonar client closed!";
 		}
 	}
+	private class HelpHandler implements ICommandHandler{
+		
+		private static final String KEY = "help";
+		
+		@Override
+		public String handleCommand(List<String> parameters) {
+			StringBuilder bld = new StringBuilder("Available commands\n");
+			for (String c : commands.keySet() ){
+				bld.append(c).append("\n");
+			}
+			return bld.toString();
+		}
+	}
 
 	public SonarCommandLineInterface() {
 		registerCommandHandler(ExitHandler.KEY,new ExitHandler());
+		registerCommandHandler(HelpHandler.KEY,new HelpHandler());
 	}
 	
 	
@@ -129,6 +145,8 @@ public class SonarCommandLineInterface {
 				sif.registerCommandHandler(SonarMetricsHandler67.KEY, new SonarMetricsHandler67(sonarBaseUrl));
 				sif.registerCommandHandler(SonarResourceHandler67.KEY, new SonarResourceHandler67(sonarBaseUrl));
 				sif.registerCommandHandler(SonarResourceMetricsHandler67.KEY, new SonarResourceMetricsHandler67(sonarBaseUrl));
+				sif.registerCommandHandler(SonarIssueFinder.KEY, new SonarIssueFinder(sonarBaseUrl));
+				sif.registerCommandHandler(SonarRuleFinder.KEY, new SonarRuleFinder(sonarBaseUrl));
 				break;
 			case PRE_4_3:
 			default:

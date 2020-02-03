@@ -34,7 +34,6 @@ public class SonarResourceHandler67 extends AbstractSonarJSONQueryHandler{
 	
 	@Override
 	protected String processSonarResponse(JsonObject jsonResponse) {
-		
 		StringBuilder bld = new StringBuilder();
 		for (SonarResource r : getSonarResourcesFromXML(jsonResponse)){
 			bld.append(r.getResurceName()).append(" [").append(r.getScope()).append("]\n");

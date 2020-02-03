@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
@@ -14,8 +15,10 @@ import com.google.gson.JsonParser;
 import hu.qgears.sonar.client.commands.AbstractSonarQueryHandler;
 import hu.qgears.sonar.client.model.ResourceMetric;
 import hu.qgears.sonar.client.model.SonarAPI;
+import hu.qgears.sonar.client.model.SonarIssue;
 import hu.qgears.sonar.client.model.SonarResource;
 import hu.qgears.sonar.client.model.SonarResourceScope;
+import hu.qgears.sonar.client.model.SonarRule;
 
 /**
  /**
@@ -35,6 +38,13 @@ public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryH
 	public AbstractSonarJSONQueryHandler(String sonarBaseURL) {
 		super(sonarBaseURL);
 		api = SonarAPI.POST_6_7;
+	}
+	
+	@Override
+	public String handleCommand(List<String> cmdParameters) {
+		hasNextPage = false;
+		pageIndex = 0;
+		return super.handleCommand(cmdParameters);
 	}
 
 	
@@ -56,7 +66,6 @@ public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryH
 	@Override
 	protected String processUrl(String address) throws Exception {
 		JsonObject a = read(address);
-		
 		return processSonarResponse(a);
 	}
 	
@@ -92,14 +101,22 @@ public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryH
 			JsonElement jelement = new JsonParser().parse(new InputStreamReader(is,Charset.forName("UTF-8")));
 			JsonObject  jobject = jelement.getAsJsonObject();
 			JsonElement pages = jobject.get("paging");
+			int total;
+			int pSize;
 			if (pages != null){
+				//some API-s put page info into a dedicated paging subobject
 				JsonObject p = pages.getAsJsonObject();
-				int total = readIntfield(p, "total");
+				total = readIntfield(p, "total");
 				pageIndex = readIntfield(p, "pageIndex");
-				int pSize = readIntfield(p, "pageSize");
-				if (total > pageIndex * pSize){
-					hasNextPage = true;
-				}
+				pSize = readIntfield(p, "pageSize");
+			} else {
+				//some API-s put page info directly into root
+				total = readIntfield(jobject, "total");
+				pageIndex = readIntfield(jobject, "p");
+				pSize = readIntfield(jobject, "ps");
+			}
+			if ((total > -1) &&  (total > pageIndex * pSize)){
+				hasNextPage = true;
 			}
 			return jobject;
 		}
@@ -130,6 +147,30 @@ public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryH
 		rm.setFormattedValue(val);
 		return rm;
 	}
+	protected SonarIssue readIssue(JsonObject m) {
+		String ruleId = readStringfield(m, "rule");
+		String sev = readStringfield(m, "severity");
+		String comp = readStringfield(m, "component");
+		int line = readIntfield(m, "line");
+		SonarIssue rm = new SonarIssue();
+		rm.setRuleId(ruleId);
+		rm.setSeverity(sev);
+		rm.setComponentKey(comp);
+		rm.setLine(line);
+		return rm;
+	}
+	protected SonarRule readRule(JsonObject m) {
+		String ruleId = readStringfield(m, "key");
+		String name = readStringfield(m, "name");
+		String description = readStringfield(m, "htmlDesc");
+		String sev = readStringfield(m, "severity");
+		SonarRule rm = new SonarRule();
+		rm.setRuleId(ruleId);
+		rm.setName(name);
+		rm.setDescription(description);
+		rm.setSeverity(sev);
+		return rm;
+	}
 
 	@Override
 	protected void addQueryParameters(Map<String, String> qParams) {
@@ -138,4 +179,5 @@ public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryH
 			qParams.put("p", String.valueOf(pageIndex));
 		}
 	}
+	
 }

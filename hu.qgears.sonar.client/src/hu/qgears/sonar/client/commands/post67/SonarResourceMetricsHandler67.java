@@ -84,7 +84,7 @@ public class SonarResourceMetricsHandler67 extends AbstractSonarJSONQueryHandler
 	protected void addQueryParameters(Map<String,String> qp) {
 		super.addQueryParameters(qp);
 		if (id != null){
-			qp.put("component", id);;
+			qp.put("component", id);
 		}
 		if (metrics != null){
 			qp.put("metricKeys", metrics);

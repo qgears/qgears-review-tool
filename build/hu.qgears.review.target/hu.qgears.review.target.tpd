@@ -2,20 +2,23 @@ target "Q-Gears review tool target platform"
 
 with requirements
 
-location "http://download.eclipse.org/releases/mars/" eclipse-mars-mirror {
+location "https://download.eclipse.org/releases/2020-03" eclipse-2020-03-mirror {
 	javax.servlet [3.1.0.v201410161800,3.1.0.v201410161800]
-	org.eclipse.jetty.server [9.2.13.v20150730,9.2.13.v20150730]
-	org.eclipse.jetty.util [9.2.13.v20150730,9.2.13.v20150730]
-	org.eclipse.platform [4.5.2.v20160212-1500,4.5.2.v20160212-1500]
-	org.eclipse.ui.views [3.8.0.v20150422-0725,3.8.0.v20150422-0725]
-	org.eclipse.jdt.ui [3.11.2.v20151123-1510,3.11.2.v20151123-1510]
-	com.google.gson [2.2.4.v201311231704,2.2.4.v201311231704]
+	org.eclipse.jetty.server [9.4.27.v20200227,9.4.27.v20200227]
+	org.eclipse.jetty.util [9.4.27.v20200227,9.4.27.v20200227]
+	org.eclipse.platform [4.15.0.v20200305-0155,4.15.0.v20200305-0155]
+	org.eclipse.ui.views [3.10.200.v20200213-1442,3.10.200.v20200213-1442]
+	org.eclipse.jdt.ui [3.21.0.v20200226-1531,3.21.0.v20200226-1531]
+	com.google.gson [2.8.2.v20180104-1110,2.8.2.v20180104-1110]
 	
-	org.eclipse.team.svn.ui [3.0.4.I20160131-1700,3.0.4.I20160131-1700]
-	org.eclipse.egit.feature.group [4.1.1,4.1.2)
+	org.eclipse.egit.feature.group [5.7.0,5.7.1)
 }
 
-location "http://qgears.net/opensource/updates/" qgears-opensource-repo {
+location "https://download.eclipse.org/technology/subversive/4.0/update-site" subversive-repo {
+	org.eclipse.team.svn.ui [4.0.5.I20170425-1700,4.0.5.I20170425-1700]
+}
+
+location "https://qgears.com/opensource/updates/" qgears-opensource-repo {
 	hu.qgears.commons [7.2.1.20190920163039,7.2.1.20190920163039]
 	joptsimple [1.4.0.20190329132902,1.4.0.20190329132902]
 	org.apache.odftoolkit.simple-odf [0.8.2.incubating,0.8.2.incubating]

@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Q-Gears review tool target platform" sequenceNumber="1572351646">
+<target name="Q-Gears review tool target platform" sequenceNumber="1593405032">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="javax.servlet" version="3.1.0.v201410161800"/>
-      <unit id="org.eclipse.jetty.server" version="9.2.13.v20150730"/>
-      <unit id="org.eclipse.jetty.util" version="9.2.13.v20150730"/>
-      <unit id="org.eclipse.platform" version="4.5.2.v20160212-1500"/>
-      <unit id="org.eclipse.ui.views" version="3.8.0.v20150422-0725"/>
-      <unit id="org.eclipse.jdt.ui" version="3.11.2.v20151123-1510"/>
-      <unit id="com.google.gson" version="2.2.4.v201311231704"/>
-      <unit id="org.eclipse.team.svn.ui" version="3.0.4.I20160131-1700"/>
-      <unit id="org.eclipse.egit.feature.group" version="4.1.1.201511131810-r"/>
-      <repository id="eclipse-mars-mirror" location="http://download.eclipse.org/releases/mars/"/>
+      <unit id="org.eclipse.jetty.server" version="9.4.27.v20200227"/>
+      <unit id="org.eclipse.jetty.util" version="9.4.27.v20200227"/>
+      <unit id="org.eclipse.platform" version="4.15.0.v20200305-0155"/>
+      <unit id="org.eclipse.ui.views" version="3.10.200.v20200213-1442"/>
+      <unit id="org.eclipse.jdt.ui" version="3.21.0.v20200226-1531"/>
+      <unit id="com.google.gson" version="2.8.2.v20180104-1110"/>
+      <unit id="org.eclipse.egit.feature.group" version="5.7.0.202003110725-r"/>
+      <repository id="eclipse-2020-03-mirror" location="https://download.eclipse.org/releases/2020-03"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.team.svn.ui" version="4.0.5.I20170425-1700"/>
+      <repository id="subversive-repo" location="https://download.eclipse.org/technology/subversive/4.0/update-site"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="hu.qgears.commons" version="7.2.1.20190920163039"/>
       <unit id="joptsimple" version="1.4.0.20190329132902"/>
       <unit id="org.apache.odftoolkit.simple-odf" version="0.8.2.incubating"/>
-      <repository id="qgears-opensource-repo" location="http://qgears.net/opensource/updates/"/>
+      <repository id="qgears-opensource-repo" location="https://qgears.com/opensource/updates/"/>
     </location>
   </locations>
 </target>

@@ -13,7 +13,7 @@ Require-Bundle: hu.qgears.review;bundle-version="1.0.0",hu.qgears.sona
  e.ui.ide;bundle-version="3.7.0",org.eclipse.core.resources;bundle-ver
  sion="3.7.101"
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: hu.qgears.review.eclipse.ui.ReviewToolUI
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Q-Gears Kft.

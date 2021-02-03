@@ -3,6 +3,7 @@ package hu.qgears.review.util.vct.gitimpl;
 import hu.qgears.commons.UtilProcess;
 import hu.qgears.review.action.ReviewToolConfig;
 import hu.qgears.review.model.ReviewSource;
+import hu.qgears.review.util.UtilSha1;
 import hu.qgears.review.util.vct.EVersionControlTool;
 import hu.qgears.review.util.vct.IVersionControlTool;
 
@@ -39,9 +40,9 @@ public class GitImpl implements IVersionControlTool{
 		for (String file : files.split(("\\r?\\n"))){
 			if (rtc.matchesSource(file)){
 				String[] columns = file.split("\\\t");
-				String sha1 = columns[0].substring(columns[0].lastIndexOf(' ')+1);
 				String filePath = columns[1];
 				File fileInWorkingCopy = new File(targetFolder,filePath);
+				String sha1 = UtilSha1.getSHA1(fileInWorkingCopy);
 				String fileVersion = getFileVersion(targetFolder,filePath);
 				ReviewSource rs = new ReviewSource(id, sourceFolderURL, filePath, folderVersion, fileVersion, sha1, fileInWorkingCopy, EVersionControlTool.GIT);
 				sources.add(rs);

@@ -19,7 +19,7 @@ location "https://download.eclipse.org/technology/subversive/4.0/update-site" su
 }
 
 location "https://qgears.com/opensource/updates/" qgears-opensource-repo {
-	hu.qgears.commons [10.0.0.20210112171126,10.0.0.20210112171126]
+	hu.qgears.commons [10.0.1.20210216100110,10.0.1.20210216100110]
 	joptsimple [1.5.0.20200810174527,1.5.0.20200810174527]
 	org.apache.odftoolkit.simple-odf [0.8.2.incubating,0.8.2.incubating]
 }

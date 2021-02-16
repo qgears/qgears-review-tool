@@ -14,7 +14,7 @@ Parent POM for QGears review tool components.
 	
 	<groupId>hu.qgears</groupId>
 	<artifactId>qgears-review-tool-parent</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<distributionManagement>
 		<site>

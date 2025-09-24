@@ -24,11 +24,8 @@ import hu.qgears.sonar.client.model.SonarRule;
  /**
  * Parses the SONAR server response as XML message using GSON. Subclasses has to process the
  * parsed JSON message {@link JsonObject}.
- * @author agostoni
- *
  * 
  * @author agostoni
- * 
  */
 public abstract class AbstractSonarJSONQueryHandler  extends AbstractSonarQueryHandler {
 

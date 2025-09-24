@@ -121,14 +121,38 @@ public class SonarResource {
 		}
 		switch (api) {
 		case POST_6_7:
-			//split source folder name, and .java
-			ret = ret.substring(ret.indexOf('/')+1,ret.lastIndexOf('.'));
-			ret = ret.replace('/', '.');
+
+			ret = parseQualifiedJavaNameFromPath(ret);
 			return ret;
 		case PRE_4_3:
 		default:
 			return ret;
 		}
+	}
+	/**
+	 * 	split source folder name, and .java from file name
+	 * @param fn
+	 * @return
+	 */
+	public static String parseQualifiedJavaNameFromPath(String fn) {
+		int from;
+		from = fn.indexOf("src/main/java/");
+		if (from >= 0) {
+			from += "src/main/java/".length();
+		} else {
+			from = fn.indexOf("src/");
+			if (from >= 0) {
+				from += "src/".length();
+			}
+		}
+		
+		if (from >=0) {
+			//removing trailing '.java'
+			fn = fn.substring(from, fn.length()-5);
+			
+		}
+		fn = fn.replace('/', '.');
+		return fn;
 	}
 	
 }

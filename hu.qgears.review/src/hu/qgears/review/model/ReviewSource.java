@@ -2,6 +2,7 @@ package hu.qgears.review.model;
 
 import hu.qgears.review.util.UtilSha1;
 import hu.qgears.review.util.vct.EVersionControlTool;
+import hu.qgears.sonar.client.model.SonarResource;
 
 import java.io.File;
 import java.io.Serializable;
@@ -159,15 +160,11 @@ public class ReviewSource implements Serializable{
 	public String getFullyQualifiedJavaName() {
 		String fn = getSourceUrl();
 		if (fn.contains("src")){
-			String[] parts = fn.split("\\/src\\/");
-			String fqn = parts[parts.length-1];
-			//removing trailing '.java'
-			fqn = fqn.substring(0, fqn.length()-5);
-			return fqn.replace('/', '.');
-		} else {
-			return fn;
-		}
+			fn = SonarResource.parseQualifiedJavaNameFromPath(fn);
+		} 
+		return fn;
 	}
+	
 	
 	/**
 	 * Returns the {@link ReviewEntry}s that are connected to current version of

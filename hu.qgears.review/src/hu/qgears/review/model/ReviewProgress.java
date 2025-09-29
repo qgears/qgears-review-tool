@@ -44,7 +44,7 @@ public class ReviewProgress {
 			ReviewSource src = model.getSource(r.getFullUrl());
 			if (!old && r.matches(src)){
 				count++;
-			} else if (old && !r.matches(src) && r.matchesPrevious(src)){
+			} else if (old &&  r.matchesPrevious(src)){
 				count++;
 			}
 		}

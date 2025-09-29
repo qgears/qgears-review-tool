@@ -232,7 +232,12 @@ public class ReviewEntry {
 	 * @return
 	 */
 	public boolean matchesPrevious(ReviewSource rs) {
-		return fileUrl.equals(rs.getSourceUrl());
+		if (fileUrl.equals(rs.getSourceUrl())) {
+			//url is the same - but we are not the latest
+			return !matches(rs);
+		} else {
+			return rs.getPreviousSourceUrls().contains(fileUrl);	
+		}
 	}
 	public String getSha1Sum() {
 		return sha1Sum;

@@ -5,7 +5,7 @@ import org.eclipse.jface.action.Action;
 import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
 import hu.qgears.review.eclipse.ui.vct.VersionContolExtensionManager;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
-import hu.qgears.review.model.ReviewModel;
+import hu.qgears.review.model.ReviewSource;
 
 /**
  * Compares the HEAD version and the version of the source file, specified by
@@ -25,8 +25,8 @@ public class CompareWithHeadAction extends Action {
 	
 	@Override
 	public void run() {
-		ReviewModel rm = entry.getReviewModel();
-		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(entry.getModelElement().getReviewSource(rm).getVersionControlTool());
+		ReviewSource src =  entry.getParent().getParent().getModelElement();
+		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(src.getVersionControlTool());
 		vui.compareWithHead(entry);
 	}
 }

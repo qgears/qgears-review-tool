@@ -4,6 +4,7 @@ import hu.qgears.review.eclipse.ui.vct.IVersionControlToolUi;
 import hu.qgears.review.eclipse.ui.vct.VersionContolExtensionManager;
 import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
 import hu.qgears.review.model.ReviewModel;
+import hu.qgears.review.model.ReviewSource;
 
 import org.eclipse.jface.action.Action;
 
@@ -42,8 +43,8 @@ public class CompareWithEachOtherAction extends Action{
 
 	@Override
 	public void run() {
-		ReviewModel rm = prev.getReviewModel();
-		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(prev.getModelElement().getReviewSource(rm).getVersionControlTool());
+		ReviewSource src =  prev.getParent().getParent().getModelElement();
+		IVersionControlToolUi vui = VersionContolExtensionManager.getVersionControlToolUi(src.getVersionControlTool());
 		vui.openCompareEditor(prev,next);
 	}
 

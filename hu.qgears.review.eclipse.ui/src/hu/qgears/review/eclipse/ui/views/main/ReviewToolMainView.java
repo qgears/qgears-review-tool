@@ -205,7 +205,7 @@ public class ReviewToolMainView extends AbstractReviewToolView {
 					}
 				});
 			}
-		});		
+		});
 		setReviewInstance(null);
 		job.schedule();
 	}

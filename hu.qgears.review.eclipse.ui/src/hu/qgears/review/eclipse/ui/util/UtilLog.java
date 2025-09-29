@@ -27,15 +27,25 @@ public class UtilLog {
 	 * @param exc The Exception holding stack trace information
 	 */
 	public static void showErrorDialog(String message,Throwable exc){
+		showErrorDialog("Error",message,exc);
+	}
+	public static void showErrorDialog(String dialogTitle, String message,Throwable exc){
 		Status status = new Status(IStatus.ERROR,ReviewToolUI.PLUGIN_ID,exc == null ? message : exc.getMessage(),exc);
 		ErrorDialog .openError(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				"Error", message, status);
+				dialogTitle, message, status);
 		ReviewToolUI.getDefault().getLog().log(status);
 	}
 	
 	public static void logError(String message, Throwable ex){
 		Status status = new Status(IStatus.ERROR,ReviewToolUI.PLUGIN_ID,message,ex);
+		ReviewToolUI.getDefault().getLog().log(status);
+	}
+	public static void logInfo(String message){
+		logInfo(message, null);
+	}
+	public static void logInfo(String message, Throwable ex){
+		Status status = new Status(IStatus.INFO,ReviewToolUI.PLUGIN_ID,message,ex);
 		ReviewToolUI.getDefault().getLog().log(status);
 	}
 	

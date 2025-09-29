@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ public class ReviewSource implements Serializable{
 	private String sourceFolderId;
 	private String sourceFolderUrl;
 	private String sourceUrl;
+	private List<String> previousSourceUrls;
 	private String folderVersion;
 	private String fileVersion;
 	private String sha1;
@@ -32,7 +34,7 @@ public class ReviewSource implements Serializable{
 	private final File fileInWorkingCopy;
 	
 	/**
-	 * Default contructor
+	 * Default constructor
 	 * 
 	 * @since 2.0
 	 */
@@ -197,16 +199,25 @@ public class ReviewSource implements Serializable{
 	 * @return The list of matching {@link ReviewEntry}s, list may be empty.
 	 */
 	public List<ReviewEntry> getMatchingReviewEntriesPreviousVersion(ReviewModel modelRoot){
-		Collection<ReviewEntry> entries = modelRoot.getReviewEntryByUrl().getMappedObjects(getSourceUrl());
 		List<ReviewEntry> ret = new ArrayList<ReviewEntry>();
+		collectPreviousEntries(modelRoot, ret,getSourceUrl());
+		if (previousSourceUrls != null) {
+			for (String oldUrl : previousSourceUrls)
+			{
+				collectPreviousEntries(modelRoot, ret,oldUrl);
+			}
+		}
+		return ret;
+	}
+	private void collectPreviousEntries(ReviewModel modelRoot, List<ReviewEntry> ret,String aSourceUrl) {
+		Collection<ReviewEntry> entries = modelRoot.getReviewEntryByUrl().getMappedObjects(aSourceUrl);
 		for(ReviewEntry e:entries)
 		{
-			if(!e.matches(this) && e.matchesPrevious(this))
+			if(e.matchesPrevious(this))
 			{
 				ret.add(e);
 			}
 		}
-		return ret;
 	}
 
 	/**
@@ -251,5 +262,30 @@ public class ReviewSource implements Serializable{
 	 */
 	public EVersionControlTool getVersionControlTool(){
 		return vct;
+	}
+	
+	/**
+	 * A source file might have multiple source urls if it was renamed / moved within the target repository.
+	 * 
+	 * @return list of old path names, if any, an empty list otherwise. Never <code>null</code>, 
+	 */
+	public List<String> getPreviousSourceUrls() {
+		if (previousSourceUrls == null) {
+			return Collections.emptyList();
+		}
+		return previousSourceUrls;
+	}
+	
+	/**
+	 * Called usually by the SCM layer, to populate to earlier repository URL-s mined from history.
+	 * @param url
+	 */
+	public void addPreviousSourceUrl(String url) {
+		if (previousSourceUrls == null) {
+			previousSourceUrls = new ArrayList<>();
+		}
+		if (!previousSourceUrls.contains(url)) {
+			previousSourceUrls.add(url);
+		}
 	}
 }

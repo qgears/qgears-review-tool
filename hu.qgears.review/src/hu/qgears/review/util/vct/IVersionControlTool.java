@@ -6,6 +6,8 @@ import hu.qgears.review.model.ReviewSource;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * Defines the interface between the review tool and the underlying version
  * control tool.
@@ -25,7 +27,7 @@ public interface IVersionControlTool {
 	 * @return
 	 * @throws Exception
 	 */
-	List<ReviewSource> loadSources(String id, File file,ReviewToolConfig cfg) throws Exception;
+	List<ReviewSource> loadSources(String id, File file,ReviewToolConfig cfg, IProgressMonitor mon) throws Exception;
 
 	/**
 	 * Download a source file from the scm server.

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * {@link IVersionControlTool} implementation for GIT repository.
@@ -27,7 +29,7 @@ public class GitImpl implements IVersionControlTool{
 	private static String gitTool = "/usr/bin/git";
 	
 	@Override
-	public List<ReviewSource> loadSources(String id, File targetFolder,ReviewToolConfig rtc)
+	public List<ReviewSource> loadSources(String id, File targetFolder,ReviewToolConfig rtc,IProgressMonitor m)
 			throws Exception {
 		if (!targetFolder.exists()){
 			throw new IOException("Source folder does not exist: "+targetFolder);
@@ -37,7 +39,9 @@ public class GitImpl implements IVersionControlTool{
 		String sourceFolderURL = "file://"+ targetFolder.getCanonicalPath();
 		List<ReviewSource> sources = new ArrayList<ReviewSource>();
 		String files = UtilProcess.execute(getGitTool() +" -C "+targetFolder+" ls-tree -r HEAD "+targetFolder.getAbsolutePath());
-		for (String file : files.split(("\\r?\\n"))){
+		String[] allFiles = files.split(("\\r?\\n"));
+		m.beginTask("", allFiles.length);
+		for (String file : allFiles){
 			if (rtc.matchesSource(file)){
 				String[] columns = file.split("\\\t");
 				String filePath = columns[1];
@@ -45,11 +49,28 @@ public class GitImpl implements IVersionControlTool{
 				String sha1 = UtilSha1.getSHA1(fileInWorkingCopy);
 				String fileVersion = getFileVersion(targetFolder,filePath);
 				ReviewSource rs = new ReviewSource(id, sourceFolderURL, filePath, folderVersion, fileVersion, sha1, fileInWorkingCopy, EVersionControlTool.GIT);
+				fillPreviousUrlsFromHistory(filePath, rs);
+				
 				sources.add(rs);
 			}
+			m.worked(1);
 		}
+		m.done();
 		checkRepoStatus(targetFolder);
 		return sources;
+	}
+
+	/**
+	 * Searches for the old paths where the given source file was moved from. The GIT history it used to identify move operations.
+	 * @param filePath
+	 * @param rs
+	 */
+	private void fillPreviousUrlsFromHistory(String filePath, ReviewSource rs) {
+		if (filePath.contains("src/main/java")) {
+			//TODO mine it from history
+			//git log --follow --name-status --pretty=format: UtilEventListener.java
+			rs.addPreviousSourceUrl(filePath.replace("src/main/java", "src"));
+		}
 	}
 
 	private void checkRepoStatus(File targetFolder) throws IOException {
@@ -65,7 +86,7 @@ public class GitImpl implements IVersionControlTool{
 	}
 
 	public static void main(String[] args) throws Exception {
-		new GitImpl().loadSources("hello", new File("/home/agostoni/git-hub/repository-builder/opensource-utils"), new ReviewToolConfig());
+		new GitImpl().loadSources("hello", new File("/home/agostoni/git-hub/repository-builder/opensource-utils"), new ReviewToolConfig(), new NullProgressMonitor());
 	}
 	
 	@Override

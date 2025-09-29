@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 
 /**
  * Loads a review configuration via a root configuration file.  
@@ -57,12 +60,22 @@ public class LoadConfiguration {
 	 * @throws Exception
 	 * @since 2.0
 	 */
-	public ConfigParsingResult loadConfiguration(final File mappingfile) 
+	public ConfigParsingResult loadConfiguration(final File mappingfile) throws Exception
+	{
+		return loadConfiguration(mappingfile, new NullProgressMonitor());
+	}
+	
+	
+	public ConfigParsingResult loadConfiguration(final File mappingfile, IProgressMonitor progressMonitor) 
 			throws Exception {
 		LOG.info("Current working directory : " + new File(".").getAbsolutePath());
 		
 		final List<Problem> problems = new ArrayList<Problem>();
+		
+		SubMonitor monitor = SubMonitor.convert(progressMonitor);
+		monitor.beginTask("Load config...", 100);
 		ReviewToolConfig cfg = ReviewToolConfig.load(mappingfile);
+		monitor.worked(1);
 		
 		final File configdir = cfg.getConfigDir();
 		
@@ -79,24 +92,39 @@ public class LoadConfiguration {
 					"configuration file " + mappingfile + " must refer to an" +
 							"existing directory." + configdir, problemDetail));
 		}
-		
-		final ReviewModel model = loadReviewModel(cfg, configdir, problems);
+		monitor.setTaskName("Loading review model...");
+		final ReviewModel model = loadReviewModel(cfg, configdir, problems,monitor.newChild(99));
 		final ReviewInstance reviewInstance = new ReviewInstance(model, 
 				new File(cfg.getReviewOutputFolder(), 
 						System.currentTimeMillis() + REVIEW_FILE_EXTENSION));
 		final ConfigParsingResult configParsingResult = 
 				new ConfigParsingResult(reviewInstance, problems);
 		
+		monitor.done();
 		return configParsingResult;
 	}
 	private ReviewModel loadReviewModel(final ReviewToolConfig cfg, 
-			final File configdir, final List<Problem> problems) throws Exception {
+			final File configdir, final List<Problem> problems, SubMonitor m) throws Exception {
 		ReviewModel model=new ReviewModel();
+		m.setWorkRemaining(100);
+		m.setTaskName("Parse mappings");
 		parseMappings(model, cfg);
-		loadSourceFolders(model, cfg);
+		m.worked(1);
+		
+		m.setTaskName("Loading source folders");
+		loadSourceFolders(model, cfg,m.newChild(96));
+		
+		m.setTaskName("Loading file sets");
 		loadFileSets(model, cfg);
+		m.worked(1);
+		
+		m.setTaskName("Loading existing reviews");
 		loadExistingReviews(model, cfg);
+		m.worked(1);
+
+		m.setTaskName("Loading sonar config");
 		loadSonarConfiguration(model,cfg);
+		m.worked(1);
 		return model;
 	}
 	
@@ -204,14 +232,14 @@ public class LoadConfiguration {
 						} catch (Exception e){
 							LOG.warn("Cannot load fileset : "+fileSetSubdir,e);
 						}
-						
 					}
 				}
 			}
 		}
 	}
 	
-	private void loadSourceFolders(ReviewModel model, ReviewToolConfig cfg) throws Exception {
+	private void loadSourceFolders(ReviewModel model, ReviewToolConfig cfg, SubMonitor m) throws Exception {
+		m.setWorkRemaining(cfg.getSourceFolders().size());
 		for(String line : cfg.getSourceFolders())
 		{
 			EVersionControlTool tool = getVersionControlTool (line);
@@ -219,6 +247,7 @@ public class LoadConfiguration {
 				throw new RuntimeException("Unknown source folder type found in config file :"+line);
 			} else {
 				String id = tool.getSourceFolder(line);
+				m.setTaskName("Loading source folder "+id);
 				String folder=model.mappings.get(id);
 				if (folder != null) {
 					LOG.info("Loading source folder: "+id);
@@ -231,9 +260,10 @@ public class LoadConfiguration {
 							if (cache.exists()){
 								LOG.info("Loading content from cache!");
 								files = cache.load();
+								m.worked(1);
 							} else {
 								LOG.info("Creating cache file...");
-								files = loader.loadSources(id, targetFolder,cfg);
+								files = loader.loadSources(id, targetFolder,cfg,m.newChild(1));
 								cache.save(files);
 								LOG.info("Cache file is ready to use in next startup.");
 							}
@@ -242,7 +272,7 @@ public class LoadConfiguration {
 						}
 					} 
 					if (files == null){
-						files = loader.loadSources(id, targetFolder,cfg);
+						files = loader.loadSources(id, targetFolder,cfg,m.newChild(1));
 					}
 					model.addSourceFiles(files);
 				} else {
@@ -250,6 +280,7 @@ public class LoadConfiguration {
 				}
 			}
 		}
+		m.done();
 	}
 
 	private EVersionControlTool getVersionControlTool(String line) {

@@ -1,13 +1,5 @@
 package hu.qgears.review.eclipse.ui.views.main;
 
-import hu.qgears.review.action.ConfigParsingResult;
-import hu.qgears.review.action.LoadConfiguration;
-import hu.qgears.review.action.ConfigParsingResult.Problem;
-import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
-import hu.qgears.review.eclipse.ui.ReviewToolUI;
-import hu.qgears.review.eclipse.ui.preferences.Preferences;
-import hu.qgears.review.model.ReviewInstance;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,9 +11,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
+
+import hu.qgears.review.action.ConfigParsingResult;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
+import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
+import hu.qgears.review.action.LoadConfiguration;
+import hu.qgears.review.eclipse.ui.ReviewToolUI;
+import hu.qgears.review.eclipse.ui.preferences.Preferences;
+import hu.qgears.review.model.ReviewInstance;
 
 /**
  * Eclipse {@link Job} for loading review tool configuration on a BG thread
@@ -67,11 +66,9 @@ public class LoadConfigurationJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		SubMonitor m = SubMonitor.convert(monitor);
 		try {
 			final String configurationFile = Preferences.getConfigurationFile();
 			IStatus status = Status.OK_STATUS;
-			m.beginTask("Loading..", 1);
 			if (configurationFile == null || configurationFile.isEmpty()){
 				status = new Status(IStatus.ERROR, ReviewToolUI.PLUGIN_ID, "Review " +
 						"tool configuration file is not set. Please open the " +
@@ -85,7 +82,7 @@ public class LoadConfigurationJob extends Job {
 				try {
 					final LoadConfiguration lc = new LoadConfiguration();
 					final ConfigParsingResult configParsingResult = 
-							lc.loadConfiguration(new File (configurationFile));
+							lc.loadConfiguration(new File (configurationFile),monitor);
 					reviewInstance = configParsingResult.getReviewInstance();
 					
 					final List<Problem> configParsingProblems = 
@@ -111,7 +108,7 @@ public class LoadConfigurationJob extends Job {
 			}
 			return status;
 		} finally {
-			m.done();
+			monitor.done();
 		}
 	}
 

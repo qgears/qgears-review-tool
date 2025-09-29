@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Execute SVN status on a folder.
@@ -33,7 +34,7 @@ public class SvnStatus implements IVersionControlTool {
 	private static final Logger LOG = Logger.getLogger(SvnStatus.class);
 	private static String svnTool = "/usr/bin/svn";
 	@Override
-	public List<ReviewSource> loadSources(String id, File dir,ReviewToolConfig rtc) throws Exception {
+	public List<ReviewSource> loadSources(String id, File dir,ReviewToolConfig rtc,IProgressMonitor m) throws Exception {
 		LOG.info("Loading source from SVN working copy "+dir);
 		List<ReviewSource> ret=new ArrayList<ReviewSource>();
 		String svnurl=getSvnUrl(dir);
@@ -41,7 +42,10 @@ public class SvnStatus implements IVersionControlTool {
 		Document doc=UtilDom4j.read(new StringReader(s));
 		List<Element> es=UtilDom4j.selectElements(doc.getRootElement(), "target/entry[@path='.']/wc-status");
 		String rev=es.get(0).attributeValue("revision");
-		for(Element e:UtilDom4j.selectElements(doc.getRootElement(), "target/entry"))
+		
+		List<Element> svnSrcDomEntries = UtilDom4j.selectElements(doc.getRootElement(), "target/entry");
+		m.beginTask("", svnSrcDomEntries.size());
+		for(Element e:svnSrcDomEntries)
 		{
 			String mod=((Element)e.selectSingleNode("wc-status")).attributeValue("item");
 			String path=e.attributeValue("path");
@@ -65,6 +69,7 @@ public class SvnStatus implements IVersionControlTool {
 					ret.add(new ReviewSource(id, svnurl, path, rev, ver, sha1,f,EVersionControlTool.SVN));
 				}
 			}
+			m.worked(1);
 		}
 		return ret;
 	}

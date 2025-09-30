@@ -31,6 +31,26 @@ import hu.qgears.review.util.vct.IVersionControlTool;
  */
 public class GitImpl implements IVersionControlTool{
 
+	private static final class CLIMonitor extends NullProgressMonitor {
+		private int work;
+		UtilTime t = UtilTime.createTimer();
+		UtilTime full = UtilTime.createTimer();
+
+		@Override
+		public void worked(int w) {
+			this.work+=w;
+			if (this.work % 100 == 0) {
+				t.printElapsed("Worked "+work);
+			}
+		}
+
+		@Override
+		public void done() {
+			full.printElapsed("Loading git");
+		}
+	}
+
+
 	private static final Logger LOG = Logger.getLogger(GitImpl.class);
 	
 	private static String gitTool = "/usr/bin/git";
@@ -54,10 +74,7 @@ public class GitImpl implements IVersionControlTool{
 					})
 				.collect(Collectors.toList());
 		m.beginTask("", allFiles.size());
-		for (String s : allFiles) {
-			System.out.println(s);
-		}
-		//parallel computation helps a lot here, as there is a log of waiting time on external 'git' command calls
+		//parallel computation helps a lot here, as there is a lot of waiting time on external 'git' command calls
 		allFiles.parallelStream().forEach(filePath ->{
 			ReviewSource rs = createReviewSource(id, targetFolder, folderVersion, sourceFolderURL, filePath);
 			synchronized (sources) {
@@ -80,7 +97,7 @@ public class GitImpl implements IVersionControlTool{
 				sha1 = UtilSha1.getSHA1(fileInWorkingCopy);
 			String fileVersion = getFileVersion(targetFolder,filePath);
 			ReviewSource rs = new ReviewSource(id, sourceFolderURL, filePath, folderVersion, fileVersion, sha1, fileInWorkingCopy, EVersionControlTool.GIT);
-			fillPreviousUrlsFromHistory(targetFolder, filePath, rs);
+			//fillPreviousUrlsFromHistory(targetFolder, filePath, rs);
 			return rs;
 		} catch (IOException e) {
 			throw new UncheckedIOException("Failed to load "+filePath,e);
@@ -88,19 +105,6 @@ public class GitImpl implements IVersionControlTool{
 	}
 	
 
-	/**
-	 * Searches for the old paths where the given source file was moved from. The GIT history it used to identify move operations.
-	 * @param targetFolder 
-	 * @param filePath
-	 * @param rs
-	 * @throws IOException 
-	 */
-	private void fillPreviousUrlsFromHistory(File targetFolder, String filePath, ReviewSource rs) throws IOException {
-		List<String> oldVersions = getOldVersions(targetFolder, filePath);
-		for (String oldVersion : oldVersions) {
-			rs.addPreviousSourceUrl(oldVersion);
-		}
-	}
 
 	private List<String> getOldVersions(File gitFolder, String filePath) throws IOException {
 		//git log --follow --name-status --pretty=format: UtilEventListener.java
@@ -146,24 +150,36 @@ public class GitImpl implements IVersionControlTool{
 		ReviewToolConfig cfg = new ReviewToolConfig();
 		//		System.out.println(new GitImpl().getOldVersions(git, p));
 		cfg.addSourcePattern(".*\\.java$");
-		new GitImpl().loadSources("hello", git, cfg, new NullProgressMonitor() {
-			private int work;
-			UtilTime t = UtilTime.createTimer();
-			UtilTime full = UtilTime.createTimer();
-			@Override
-			public void worked(int w) {
-				this.work+=w;
-				if (this.work % 100 == 0) {
-					t.printElapsed("Worked "+work);
+		GitImpl gitImpl = new GitImpl();
+		List<ReviewSource> srcs = gitImpl.loadSources("hello", git, cfg, new CLIMonitor());
+		gitImpl.fetchOldFileUrls(srcs,new CLIMonitor());
+		
+		
+	}
+	@Override
+	public void fetchOldFileUrls(List<ReviewSource> srcs, IProgressMonitor m) {
+		
+		m.beginTask("Fetching old urls from git", srcs.size());
+		srcs.parallelStream().forEach(rs -> {
+			try  {
+				List<String> oldVersions = getOldVersions(rs.getFileInWorkingCopy().getParentFile(), rs.getFileInWorkingCopy().getName());
+				for (String oldVersion : oldVersions) {
+					rs.addPreviousSourceUrl(oldVersion);
 				}
+			} catch (IOException e) {
+				throw new UncheckedIOException("Failed to fetch old path names of "+rs,e);
 			}
-			@Override
-			public void done() {
-				full.printElapsed("Loading git");
+			
+			synchronized (m) {
+				m.worked(1);
 			}
 		});
+		m.done();
+		
 	}
 	
+
+
 	@Override
 	public byte[] downloadResource(String svnurl, String revision)
 			throws Exception {

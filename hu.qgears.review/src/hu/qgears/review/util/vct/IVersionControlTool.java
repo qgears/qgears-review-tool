@@ -39,4 +39,13 @@ public interface IVersionControlTool {
 	 */
 	byte[] downloadResource(String svnurl, String revision) throws Exception;
 
+	/**
+	 * Searches for the old paths where the given source file was originally committed, and moved from. 
+	 * Will fill {@link ReviewSource#getPreviousSourceUrls()} list.
+	 * 
+	 * @param srcs
+	 * @param m
+	 */
+	void fetchOldFileUrls(List<ReviewSource> srcs, IProgressMonitor m);
+
 }

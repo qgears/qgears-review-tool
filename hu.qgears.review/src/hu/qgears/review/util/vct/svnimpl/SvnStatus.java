@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class SvnStatus implements IVersionControlTool {
 	private static final Logger LOG = Logger.getLogger(SvnStatus.class);
 	private static String svnTool = "/usr/bin/svn";
+	private boolean logged;
 	@Override
 	public List<ReviewSource> loadSources(String id, File dir,ReviewToolConfig rtc,IProgressMonitor m) throws Exception {
 		LOG.info("Loading source from SVN working copy "+dir);
@@ -134,5 +135,13 @@ public class SvnStatus implements IVersionControlTool {
 		Future<Pair<byte[], byte[]>> fut=UtilProcess.saveOutputsOfProcess(p);
 		Pair<byte[], byte[]> pa=fut.get();
 		return pa.getA();
+	}
+
+	@Override
+	public void fetchOldFileUrls(List<ReviewSource> srcs, IProgressMonitor cliMonitor) {
+		if (!logged) {
+			logged = true;
+			LOG.error("fetchOldFileUrls is not implemented for SVN");
+		}
 	}
 }

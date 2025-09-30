@@ -1,23 +1,5 @@
 package hu.qgears.review.action;
 
-import hu.qgears.commons.UtilFile;
-import hu.qgears.commons.UtilFileVisitor;
-import hu.qgears.commons.UtilString;
-import hu.qgears.review.action.ConfigParsingResult.Problem;
-import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
-import hu.qgears.review.model.ReviewEntry;
-import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.model.ReviewModel;
-import hu.qgears.review.model.ReviewSource;
-import hu.qgears.review.tool.PomFileSet;
-import hu.qgears.review.tool.PomFileSet.Params;
-import hu.qgears.review.tool.WhiteListFileSet;
-import hu.qgears.review.util.UtilFileFilter;
-import hu.qgears.review.util.UtilSimpleString;
-import hu.qgears.review.util.vct.EVersionControlTool;
-import hu.qgears.review.util.vct.IVersionControlTool;
-import hu.qgears.review.util.vct.VersionControlToolManager;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +11,26 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
+
+import hu.qgears.commons.MultiMapHashImpl;
+import hu.qgears.commons.UtilFile;
+import hu.qgears.commons.UtilFileVisitor;
+import hu.qgears.commons.UtilString;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
+import hu.qgears.review.action.ConfigParsingResult.Problem.Type;
+import hu.qgears.review.model.ReviewEntry;
+import hu.qgears.review.model.ReviewInstance;
+import hu.qgears.review.model.ReviewModel;
+import hu.qgears.review.model.ReviewSource;
+import hu.qgears.review.model.ReviewSourceSet;
+import hu.qgears.review.tool.PomFileSet;
+import hu.qgears.review.tool.PomFileSet.Params;
+import hu.qgears.review.tool.WhiteListFileSet;
+import hu.qgears.review.util.UtilFileFilter;
+import hu.qgears.review.util.UtilSimpleString;
+import hu.qgears.review.util.vct.EVersionControlTool;
+import hu.qgears.review.util.vct.IVersionControlTool;
+import hu.qgears.review.util.vct.VersionControlToolManager;
 
 /**
  * Loads a review configuration via a root configuration file.  
@@ -112,11 +114,14 @@ public class LoadConfiguration {
 		m.worked(1);
 		
 		m.setTaskName("Loading source folders");
-		loadSourceFolders(model, cfg,m.newChild(96));
-		
+		loadSourceFolders(model, cfg,m.newChild(48));
+
 		m.setTaskName("Loading file sets");
 		loadFileSets(model, cfg);
 		m.worked(1);
+
+		m.setTaskName("Fetching old URLs...");
+		fetchOldFileUrls(model, m.newChild(48));
 		
 		m.setTaskName("Loading existing reviews");
 		loadExistingReviews(model, cfg);
@@ -318,7 +323,6 @@ public class LoadConfiguration {
 		final File fileSetDefFile = new File(fileSetDefSubdir, "filesetdefinition");
 		
 		LOG.info("Loading fileset definition: " + fileSetDefFile);
-		
 		final String fileSetDefinition = UtilFile.loadAsString(fileSetDefFile);
 		final List<String> fileSetDefLines = 
 				UtilString.split(fileSetDefinition, "\r\n");
@@ -347,6 +351,28 @@ public class LoadConfiguration {
 		}
 	}
 	
+	private void fetchOldFileUrls(ReviewModel model,SubMonitor m) throws Exception {
+
+		MultiMapHashImpl<EVersionControlTool,ReviewSource> sources = new MultiMapHashImpl<>();
+		int srcCount = 0;
+		for (ReviewSourceSet ss : model.sourcesets.values()) {
+			for (String src : ss.sourceFiles) {
+				ReviewSource rs = model.getSource(src);
+				sources.putSingle(rs.getVersionControlTool(), rs);
+				srcCount++;
+			}
+		}
+		
+		m.beginTask("Fetching old source URLs from SCM history",srcCount);
+		
+		for ( EVersionControlTool v : EVersionControlTool.values()) {
+			IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(v);
+			List<ReviewSource> srcs = sources.get(v);
+			loader.fetchOldFileUrls(srcs, m.newChild(srcs.size()));
+		}
+	}
+
+
 	/**
 	 * Parses file set from a pomFileBytes.xml describing a SONAR analisys job. Use
 	 * module definitions as whitelist of required components, and use

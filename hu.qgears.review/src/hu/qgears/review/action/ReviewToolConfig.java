@@ -99,17 +99,23 @@ public class ReviewToolConfig {
 	private void parseSourcePatternrs() throws IOException {
 		File sourcePattern = new File (configDir,SOURCE_PATTERNS);
 		if (sourcePattern.exists()){
-			sourcePatterns = new ArrayList<Matcher>();
 			for (String line: UtilFile.readLines(sourcePattern)){
-				try {
-					Pattern p = Pattern.compile(line);
-					sourcePatterns.add(p.matcher(""));
-				} catch (Exception e){
-					throw new IOException("Invalid regexp found in config file "+SOURCE_PATTERNS+": "+line,e);
-				}
+				addSourcePattern(line);
 			}
 		} else {
 			LOG.warn("No sourcepatterns specified, all resources in source folders will be parsed. Create "+sourcePattern +" to specify source filters.");
+		}
+	}
+
+	public void addSourcePattern(String line) throws IOException {
+		try {
+			if (sourcePatterns == null) {
+				sourcePatterns = new ArrayList<Matcher>();
+			}
+			Pattern p = Pattern.compile(line);
+			sourcePatterns.add(p.matcher(""));
+		} catch (Exception e){
+			throw new IOException("Invalid regexp found in config file "+SOURCE_PATTERNS+": "+line,e);
 		}
 	}
 

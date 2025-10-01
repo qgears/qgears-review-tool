@@ -1,6 +1,7 @@
 package hu.qgears.review.eclipse.ui.views.main;
 
 import hu.qgears.review.eclipse.ui.ReviewToolUI;
+import hu.qgears.review.eclipse.ui.actions.CheckForRenameAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithEachOtherAction;
 import hu.qgears.review.eclipse.ui.actions.CompareWithHeadAction;
 import hu.qgears.review.eclipse.ui.actions.CreateReviewEntryAction;
@@ -29,6 +30,7 @@ import hu.qgears.review.report.ReviewStatus;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -234,9 +236,15 @@ public class ReviewToolMainView extends AbstractReviewToolView {
 	private void createActions(IMenuManager menuManager) {
 		Object sel = getSingleSelection(viewer.getSelection());
 		List<Object> selection = getSelection(viewer.getSelection());
+		List<SourceTreeElement> selectedSources = selection.stream().filter(o -> o instanceof SourceTreeElement)
+				.map( o -> (SourceTreeElement)o)
+				.collect(Collectors.toList()); 
 		if (sel instanceof SourceTreeElement){
 			menuManager.add(openJavaTypeAction);
 			menuManager.add(new CreateReviewEntryAction((SourceTreeElement) sel, viewer,getReviewInstance()));
+		}
+		if (selectedSources != null) {
+			menuManager.add(new CheckForRenameAction(selectedSources, viewer,getReviewInstance()));
 		}
 		if (sel instanceof ReviewEntryView){
 			menuManager.add(openReviewDetailsAction);

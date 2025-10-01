@@ -1,12 +1,12 @@
 package hu.qgears.review.eclipse.ui.views.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSource;
 import hu.qgears.review.model.ReviewSourceSet;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Wrapper class for {@link ReviewSource}s, that makes easier to embed review
@@ -61,5 +61,25 @@ public class SourceTreeElement extends AbstractViewModel<ReviewSource>{
 	 */
 	public ReviewSource getSource() {
 		return getModelElement();
+	}
+	
+	public ReviewEntryView getMatchingView(ReviewEntry re) {
+		 return new IReviewModelVisitor() {
+			private ReviewEntryView ret;
+			@Override
+			public boolean visit(AbstractViewModel<?> reviewModelElement) {
+				if (reviewModelElement instanceof ReviewEntryView) {
+					ReviewEntryView rev = (ReviewEntryView) reviewModelElement;
+					if (rev.getModelElement().equals(re)){
+						ret = rev;
+					}
+				}
+				return ret == null;
+			}
+			public ReviewEntryView find() {
+				SourceTreeElement.this.visit(this);
+				return ret;
+			}
+		}.find();
 	}
 }

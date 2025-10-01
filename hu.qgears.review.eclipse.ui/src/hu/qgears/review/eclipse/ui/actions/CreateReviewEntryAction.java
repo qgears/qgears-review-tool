@@ -1,14 +1,5 @@
 package hu.qgears.review.eclipse.ui.actions;
 
-import hu.qgears.review.eclipse.ui.util.UtilLog;
-import hu.qgears.review.eclipse.ui.views.model.AbstractViewModel;
-import hu.qgears.review.eclipse.ui.views.model.IReviewModelVisitor;
-import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
-import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
-import hu.qgears.review.eclipse.ui.wizard.CreateReviewEntryWizard;
-import hu.qgears.review.model.ReviewEntry;
-import hu.qgears.review.model.ReviewInstance;
-
 import java.io.IOException;
 
 import org.eclipse.jface.action.Action;
@@ -18,6 +9,13 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+
+import hu.qgears.review.eclipse.ui.util.UtilLog;
+import hu.qgears.review.eclipse.ui.views.model.ReviewEntryView;
+import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
+import hu.qgears.review.eclipse.ui.wizard.CreateReviewEntryWizard;
+import hu.qgears.review.model.ReviewEntry;
+import hu.qgears.review.model.ReviewInstance;
 
 /**
  * Action that opens {@link CreateReviewEntryWizard}.
@@ -48,21 +46,10 @@ public class CreateReviewEntryAction extends Action{
 			try {
 				final ReviewEntry newReviewEntry = w.getNewReviewEntry();
 				reviewInstance.saveEntry(newReviewEntry);
-				currentSelection.visit(new IReviewModelVisitor() {
-					boolean done = false;
-					@Override
-					public boolean visit(AbstractViewModel<?> reviewModelElement) {
-						if (reviewModelElement instanceof ReviewEntryView) {
-							ReviewEntryView rev = (ReviewEntryView) reviewModelElement;
-							if (rev.getModelElement().equals(newReviewEntry)){
-								viewerToRefresh.setSelection(new StructuredSelection(rev));
-								done = true;
-							}
-							return false;
-						}
-						return !done;
-					}
-				});
+				ReviewEntryView rev = currentSelection.getMatchingView(newReviewEntry);
+				if (rev != null) {
+					viewerToRefresh.setSelection(new StructuredSelection(rev));
+				}
 			} catch (IOException e) {
 				UtilLog.showErrorDialog("Cannot create new entry", e);
 			}

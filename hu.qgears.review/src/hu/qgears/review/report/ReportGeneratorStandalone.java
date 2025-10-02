@@ -1,19 +1,17 @@
 package hu.qgears.review.report;
 
-import hu.qgears.review.action.ConfigParsingResult;
-import hu.qgears.review.action.LoadConfiguration;
-import hu.qgears.review.action.ConfigParsingResult.Problem;
-import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.model.ReviewModel;
-import hu.qgears.review.model.ReviewSourceSet;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.qgears.review.action.ConfigParsingResult;
+import hu.qgears.review.action.ConfigParsingResult.Problem;
+import hu.qgears.review.action.LoadConfiguration;
+import hu.qgears.review.model.ReviewInstance;
+import hu.qgears.review.model.ReviewModel;
+import hu.qgears.review.model.ReviewSourceSet;
 import joptsimple.annot.AnnotatedClass;
 import joptsimple.annot.JOHelp;
 import joptsimple.annot.JOSimpleBoolean;
@@ -27,11 +25,6 @@ import joptsimple.annot.JOSimpleBoolean;
  */
 public class ReportGeneratorStandalone {
 
-	/**
-	 * System property for specifying an error log file.
-	 */
-	private static final String SYS_PROP_ERROR_INDICATOR = "hu.qgears.report.error.indicator";
-	
 	/**
 	 * Helper class for parsing command line arguments of this application.
 	 * 
@@ -82,34 +75,15 @@ public class ReportGeneratorStandalone {
 			error("Invalid parameters specified: " +e.getMessage());
 			error("Valid parameters are:");
 			params.printHelpOn(System.err);
-			printErrorLog(e);
 			throw e;
 		}
 		try { 
 			ReportGeneratorStandalone app = new ReportGeneratorStandalone();
 			app.run(params);
 		} catch (Exception e) {
-			printErrorLog(e);
 			throw e;
 		}
 
-	}
-
-	private static void printErrorLog(Exception e) {
-		String errorLogFile = System.getProperty(SYS_PROP_ERROR_INDICATOR);
-		if (errorLogFile != null && !errorLogFile.isEmpty()){
-			File error = new File (errorLogFile);
-			try {
-				PrintWriter pw = new PrintWriter(error,"UTF-8");
-				pw.println("Report generation failed due to an exception!");
-				if (e != null){
-					e.printStackTrace(pw);
-				}
-				pw.close();
-			} catch (Exception e1) {
-				error("Cannot create error log file: " + e1.getMessage());
-			}
-		}
 	}
 
 	/**

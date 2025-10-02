@@ -18,7 +18,6 @@ public class ReportGeneratorEclipseApp implements IApplication {
 		try {
 			ReportGeneratorStandalone.main(Platform.getApplicationArgs());
 		} catch (Exception e) {
-			e.printStackTrace();
 			return -1;
 		}
 		return 0;

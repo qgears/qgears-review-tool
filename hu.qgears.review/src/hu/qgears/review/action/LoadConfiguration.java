@@ -366,9 +366,11 @@ public class LoadConfiguration {
 		m.beginTask("Fetching old source URLs from SCM history",srcCount);
 		
 		for ( EVersionControlTool v : EVersionControlTool.values()) {
-			IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(v);
 			List<ReviewSource> srcs = sources.get(v);
-			loader.fetchOldFileUrls(srcs, m.newChild(srcs.size()));
+			if (srcs.size() > 0) {
+				IVersionControlTool loader = VersionControlToolManager.getInstance().getImplementationFor(v);
+				loader.fetchOldFileUrls(srcs, m.newChild(srcs.size()));
+			}
 		}
 	}
 

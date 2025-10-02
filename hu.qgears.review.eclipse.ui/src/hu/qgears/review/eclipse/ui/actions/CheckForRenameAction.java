@@ -20,7 +20,6 @@ import hu.qgears.review.eclipse.ui.views.model.SourceTreeElement;
 import hu.qgears.review.model.EReviewAnnotation;
 import hu.qgears.review.model.ReviewEntry;
 import hu.qgears.review.model.ReviewInstance;
-import hu.qgears.review.model.ReviewModel;
 import hu.qgears.review.model.ReviewSource;
 
 public class CheckForRenameAction extends Action {

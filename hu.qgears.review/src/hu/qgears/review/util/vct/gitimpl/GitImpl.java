@@ -62,7 +62,12 @@ public class GitImpl implements IVersionControlTool{
 			throw new IOException("Source folder does not exist: "+targetFolder);
 		}
 		LOG.info("Loading sources from GIT repository "+targetFolder);
-		String folderVersion = getFileVersion(targetFolder,".");
+		String folderVersion;
+		try {
+			folderVersion = getFileVersion(targetFolder,".");
+		} catch (Exception e) {
+			throw new Exception(targetFolder+" is not a valid GIT repo",e);
+		}
 		String sourceFolderURL = "file://"+ targetFolder.getCanonicalPath();
 		List<ReviewSource> sources = new ArrayList<ReviewSource>();
 		List<String> allFiles = stdOutLines(getGitTool() +" -C "+targetFolder+" ls-tree -r HEAD "+targetFolder.getAbsolutePath())
@@ -140,8 +145,13 @@ public class GitImpl implements IVersionControlTool{
 	}
 
 	private String getFileVersion(File root, String relativePath) throws IOException {
-		String log = UtilProcess.execute(getGitTool()+ " -C "+root.getAbsolutePath()+" log --no-color --format=oneline -n 1 -- "+relativePath);
-		return log.substring(0,log.indexOf(' '));
+		String command = getGitTool()+ " -C "+root.getAbsolutePath()+" log --no-color --format=oneline -n 1 -- "+relativePath;
+		try {
+			String log = UtilProcess.execute(command);
+			return log.substring(0,log.indexOf(' '));
+		} catch (Exception e) {
+			throw new IOException("Unexpected output of command : "+command,e);
+		}
 	}
 
 	public static void main(String[] args) throws Exception {

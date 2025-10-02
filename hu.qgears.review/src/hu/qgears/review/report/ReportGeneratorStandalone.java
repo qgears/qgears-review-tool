@@ -63,7 +63,6 @@ public class ReportGeneratorStandalone {
 		public void printHelpOn(PrintStream out) throws IOException {
 			c.printHelpOn(out);
 		}
-		
 	}
 
 	private File mapping;
@@ -77,14 +76,23 @@ public class ReportGeneratorStandalone {
 		ApplicationParameters params = new ApplicationParameters();
 		try {
 			params.c.parseArgs(args);
-			ReportGeneratorStandalone app = new ReportGeneratorStandalone();
-			app.run(params);
+			info("Report gen started with arguments :");
+			info(params.c.optionsToString());
 		} catch (Exception e) {
 			error("Invalid parameters specified: " +e.getMessage());
 			error("Valid parameters are:");
 			params.printHelpOn(System.err);
 			printErrorLog(e);
+			throw e;
 		}
+		try { 
+			ReportGeneratorStandalone app = new ReportGeneratorStandalone();
+			app.run(params);
+		} catch (Exception e) {
+			printErrorLog(e);
+			throw e;
+		}
+
 	}
 
 	private static void printErrorLog(Exception e) {
